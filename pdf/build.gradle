@@ -1,0 +1,66 @@
+dependencies {
+	compile 'com.craigburke.document:core:0.1.0-SNAPSHOT'
+	compile 'com.lowagie:itext:2.1.7'
+	testCompile 'org.apache.pdfbox:pdfbox:1.8.8'
+}
+
+task sourcesJar(type: Jar) {
+	classifier = 'sources'
+	from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	classifier = 'javadoc'
+	from 'build/docs/javadoc'
+}
+
+bintray {
+	user = project.hasProperty('bintrayUsername') ? project.bintrayUsername : ''
+	key = project.hasProperty('bintrayApiKey') ? project.bintrayApiKey : ''
+	publications = ['maven']
+    
+	pkg {
+		repo = 'document-builder'
+        userOrg = 'craigburke'
+		name = 'word'
+		licenses = ['Apache-2.0']
+	}
+}
+
+publishing {
+	publications {
+	maven(MavenPublication) {
+		artifactId 'word'
+		pom.withXml {
+			asNode().children().last() + {
+			resolveStrategy = Closure.DELEGATE_FIRST
+			name 'core'
+			description 'Groovy PDF Document Builder'
+			url 'https://github.com/craigburke/document-builder'
+			scm {
+				url 'https://github.com/craigburke/document-builder'
+				connection 'scm:https://github.com/craigburke/document-builder.git'
+				developerConnection 'scm:https://github.com/craigburke/document-builder.git'
+			}
+			licenses {
+				license {
+					name 'The Apache Software License, Version 2.0'
+					url 'http://www.apache.org/license/LICENSE-2.0.txt'
+					distribution 'repo'
+					}
+				}
+				developers {
+					developer {
+						id 'craigburke'
+						name 'Craig Burke'
+						email 'craig@craigburke.com'
+						}
+					}
+				}
+			}		
+			from components.java
+			artifact sourcesJar
+            artifact javadocJar
+		}
+	}
+}

@@ -1,32 +1,28 @@
 plugins {
-	id 'net.saliman.cobertura' version '2.2.5'
-}
+	id 'com.jfrog.bintray' version '1.0'
+    id 'net.saliman.cobertura' version '2.2.5'
+}	
 
-apply plugin: 'groovy'
-apply plugin: 'idea'
+subprojects {
+	group = 'com.craigburke.document'
+	version = '0.1.0-SNAPSHOT'
 
-repositories {
-	jcenter()
-}
+	apply plugin: 'groovy'
+	apply plugin: 'idea'
+	apply plugin: 'maven-publish'
 
-group = 'com.craigburke.document'
-version = '0.1-SNAPSHOT'
+	repositories {
+		mavenLocal()
+		jcenter()
+		mavenCentral()
+	}
 
-dependencies {
-	String POI_VERSION = '3.10.1'
-	
-	compile 'org.codehaus.groovy:groovy-all:2.3.6'
-	
-	compile "org.apache.poi:poi:${POI_VERSION}"
-	compile "org.apache.poi:poi-ooxml:${POI_VERSION}"
-	compile 'org.apache.poi:ooxml-schemas:1.1'
-	
-	compile 'com.lowagie:itext:2.1.7'
-	
-	testCompile 'org.apache.pdfbox:pdfbox:1.8.8'
-	testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+	dependencies {
+		compile 'org.codehaus.groovy:groovy-all:2.3.9'
+		testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+	}
 }
 
 task wrapper(type: Wrapper) {
-	gradleVersion = '2.2'
+    gradleVersion = '2.2'
 }

@@ -12,7 +12,6 @@ import com.craigburke.document.core.Image
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.Font
 
-
 import com.lowagie.text.Document as PdfDocument
 import com.lowagie.text.Paragraph as PdfParagraph
 import com.lowagie.text.Image as PdfImage
@@ -46,7 +45,6 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		document
 	}
 
-
 	void addFontFolder(File folder) {
 	 	FontFactory.registerDirectory(folder.path)
 	}
@@ -72,7 +70,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 	
 	void addLineBreakToParagraph(Paragraph paragraph) {
-	
+		paragraph.item.add(Chunk.NEWLINE)
 	}
 	
 	void addTextToParagraph(Text text, Paragraph paragraph) {
@@ -90,10 +88,12 @@ class PdfDocumentBuilder extends DocumentBuilder {
 			parent.item.addElement(paragraph.item)
 		}
 	}
-	
+
 	void addTableToDocument(Table table, Document document) {
-		table.item = new PdfPTable(table.columns)
-		table.item.totalWidth = table.width
+		PdfPTable pdfTable = new PdfPTable(table.columns)
+		pdfTable.totalWidth = table.width
+
+		table.item = pdfTable
 	}
 	
 	void addRowToTable(Row row, Table table) {

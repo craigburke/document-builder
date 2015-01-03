@@ -3,6 +3,7 @@ package com.craigburke.document.builder
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Image
 import com.craigburke.document.core.Paragraph
+import com.lowagie.text.pdf.PdfDocument
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 
@@ -18,16 +19,15 @@ class PdfDocumentLoader {
         document.marginBottom = new BigDecimal(info.getString('marginBottom'))
         document.marginRight = new BigDecimal(info.getString('marginRight'))
 
-        loadParagraphs(document)
-        loadTables(document)
+        loadChildren(document)
         document
     }
 
-    // The order of paragraphs could be wrong, might become an issue later
-    private static void loadParagraphs(Document document) {
-
+    // The order of children could be wrong, might become an issue later
+    private static void loadChildren(Document document) {
         def pages = document.item.documentCatalog.allPages
 
+        // Images
         pages.resources.images*.each { name, image ->
             Paragraph paragraph = new Paragraph(parent: document)
             OutputStream out = new ByteArrayOutputStream()
@@ -36,6 +36,7 @@ class PdfDocumentLoader {
             document.children << paragraph
         }
 
+        // Paragraphs
         def extractor = new PdfParagraphExtractor(document)
         pages.each { PDPage page ->
             if (page.contents) {
@@ -43,11 +44,11 @@ class PdfDocumentLoader {
             }
             document.children.addAll(0, extractor.paragraphs)
         }
+
+        // Tables
+
     }
 
-    private static void loadTables(Document document) {
-
-    }
 
 
 

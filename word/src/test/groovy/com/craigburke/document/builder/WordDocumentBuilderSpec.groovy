@@ -2,7 +2,7 @@ package com.craigburke.document.builder
 
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.builder.DocumentBuilder
-import com.craigburke.document.DocumentBuilderSpec
+import com.craigburke.document.core.test.DocumentBuilderSpec
 
 class WordDocumentBuilderSpec extends DocumentBuilderSpec  {
 

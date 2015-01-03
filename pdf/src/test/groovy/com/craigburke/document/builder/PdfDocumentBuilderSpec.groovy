@@ -13,7 +13,7 @@ import static com.craigburke.document.core.UnitUtil.*
 
 import com.craigburke.document.core.builder.DocumentBuilder
 import com.craigburke.document.builder.PdfDocumentBuilder
-import com.craigburke.document.DocumentBuilderSpec
+import com.craigburke.document.core.test.DocumentBuilderSpec
 
 import org.apache.pdfbox.util.PDFTextStripper
 import org.apache.pdfbox.pdmodel.PDDocument
