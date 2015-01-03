@@ -3,13 +3,24 @@ plugins {
     id 'net.saliman.cobertura' version '2.2.5'
 }	
 
-subprojects {
+allprojects {
 	group = 'com.craigburke.document'
 	version = '0.1.0-SNAPSHOT'
 
 	apply plugin: 'groovy'
 	apply plugin: 'idea'
 	apply plugin: 'maven-publish'
+
+	configurations { 
+		provided 
+		testCompile { extendsFrom provided }
+	}
+
+	sourceSets {
+		main {
+			compileClasspath += configurations.provided
+		}
+	} 
 
 	repositories {
 		mavenLocal()
