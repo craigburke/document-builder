@@ -1,104 +1,104 @@
 plugins {
-	id 'com.jfrog.bintray' version '1.0'
+    id 'com.jfrog.bintray' version '1.0'
     id 'net.saliman.cobertura' version '2.2.5'
-}	
+}
 
 allprojects {
-	apply plugin: 'idea'
+    apply plugin: 'idea'
 }
 
 subprojects {
-	group = 'com.craigburke.document'
-	version = '0.1.0-SNAPSHOT'
+    group = 'com.craigburke.document'
+    version = '0.1.0-SNAPSHOT'
 
-	apply plugin: 'groovy'
-	apply plugin: 'maven-publish'
+    apply plugin: 'groovy'
+    apply plugin: 'maven-publish'
 
-	configurations {
-		provided
-		testCompile { extendsFrom provided }
-	}
+    configurations {
+        provided
+        testCompile { extendsFrom provided }
+    }
 
-	sourceSets {
-		main {
-			compileClasspath += configurations.provided
-		}
-	}
+    sourceSets {
+        main {
+            compileClasspath += configurations.provided
+        }
+    }
 
-	repositories {
-		mavenLocal()
-		jcenter()
-		mavenCentral()
-	}
+    repositories {
+        mavenLocal()
+        jcenter()
+        mavenCentral()
+    }
 
-	dependencies {
-		compile 'org.codehaus.groovy:groovy-all:2.3.9'
-		testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
-	}
+    dependencies {
+        compile 'org.codehaus.groovy:groovy-all:2.3.9'
+        testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+    }
 
-	task sourcesJar(type: Jar) {
-		classifier = 'sources'
-		from sourceSets.main.allSource
-	}
+    task sourcesJar(type: Jar) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
 
-	task javadocJar(type: Jar, dependsOn: javadoc) {
-		classifier = 'javadoc'
-		from 'build/docs/javadoc'
-	}
+    task javadocJar(type: Jar, dependsOn: javadoc) {
+        classifier = 'javadoc'
+        from 'build/docs/javadoc'
+    }
 
 
-	bintray {
-		user = project.hasProperty('bintrayUsername') ? bintrayUsername : ''
-		key = project.hasProperty('bintrayApiKey') ? bintrayApiKey : ''
-		publications = ['maven']
+    bintray {
+        user = project.hasProperty('bintrayUsername') ? bintrayUsername : ''
+        key = project.hasProperty('bintrayApiKey') ? bintrayApiKey : ''
+        publications = ['maven']
 
-		pkg {
-			repo = 'document-builder'
-			userOrg = 'craigburke'
-			name = project.hasProperty('artifactId') ? artifactId : ''
-			licenses = ['Apache-2.0']
-		}
-	}
+        pkg {
+            repo = 'document-builder'
+            userOrg = 'craigburke'
+            name = project.hasProperty('artifactId') ? artifactId : ''
+            licenses = ['Apache-2.0']
+        }
+    }
 
-	publishing {
-		publications {
-			maven(MavenPublication) {
-				artifactId project.artifactId
-				pom.withXml {
-					asNode().children().last() + {
-						resolveStrategy = Closure.DELEGATE_FIRST
-						name project.hasProperty('artifactId') ? artifactId : ''
-						description project.hasProperty('description') ? description : ''
-						url 'https://github.com/craigburke/document-builder'
-						scm {
-							url 'https://github.com/craigburke/document-builder'
-							connection 'scm:https://github.com/craigburke/document-builder.git'
-							developerConnection 'scm:https://github.com/craigburke/document-builder.git'
-						}
-						licenses {
-							license {
-								name 'The Apache Software License, Version 2.0'
-								url 'http://www.apache.org/license/LICENSE-2.0.txt'
-								distribution 'repo'
-							}
-						}
-						developers {
-							developer {
-								id 'craigburke'
-								name 'Craig Burke'
-								email 'craig@craigburke.com'
-							}
-						}
-					}
-				}
-				from components.java
-				artifact sourcesJar
-				artifact javadocJar
-			}
-		}
-	}
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                artifactId hasProperty('artifactId') ? project.artifactId : ''
+                pom.withXml {
+                    asNode().children().last() + {
+                        resolveStrategy = Closure.DELEGATE_FIRST
+                        name project.hasProperty('artifactId') ? artifactId : ''
+                        description project.hasProperty('description') ? description : ''
+                        url 'https://github.com/craigburke/document-builder'
+                        scm {
+                            url 'https://github.com/craigburke/document-builder'
+                            connection 'scm:https://github.com/craigburke/document-builder.git'
+                            developerConnection 'scm:https://github.com/craigburke/document-builder.git'
+                        }
+                        licenses {
+                            license {
+                                name 'The Apache Software License, Version 2.0'
+                                url 'http://www.apache.org/license/LICENSE-2.0.txt'
+                                distribution 'repo'
+                            }
+                        }
+                        developers {
+                            developer {
+                                id 'craigburke'
+                                name 'Craig Burke'
+                                email 'craig@craigburke.com'
+                            }
+                        }
+                    }
+                }
+                from components.java
+                artifact sourcesJar
+                artifact javadocJar
+            }
+        }
+    }
 
-	bintrayUpload.dependsOn build, sourcesJar, javadoc
+    bintrayUpload.dependsOn build, sourcesJar, javadoc
 }
 
 task wrapper(type: Wrapper) {
