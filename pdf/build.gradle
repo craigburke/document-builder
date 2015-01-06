@@ -1,5 +1,5 @@
 dependencies {
-	compile 'com.craigburke.document:core:0.1.0-SNAPSHOT'
+	compile project(':core')
 	compile 'com.lowagie:itext:2.1.7'
 	testCompile 'org.apache.pdfbox:pdfbox:1.8.8'
 }

@@ -39,8 +39,14 @@ abstract class DocumentBuilderSpec extends Specification {
 	}
 	
 	def "load fonts"() {
-		def fontFolder = new File('src/test/resources/fonts')
-		def fontFile = new File('src/test/resources/fonts/OpenSans-Bold.ttf')
+		setup:
+		String fontFileName = "OpenSans-Bold.ttf"
+
+		File fontFolder = new File("temp-fonts")
+		File fontFile = new File(fontFolder, fontFileName)
+		fontFolder.mkdirs()
+
+		fontFile << DocumentBuilderSpec.classLoader.getResourceAsStream("test/fonts/${fontFileName}")
 				
 		when:
 		builder.document {
@@ -50,6 +56,10 @@ abstract class DocumentBuilderSpec extends Specification {
 		
 		then:
 		notThrown(Exception)
+
+		cleanup:
+		fontFolder?.delete()
+		fontFile?.delete()
 	}
 
 	@Unroll
@@ -206,7 +216,7 @@ abstract class DocumentBuilderSpec extends Specification {
 	}	
 	
 	def "add an image"() {
-		def imageData = getClass().classLoader.getResource('images/cheeseburger.jpg')?.bytes
+		def imageData = getClass().classLoader.getResource('test/images/cheeseburger.jpg')?.bytes
 		
 		given:
 		imageData != null

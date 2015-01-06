@@ -63,7 +63,7 @@ subprojects {
     publishing {
         publications {
             maven(MavenPublication) {
-                artifactId hasProperty('artifactId') ? project.artifactId : ''
+                artifactId hasProperty('artifactId') ? artifactId : ''
                 pom.withXml {
                     asNode().children().last() + {
                         resolveStrategy = Closure.DELEGATE_FIRST

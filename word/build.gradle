@@ -1,5 +1,5 @@
-dependencies {	
-	compile 'com.craigburke.document:core:0.1.0-SNAPSHOT'
+dependencies {
+	compile project(':core')
 
 	String POI_VERSION = '3.10.1'
 	
