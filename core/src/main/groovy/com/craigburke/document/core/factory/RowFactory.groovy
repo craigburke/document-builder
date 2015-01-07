@@ -26,7 +26,7 @@ class RowFactory extends AbstractFactory {
 	
 	void onNodeCompleted(FactoryBuilderSupport builder, table, row) {
 		if (builder.onRowComplete instanceof Closure) {
-			builder.onRowComplete(row)
+			builder.onRowComplete(row, table)
 		}
    	}
 	

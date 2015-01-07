@@ -42,9 +42,9 @@ class CellFactory extends AbstractFactory {
 		}
 	}
 	
-	void onNodeCompleted(FactoryBuilderSupport builder, parent, current) {
+	void onNodeCompleted(FactoryBuilderSupport builder, row, cell) {
 		if (builder.onCellComplete instanceof Closure) {
-			builder.onCellComplete(parent, current)
+			builder.onCellComplete(cell, row)
 		}
    	}
 

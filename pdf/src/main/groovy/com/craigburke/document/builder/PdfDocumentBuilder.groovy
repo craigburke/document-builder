@@ -93,7 +93,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
 		table.item = pdfTable
 	}
-	
+
 	void addRowToTable(Row row, Table table) {
 		row.item = []
 	}
@@ -112,15 +112,15 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	
 	def onRowComplete = { Row row, Table table -> 
 		row.item.each { cell ->
-			table.item.addCell(cell.item)
+			table.item.addCell(cell)
 		}
 		table.item.completeRow()
 	}
 	
 	def onCellComplete = { Cell cell, Row row -> 
 		def phrase = new Phrase()
-		cell.item.each { chunk ->
-			phrase.add(chunk)
+		cell.paragraphs.each { paragraph ->
+			phrase.add(paragraph.item)
 		}
 		row.item << new PdfPCell(phrase)
 	}
