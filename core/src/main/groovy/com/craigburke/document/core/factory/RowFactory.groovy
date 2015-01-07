@@ -18,9 +18,9 @@ class RowFactory extends AbstractFactory {
 		row
 	}
  	
-	void setChild(FactoryBuilderSupport builder, parent, child) {
-		child.parent = parent
-		parent.children << child
+	void setChild(FactoryBuilderSupport builder, row, cell) {
+		cell.parent = row
+		row.cells << cell
 		builder.currentCellPosition++
 	}
 	

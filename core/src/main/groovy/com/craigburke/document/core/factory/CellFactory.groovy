@@ -28,17 +28,17 @@ class CellFactory extends AbstractFactory {
 			builder.addParagraphToCell(paragraph, cell)
 			builder.addTextToParagraph(text, paragraph)
 			
-			cell.children << paragraph
+			cell.paragraphs << paragraph
 		}
 		
 		cell
 	}
 	
-	void setChild(FactoryBuilderSupport builder, parent, child) {
-		child.parent = parent
+	void setChild(FactoryBuilderSupport builder, cell, paragraph) {
+		paragraph.parent = cell
 		
-		if (child instanceof Paragraph) {
-			parent.paragraphs << child
+		if (paragraph instanceof Paragraph) {
+			cell.paragraphs << paragraph
 		}
 	}
 	

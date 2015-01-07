@@ -144,8 +144,8 @@ abstract class DocumentBuilderSpec extends Specification {
 		def paragraph2 = document.children[1].children[0]
 		def paragraph3 = document.children[2].children[0]
 
-		def table1 = document.children[3].children[0].children[0].children[0].children[0]
-		def table2 = document.children[4].children[0].children[0].children[0].children[0]
+		def table1 = document.children[3].rows[0].cells[0].paragraphs[0].children[0]
+		def table2 = document.children[4].rows[0].cells[0].paragraphs[0].children[0]
 
 		then:
 		paragraph1.font.family == 'Courier'
@@ -180,10 +180,10 @@ abstract class DocumentBuilderSpec extends Specification {
 		table.width == 100
 		
 		and:
-		table.children[0].children[0].width == 25
+		table.rows[0].cells[0].width == 25
 		
 		and:
-		table.children[0].children[1].width == 75
+		table.rows[0].cells[1].width == 75
 	}
 
 	def "set paragraph text"() {

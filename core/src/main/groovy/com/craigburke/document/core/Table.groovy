@@ -3,7 +3,7 @@ package com.craigburke.document.core
 class Table {
 	def item
 	Font font
-	List<Row> children = []
+	List<Row> rows = []
 	def parent
 	
 	Integer columns = 1

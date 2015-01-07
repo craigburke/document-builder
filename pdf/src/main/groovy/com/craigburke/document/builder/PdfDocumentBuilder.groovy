@@ -120,7 +120,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	
 	def onCellComplete = { Cell cell, Row row -> 
 		def phrase = new Phrase()
-		cell.children.each { paragraph ->
+		cell.paragraphs.each { paragraph ->
 			phrase.add(paragraph.item)
 		}
 		row.item << new PdfPCell(phrase)
@@ -160,8 +160,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
 				}
 				else {
 					table(columns: child.columns, width: child.width, borderSize: child.borderSize) {
-						child.children.each {
-							def cells = it.children
+						child.rows.each {
+							def cells = it.cells
 							row() {
 								cells.each {
 									cell(width: "${it.width ?: 0}")

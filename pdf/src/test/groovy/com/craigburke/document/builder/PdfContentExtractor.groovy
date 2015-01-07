@@ -58,13 +58,13 @@ class PdfContentExtractor extends PDFTextStripper {
 
         private processTable(TextPosition text, Font font ) {
             def textNode
-            Cell cell = currentChild.children[tablePosition.row].children[tablePosition.cell]
+            Cell cell = currentChild.rows[tablePosition.row].cells[tablePosition.cell]
 
-            if (!cell.children | isNewSection(text)) {
-                if (!cell.children) {
-                    cell.children << new Paragraph()
+            if (!cell.paragraphs | isNewSection(text)) {
+                if (!cell.paragraphs) {
+                    cell.paragraphs << new Paragraph()
                 }
-                Paragraph paragraph = cell.children.last()
+                Paragraph paragraph = cell.paragraphs.last()
                 textNode = createText(paragraph, font)
 
                 paragraph.children << textNode
