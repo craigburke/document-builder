@@ -111,22 +111,21 @@ abstract class DocumentBuilderSpec extends Specification {
 		fontSize << [12, 60, 120]
 		margin << MARGINS
 	}
-	
+
 	def "override or inherit font settings"() {
 		when:
-		builder.document(font: [family: 'Doc']) {
+		builder.document(font: [family: 'Helvetica']) {
 			
-			paragraph(font: [family: 'Paragraph override']) {
-				text "Foo"
-				text "Bar"
+			paragraph(font: [family: 'Courier']) {
+				text "Paragraph override"
 			}
 			paragraph "Inherit doc font"
 
 			paragraph {
-				text "Text override", font: [family: 'Text override']
+				text "Text override", font: [family: 'Times-Roman']
 			}
 
-			table(columns: 1, font: [family: 'Table override']) {
+			table(columns: 1, font: [family: 'Courier']) {
 				row {
 					cell("Override")
 				}
@@ -136,7 +135,6 @@ abstract class DocumentBuilderSpec extends Specification {
 					cell("Default font")
 				}
 			}
-
 			
 		}
 		
@@ -144,25 +142,25 @@ abstract class DocumentBuilderSpec extends Specification {
 		
 		def paragraph1 = document.children[0].children[0]
 		def paragraph2 = document.children[1].children[0]
-		def paragraphText = document.children[2].children[0]
+		def paragraph3 = document.children[2].children[0]
 
-		def table1 = document.children[3].rows[0].cells[0].paragraphs[0].children[0]
-		def table2 = document.children[4].rows[0].cells[0].paragraphs[0].children[0]
+		def table1 = document.children[3].children[0].children[0].children[0].children[0]
+		def table2 = document.children[4].children[0].children[0].children[0].children[0]
 
 		then:
-		paragraph1.font.family == 'Paragraph override'
+		paragraph1.font.family == 'Courier'
 		
 		and:
-		paragraph2.font.family == 'Doc'
+		paragraph2.font.family == 'Helvetica'
+
+		and:
+		paragraph3.font.family == 'Times-Roman'
+
+		and:
+		table1.font.family == 'Courier'
 		
 		and:
-		table1.font.family == 'Table override'
-		
-		and:
-		table2.font.family == 'Doc'
-		
-		and:
-		paragraphText.font.family == 'Text override'
+		table2.font.family == 'Helvetica'
 	}
 
 	def "set table options"() {
@@ -182,10 +180,10 @@ abstract class DocumentBuilderSpec extends Specification {
 		table.width == 100
 		
 		and:
-		table.rows[0].cells[0].width == 25
+		table.children[0].children[0].width == 25
 		
 		and:
-		table.rows[0].cells[1].width == 75	
+		table.children[0].children[1].width == 75
 	}
 
 	def "set paragraph text"() {
@@ -214,7 +212,7 @@ abstract class DocumentBuilderSpec extends Specification {
 		and:
 		paragraphs[2].text == "Bar"
 	}	
-	
+
 	def "add an image"() {
 		def imageData = getClass().classLoader.getResource('test/images/cheeseburger.jpg')?.bytes
 		

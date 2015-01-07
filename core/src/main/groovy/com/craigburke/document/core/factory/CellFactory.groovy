@@ -28,7 +28,7 @@ class CellFactory extends AbstractFactory {
 			builder.addParagraphToCell(paragraph, cell)
 			builder.addTextToParagraph(text, paragraph)
 			
-			cell.paragraphs << paragraph
+			cell.children << paragraph
 		}
 		
 		cell

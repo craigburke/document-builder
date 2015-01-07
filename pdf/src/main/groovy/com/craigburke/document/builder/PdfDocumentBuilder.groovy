@@ -24,6 +24,7 @@ import com.lowagie.text.pdf.PdfPCell
 import com.lowagie.text.pdf.PdfWriter
 import com.lowagie.text.FontFactory
 import groovy.xml.MarkupBuilder
+import sun.font.FontFamily
 
 import java.awt.Color
 
@@ -119,7 +120,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	
 	def onCellComplete = { Cell cell, Row row -> 
 		def phrase = new Phrase()
-		cell.paragraphs.each { paragraph ->
+		cell.children.each { paragraph ->
 			phrase.add(paragraph.item)
 		}
 		row.item << new PdfPCell(phrase)
@@ -143,15 +144,42 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
 		def xmlWriter = new StringWriter()
 		def xml = new MarkupBuilder(xmlWriter)
-		xml.document(marginTop: "${document.marginTop}", marginBottom: "${document.marginBottom}", marginLeft: "${document.marginLeft}", marginRight: "${document.marginRight}")
+
+		xml.document(marginTop: "${document.marginTop}", marginBottom: "${document.marginBottom}", marginLeft: "${document.marginLeft}", marginRight: "${document.marginRight}") {
+
+			delegate = xml
+			resolveStrategy = Closure.DELEGATE_FIRST
+
+			document.children.each { child ->
+				if (child.getClass() == Paragraph) {
+					paragraph(marginTop: "${child.marginTop}", marginBottom: "${child.marginBottom}", marginLeft: "${child.marginLeft}", marginRight: "${child.marginRight}") {
+						child.children.findAll { it.getClass() == Image }.each {
+							image()
+						}
+					}
+				}
+				else {
+					table(columns: child.columns, width: child.width, borderSize: child.borderSize) {
+						child.children.each {
+							def cells = it.children
+							row() {
+								cells.each {
+									cell(width: "${it.width ?: 0}")
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 
 		xmpWriter.addRdfDescription("", xmlWriter.toString())
 		xmpWriter.close()
 		writer.xmpMetadata = xmpOut.toByteArray()
 	}
 
-
 	private static Chunk getTextChunk(Font font, String text) {
+
 		def textFont = FontFactory.getFont(font.family, font.size)
 		textFont.color = font.rgbColor as Color
 	    new Chunk(text ?: "", textFont)

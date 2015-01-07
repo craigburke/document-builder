@@ -1,8 +1,11 @@
 package com.craigburke.document.builder
 
+import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Image
 import com.craigburke.document.core.Paragraph
+import com.craigburke.document.core.Row
+import com.craigburke.document.core.Table
 import com.lowagie.text.pdf.PdfDocument
 import groovy.xml.Namespace
 import org.apache.pdfbox.pdmodel.PDDocument
@@ -23,6 +26,35 @@ class PdfDocumentLoader {
         document.marginLeft = new BigDecimal(metaData.'@marginLeft')
         document.marginRight = new BigDecimal(metaData.'@marginRight')
 
+        metaData.each {
+            if (it.name() == 'paragraph') {
+                def paragraph = new Paragraph(parent: document)
+                paragraph.marginTop = new BigDecimal(it.'@marginTop')
+                paragraph.marginBottom = new BigDecimal(it.'@marginBottom')
+                paragraph.marginLeft = new BigDecimal(it.'@marginLeft')
+                paragraph.marginRight = new BigDecimal(it.'@marginRight')
+
+                it.image.each {
+                    paragraph.children << new Image(parent: paragraph)
+                }
+
+                document.children << paragraph
+
+            }
+            else {
+                def table = new Table(parent: document, width: new BigDecimal(it.'@width'))
+                it.row.each { rowNode ->
+                    Row row = new Row()
+                    rowNode.cell.each {
+                        def cell = new Cell()
+                        row.children << new Cell(width: new BigDecimal(it.'@width'))
+                    }
+                    table.children << row
+                }
+                document.children << table
+            }
+        }
+
         loadChildren(document)
         document
     }
@@ -33,23 +65,24 @@ class PdfDocumentLoader {
 
         // Images
         pages.resources.images*.each { name, image ->
-            Paragraph paragraph = new Paragraph(parent: document)
             OutputStream out = new ByteArrayOutputStream()
             image.write2OutputStream(out)
-            paragraph.children << new Image(data: out.toByteArray())
-            document.children << paragraph
+
+            def imageNode
+            document.children.each {
+                imageNode = imageNode ?: it.children.find {it.getClass() == Image && !it.data}
+            }
+
+            imageNode?.data = out.toByteArray()
         }
 
-        // Paragraphs
-        def extractor = new PdfParagraphExtractor(document)
+        // Set content and margins based on text position
+        def extractor = new PdfContentExtractor(document)
         pages.each { PDPage page ->
             if (page.contents) {
                 extractor.processStream(page, page.findResources(), page.contents.stream)
             }
-            document.children.addAll(0, extractor.paragraphs)
         }
-
-        // Tables
 
     }
 

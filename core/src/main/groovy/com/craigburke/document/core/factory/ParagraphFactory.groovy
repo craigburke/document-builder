@@ -32,6 +32,7 @@ class ParagraphFactory extends AbstractFactory {
 	
 	void setChild(FactoryBuilderSupport builder, parent, child) {
 		child.parent = parent
+		parent.children << child
 	}
 	
  	void onNodeCompleted(FactoryBuilderSupport builder, parent, current) {

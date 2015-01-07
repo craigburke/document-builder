@@ -21,6 +21,11 @@ class TextFactory extends AbstractFactory {
 		}
 				
 		text
-	}	
+	}
+
+	void setChild(FactoryBuilderSupport builder, parent, child) {
+		child.parent = parent
+		parent.children << child
+	}
 	
 }

@@ -20,7 +20,7 @@ class RowFactory extends AbstractFactory {
  	
 	void setChild(FactoryBuilderSupport builder, parent, child) {
 		child.parent = parent
-		parent.cells << child
+		parent.children << child
 		builder.currentCellPosition++
 	}
 	

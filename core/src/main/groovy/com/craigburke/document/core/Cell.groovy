@@ -4,7 +4,7 @@ class Cell {
 	def item
 	Font font
 	Row parent
-	List paragraphs = []
+	List<Paragraph> children = []
 
 	Integer position = 0
 	BigDecimal width

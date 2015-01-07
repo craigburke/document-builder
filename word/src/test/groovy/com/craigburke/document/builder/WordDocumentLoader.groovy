@@ -40,7 +40,7 @@ class WordDocumentLoader {
 
             tableItem.rows.each { rowItem ->
                 Row row = new Row(item: rowItem, parent: table)
-                table.rows << row
+                table.children << row
                 rowItem.tableCells.each { cellItem ->
                     Cell cell = new Cell(item: cellItem, parent: row)
 
@@ -49,9 +49,9 @@ class WordDocumentLoader {
                         cell.width = twipToPoint(widthSettings.w)
                     }
 
-                    cell.paragraphs = cell.item.paragraphs.collect { getParagraph(it) }
+                    cell.children = cell.item.paragraphs.collect { getParagraph(it) }
 
-                    row.cells << cell
+                    row.children << cell
                 }
             }
 

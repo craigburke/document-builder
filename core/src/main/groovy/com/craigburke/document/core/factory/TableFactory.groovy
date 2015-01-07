@@ -19,7 +19,7 @@ class TableFactory extends AbstractFactory {
 
 	void setChild(FactoryBuilderSupport builder, parent, child) {
 		child.parent = parent
-		parent.rows << child
+		parent.children << child
 		builder.currentRowPosition++
 	}
 
