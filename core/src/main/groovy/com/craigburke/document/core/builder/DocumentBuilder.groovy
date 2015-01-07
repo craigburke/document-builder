@@ -9,8 +9,7 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements FontBuil
 	
 	Document document
 	OutputStream out
-	def onDocumentComplete
-				
+
 	DocumentBuilder(OutputStream out) {
 		super(true)
 		this.out = out

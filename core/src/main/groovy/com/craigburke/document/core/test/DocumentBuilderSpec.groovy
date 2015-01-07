@@ -2,7 +2,6 @@ package com.craigburke.document.core.test
 
 import com.craigburke.document.core.builder.DocumentBuilder
 import com.craigburke.document.core.Document
-import spock.lang.IgnoreRest
 import spock.lang.Specification
 import spock.lang.Shared
 import spock.lang.Unroll
@@ -58,8 +57,8 @@ abstract class DocumentBuilderSpec extends Specification {
 		notThrown(Exception)
 
 		cleanup:
-		fontFolder?.delete()
 		fontFile?.delete()
+		fontFolder?.deleteDir()
 	}
 
 	@Unroll

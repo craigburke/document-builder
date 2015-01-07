@@ -1,5 +1,6 @@
 package com.craigburke.document.builder
 
+import com.lowagie.text.xml.xmp.XmpWriter
 import groovy.transform.InheritConstructors
 
 import com.craigburke.document.core.builder.DocumentBuilder
@@ -22,6 +23,7 @@ import com.lowagie.text.pdf.PdfPTable
 import com.lowagie.text.pdf.PdfPCell
 import com.lowagie.text.pdf.PdfWriter
 import com.lowagie.text.FontFactory
+import groovy.xml.MarkupBuilder
 
 import java.awt.Color
 
@@ -36,10 +38,6 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		document.item.setMargins(document.marginLeft, document.marginRight, document.marginTop, document.marginBottom)
 
 		writer = PdfWriter.getInstance(document.item as PdfDocument, out)
-		document.item.addHeader('marginTop', "${document.marginTop}")
-		document.item.addHeader('marginRight', "${document.marginRight}")
-		document.item.addHeader('marginBottom', "${document.marginBottom}")
-		document.item.addHeader('marginLeft', "${document.marginLeft}")
 
 		document.item.open()
 		document
@@ -133,8 +131,25 @@ class PdfDocumentBuilder extends DocumentBuilder {
 			writer.pageEmpty = false
 			document.item.newPage()
 		}
+
+		addMetadata()
+
 		document.item.close()
 	}
+
+	private void addMetadata() {
+		ByteArrayOutputStream xmpOut = new ByteArrayOutputStream()
+		XmpWriter xmpWriter = new XmpWriter(xmpOut)
+
+		def xmlWriter = new StringWriter()
+		def xml = new MarkupBuilder(xmlWriter)
+		xml.document(marginTop: "${document.marginTop}", marginBottom: "${document.marginBottom}", marginLeft: "${document.marginLeft}", marginRight: "${document.marginRight}")
+
+		xmpWriter.addRdfDescription("", xmlWriter.toString())
+		xmpWriter.close()
+		writer.xmpMetadata = xmpOut.toByteArray()
+	}
+
 
 	private static Chunk getTextChunk(Font font, String text) {
 		def textFont = FontFactory.getFont(font.family, font.size)

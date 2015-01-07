@@ -4,6 +4,7 @@ import com.craigburke.document.core.Document
 import com.craigburke.document.core.Image
 import com.craigburke.document.core.Paragraph
 import com.lowagie.text.pdf.PdfDocument
+import groovy.xml.Namespace
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 
@@ -13,11 +14,14 @@ class PdfDocumentLoader {
         PDDocument pdfDoc = PDDocument.load(new ByteArrayInputStream(data))
         Document document = new Document(item: pdfDoc)
 
-        def info = pdfDoc.documentInformation.info
-        document.marginTop = new BigDecimal(info.getString('marginTop'))
-        document.marginLeft = new BigDecimal(info.getString('marginLeft'))
-        document.marginBottom = new BigDecimal(info.getString('marginBottom'))
-        document.marginRight = new BigDecimal(info.getString('marginRight'))
+        def xmp = new XmlParser().parse(pdfDoc.documentCatalog.metadata.createInputStream())
+        def rdf = new Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#', 'rdf')
+        def metaData = xmp[rdf.RDF][rdf.Description]['document'][0]
+
+        document.marginTop = new BigDecimal(metaData.'@marginTop')
+        document.marginBottom = new BigDecimal(metaData.'@marginBottom')
+        document.marginLeft = new BigDecimal(metaData.'@marginLeft')
+        document.marginRight = new BigDecimal(metaData.'@marginRight')
 
         loadChildren(document)
         document

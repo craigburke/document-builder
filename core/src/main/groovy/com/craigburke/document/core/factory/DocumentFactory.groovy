@@ -22,15 +22,7 @@ class DocumentFactory extends AbstractFactory {
 	}
 	
  	void onNodeCompleted(FactoryBuilderSupport builder, parent, document) {
-		if (builder.out) {
-			builder.write(builder.document, builder.out)
-		}
-		
-		if (builder.onDocumentComplete instanceof Closure) {
-			builder.onDocumentComplete(builder.document, builder.out)
-		}
-		
-		builder.out?.close()
+		builder.write(builder.document, builder.out)
    	}
 
 }
