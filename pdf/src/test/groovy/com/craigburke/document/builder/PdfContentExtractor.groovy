@@ -70,7 +70,7 @@ class PdfContentExtractor extends PDFTextStripper {
                 paragraph.children << textNode
             }
             else {
-                textNode = cell.children.last().children.last()
+                textNode = cell.paragraphs.last().children.last()
             }
 
             textNode

@@ -3,7 +3,7 @@ package com.craigburke.document.core
 class Paragraph {
 	def item
 	def parent
-	List children = []
+	List<Text> children = []
 	
 	Font font
 	
