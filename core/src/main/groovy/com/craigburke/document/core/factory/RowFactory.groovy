@@ -8,10 +8,10 @@ class RowFactory extends AbstractFactory {
 	boolean onHandleNodeAttributes(builder, node, attributes) { false }
 	
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
-		builder.currentCellPosition = 0		
+		builder.tablePosition.cell = 0
 		Row row = new Row(attributes)
 		
-		row.position = builder.currentRowPosition
+		row.position = builder.tablePosition.row
 		row.font = row.font ?: builder.current.font.clone()
 	 	builder.addRowToTable(row, builder.current)
 		
@@ -21,7 +21,7 @@ class RowFactory extends AbstractFactory {
 	void setChild(FactoryBuilderSupport builder, row, cell) {
 		cell.parent = row
 		row.cells << cell
-		builder.currentCellPosition++
+		builder.tablePosition.cell++
 	}
 	
 	void onNodeCompleted(FactoryBuilderSupport builder, table, row) {

@@ -9,9 +9,8 @@ import com.craigburke.document.core.Text
 import com.craigburke.document.core.Image
 
 trait TableBuilder {
-	int currentCellPosition
-	int currentRowPosition
-	
+	def tablePosition = [cell: 0, row: 0]
+
 	abstract void addTableToDocument(Table table, Document document)
 	abstract void addRowToTable(Row row, Table table)
 	
