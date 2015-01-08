@@ -54,8 +54,8 @@ subprojects {
 
     afterEvaluate { Project project ->
         bintray {
-            user = project.bintrayUsername
-            key = project.bintrayApiKey
+            user = project.hasProperty('bintrayUsername') ? project.bintrayUsername : ''
+            key = project.hasProperty('bintrayApiKey') ? project.bintrayApiKey : ''
             publications = ['maven']
 
             pkg {
@@ -105,7 +105,7 @@ subprojects {
         }
         
     }
-    
+
     bintrayUpload.dependsOn build, sourcesJar, javadoc
 }
 
