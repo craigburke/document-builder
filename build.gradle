@@ -1,18 +1,24 @@
-plugins {
-    id 'com.jfrog.bintray' version '1.0'
-    id 'net.saliman.cobertura' version '2.2.5'
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
+    }
 }
 
 allprojects {
     apply plugin: 'idea'
+    apply plugin: 'groovy'
+    
+    group = 'com.craigburke.document'
+    version = '0.1'
 }
 
 subprojects {
-    group = 'com.craigburke.document'
-    version = '0.1'
-
-    apply plugin: 'groovy'
+    
     apply plugin: 'maven-publish'
+    apply plugin: 'com.jfrog.bintray'
 
     configurations {
         provided
@@ -46,60 +52,63 @@ subprojects {
         from 'build/docs/javadoc'
     }
 
+    afterEvaluate { Project project ->
+        bintray {
+            user = project.bintrayUsername
+            key = project.bintrayApiKey
+            publications = ['maven']
 
-    bintray {
-        user = project.hasProperty('bintrayUsername') ? bintrayUsername : ''
-        key = project.hasProperty('bintrayApiKey') ? bintrayApiKey : ''
-        publications = ['maven']
-
-        pkg {
-            repo = 'document-builder'
-            userOrg = 'craigburke'
-            name = project.hasProperty('artifactId') ? artifactId : ''
-            licenses = ['Apache-2.0']
+            pkg {
+                repo = 'document-builder'
+                userOrg = 'craigburke'
+                name = project.artifactId
+                licenses = ['Apache-2.0']
+            }
         }
-    }
 
-    publishing {
-        publications {
-            maven(MavenPublication) {
-                artifactId hasProperty('artifactId') ? artifactId : ''
-                pom.withXml {
-                    asNode().children().last() + {
-                        resolveStrategy = Closure.DELEGATE_FIRST
-                        name project.hasProperty('artifactId') ? artifactId : ''
-                        description project.hasProperty('description') ? description : ''
-                        url 'https://github.com/craigburke/document-builder'
-                        scm {
+        publishing  {
+            publications {
+                maven(MavenPublication) {
+                    artifactId project.artifactId
+                    pom.withXml {
+                        asNode().children().last() + {
+                            resolveStrategy = Closure.DELEGATE_FIRST
+                            name project.artifactId
+                            description project.description
                             url 'https://github.com/craigburke/document-builder'
-                            connection 'scm:https://github.com/craigburke/document-builder.git'
-                            developerConnection 'scm:https://github.com/craigburke/document-builder.git'
-                        }
-                        licenses {
-                            license {
-                                name 'The Apache Software License, Version 2.0'
-                                url 'http://www.apache.org/license/LICENSE-2.0.txt'
-                                distribution 'repo'
+                            scm {
+                                url 'https://github.com/craigburke/document-builder'
+                                connection 'scm:https://github.com/craigburke/document-builder.git'
+                                developerConnection 'scm:https://github.com/craigburke/document-builder.git'
                             }
-                        }
-                        developers {
-                            developer {
-                                id 'craigburke'
-                                name 'Craig Burke'
-                                email 'craig@craigburke.com'
+                            licenses {
+                                license {
+                                    name 'The Apache Software License, Version 2.0'
+                                    url 'http://www.apache.org/license/LICENSE-2.0.txt'
+                                    distribution 'repo'
+                                }
+                            }
+                            developers {
+                                developer {
+                                    id 'craigburke'
+                                    name 'Craig Burke'
+                                    email 'craig@craigburke.com'
+                                }
                             }
                         }
                     }
+                    from components.java
+                    artifact sourcesJar
+                    artifact javadocJar
                 }
-                from components.java
-                artifact sourcesJar
-                artifact javadocJar
             }
         }
+        
     }
-
+    
     bintrayUpload.dependsOn build, sourcesJar, javadoc
 }
+
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.2'
