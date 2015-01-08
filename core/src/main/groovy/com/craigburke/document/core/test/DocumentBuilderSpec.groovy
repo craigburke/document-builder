@@ -212,6 +212,28 @@ abstract class DocumentBuilderSpec extends Specification {
 		and:
 		paragraphs[2].text == "Bar"
 	}	
+	
+	def "create a table with multiple cells"() {
+		when:
+		builder.document {
+			table(columns: 3) {
+				row {
+					cell("Cell1")
+					cell("Cell2")
+					cell {
+						paragraph "Cell3"
+					}
+				}
+
+			}
+		}
+
+		def table = getDocument(data).children[0]
+
+		then:
+		notThrown(Exception)
+	}
+
 
 	def "add an image"() {
 		def imageData = getClass().classLoader.getResource('test/images/cheeseburger.jpg')?.bytes

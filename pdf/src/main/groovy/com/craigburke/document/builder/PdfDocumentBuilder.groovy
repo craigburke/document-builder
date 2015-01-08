@@ -24,7 +24,6 @@ import com.lowagie.text.pdf.PdfPCell
 import com.lowagie.text.pdf.PdfWriter
 import com.lowagie.text.FontFactory
 import groovy.xml.MarkupBuilder
-import sun.font.FontFamily
 
 import java.awt.Color
 
@@ -91,6 +90,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	void addTableToDocument(Table table, Document document) {
 		PdfPTable pdfTable = new PdfPTable(table.columns)
 		pdfTable.totalWidth = table.width
+		pdfTable.spacingBefore = 0
+		pdfTable.spacingAfter = 0
 
 		table.item = pdfTable
 	}

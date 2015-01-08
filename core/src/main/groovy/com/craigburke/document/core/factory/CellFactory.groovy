@@ -24,10 +24,10 @@ class CellFactory extends AbstractFactory {
 			def text = new Text(value: value, font: cell.font)
 			
 			paragraph.children << text
-			
+
 			builder.addParagraphToCell(paragraph, cell)
 			builder.addTextToParagraph(text, paragraph)
-			
+
 			cell.paragraphs << paragraph
 		}
 		
