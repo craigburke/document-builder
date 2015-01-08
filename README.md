@@ -14,44 +14,45 @@ A document builder for Groovy for PDF or Word documents. This is still very much
 
 **Example:**
 ```
-    import com.craigburke.document.builder.WordDocumentBuilder
-    import com.craigburke.document.builder.PdfDocumentBuilder
+import com.craigburke.document.builder.WordDocumentBuilder
+import com.craigburke.document.builder.PdfDocumentBuilder
 
-    DocumentBuilder builder = new WordDocumentBuilder('myfile.docx')
-    // or DocumentBuilder builder = new PdfDocumentBuilder('myfile.pdf')
+DocumentBuilder builder = new WordDocumentBuilder('myfile.docx')
+// or DocumentBuilder builder = new PdfDocumentBuilder('myfile.pdf')
 
-      builder.document(font: [family: 'Helvetica', size: 14], marginTop: 144) {
-        paragraph "Hello World"
+builder.document(font: [family: 'Helvetica', size: 14], marginTop: 144) {
+    paragraph "Hello World"
+    
+    // A more interesting version with each letter getting progressively bigger
+    paragraph {
+        text "look at this:"
+        "HELLOOOOOOOOOO WORLD".each { letter ->
+            font.size++
+            text letter
+        }
+    }
         
-        // A more interesting version with each letter getting progressively bigger
-        paragraph {
-            text "look at this:"
-            "HELLOOOOOOOOOO WORLD".each { letter ->
-                font.size++
-                text letter
+    paragraph(marginLeft: 144, marginRight: 144, marginTop: 288, marginBottom: 288) {
+        text "A paragraph with some margins"
+    }
+      
+    // add an image
+    byte[] imageData = getClass().classLoader.getResource('cheeseburger.jpg').bytes
+        
+    paragraph {
+        image(data: imageData, width: 200, height: 250)
+    }
+      
+    // A table. We need to specify column number (for now)
+    table(columns: 3) {
+        row {
+            cell("Cell 1")
+            cell("Cell 2")
+            cell {
+                text "Cell 3"
             }
         }
+    }
         
-        paragraph(marginLeft: 144, marginRight: 144, marginTop: 288, marginBottom: 288) {
-            text "A paragraph with some margins"
-        }
-      
-        // add an image
-        byte[] imageData = getClass().classLoader.getResource('cheeseburger.jpg').bytes
-        
-        paragraph {
-            image(data: imageData, width: 200, height: 250)
-        }
-      
-        // A table. We need to specify column number (for now)
-        table(columns: 3) {
-            row {
-             cell("Cell 1")
-             cell("Cell 2")
-             cell {
-                text "Cell 3"
-             }
-           }
-        }
-        
-       }```
+}
+```
