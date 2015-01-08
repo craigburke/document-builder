@@ -7,8 +7,8 @@ A document builder for Groovy for PDF or Word documents. This is still very much
 **Dependencies:**
 
 ```
-	compile 'com.craigburke.document:word:0.1'
-	compile 'com.craigburke.document:pdf:0.1'
+compile 'com.craigburke.document:word:0.1'
+compile 'com.craigburke.document:pdf:0.1'
 ```
 
 
