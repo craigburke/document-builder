@@ -5,6 +5,6 @@ class Row {
 	Font font
 	List<Cell> cells = []
 	Table parent
-	
+
 	Integer position = 0
 }

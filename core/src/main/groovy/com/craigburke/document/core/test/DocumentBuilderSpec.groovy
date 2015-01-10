@@ -163,6 +163,25 @@ abstract class DocumentBuilderSpec extends Specification {
 		table2.font.family == 'Helvetica'
 	}
 
+	def "create table without a paragraph"() {
+		when:
+		builder.document {
+			table(columns: 1) {
+				row {
+					cell {
+						text "FOOBAR"
+					}
+				}
+			}
+		}
+
+		def table = getDocument(data).children[0]
+		
+		then:
+		table.rows[0].cells[0].paragraphs[0].text == "FOOBAR"
+
+	}
+	
 	def "set table options"() {
 		when:
 		builder.document {

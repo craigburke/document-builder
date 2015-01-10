@@ -104,11 +104,6 @@ class WordDocumentBuilder extends DocumentBuilder {
 		}
 	}
 	
-	void addImageToCell(Image image, Cell cell) {		
-		def paragraph = (cell.item.paragraphs.size == 1) ? cell.item.paragraphs.first() : cell.item.addParagraph()
-		createImageRun(paragraph, image)
-	}
-	
 	void write(Document document, OutputStream out) {
 		document.item.write(out)
 	}
@@ -137,6 +132,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 			italic = font.italic
 			text = runText
 		}		
+
 	}
 	
 	private static void createImageRun(paragraph, Image image) {

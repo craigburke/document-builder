@@ -1,6 +1,7 @@
 package com.craigburke.document.core.factory
 
 import com.craigburke.document.core.Image
+import com.craigburke.document.core.Paragraph
 
 class ImageFactory extends AbstractFactory {
 	
@@ -10,18 +11,21 @@ class ImageFactory extends AbstractFactory {
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Image image = new Image(attributes)	
 		def parent = builder.current
-		
+
+		Paragraph paragraph
+
 		switch (builder.parentName) {
 			case "cell":
-				builder.addImageToCell(image, parent)
+				paragraph = builder.current.paragraphs[0]
 				break
 			case "paragraph":
-				builder.addImageToParagraph(image, parent)
+				paragraph = builder.current
 				break
 		}
+		builder.addImageToParagraph(image, parent)
 		image
 	} 
-	
+
 	void setChild(FactoryBuilderSupport builder, parent, child) {
 		child.parent = parent
 	}

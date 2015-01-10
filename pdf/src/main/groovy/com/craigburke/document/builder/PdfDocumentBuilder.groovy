@@ -180,7 +180,6 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 
 	private static Chunk getTextChunk(Font font, String text) {
-
 		def textFont = FontFactory.getFont(font.family, font.size)
 		textFont.color = font.rgbColor as Color
 	    new Chunk(text ?: "", textFont)

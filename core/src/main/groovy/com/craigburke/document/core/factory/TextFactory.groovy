@@ -1,5 +1,6 @@
 package com.craigburke.document.core.factory
 
+import com.craigburke.document.core.Paragraph
 import com.craigburke.document.core.Text
 
 class TextFactory extends AbstractFactory {
@@ -10,16 +11,19 @@ class TextFactory extends AbstractFactory {
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Text text = new Text(value: value, font: attributes.font)
 		text.font = text.font ?: builder.current.font
-		
+
+		Paragraph paragraph
+
 		switch (builder.parentName) {
 			case "paragraph":
-				builder.addTextToParagraph(text, builder.current)
+				paragraph = builder.current
 				break
 			case "cell":
-				builder.addTextToCell(text, builder.current)
+				paragraph = builder.current.paragraphs[0]
 				break
 		}
-				
+
+		builder.addTextToParagraph(text, paragraph)
 		text
 	}
 

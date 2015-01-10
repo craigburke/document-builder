@@ -19,26 +19,22 @@ class CellFactory extends AbstractFactory {
 		
 		builder.addCellToRow(cell, row)
 		
-		if (value) {
-			def paragraph = new Paragraph(font: cell.font)
-			def text = new Text(value: value, font: cell.font)
-			
-			paragraph.children << text
+		// Every cell has at least one paragraph
+		def paragraph = new Paragraph(font: cell.font, marginTop: 0, marginBottom: 0, marginRight: 0, marginLeft: 0)
+		def text = new Text(value: value ?: "", font: cell.font)
+		paragraph.children << text
+		cell.paragraphs << paragraph
 
-			builder.addParagraphToCell(paragraph, cell)
-			builder.addTextToParagraph(text, paragraph)
+		builder.addParagraphToCell(paragraph, cell)
+		builder.addTextToParagraph(text, paragraph)
 
-			cell.paragraphs << paragraph
-		}
-		
 		cell
 	}
 	
-	void setChild(FactoryBuilderSupport builder, cell, paragraph) {
-		paragraph.parent = cell
-		
-		if (paragraph instanceof Paragraph) {
-			cell.paragraphs << paragraph
+	void setChild(FactoryBuilderSupport builder, parent, child) {
+		if (child instanceof Paragraph) {
+			child.parent = parent
+			parent.paragraphs << child
 		}
 	}
 	
