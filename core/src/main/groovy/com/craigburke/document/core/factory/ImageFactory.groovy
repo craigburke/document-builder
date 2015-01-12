@@ -10,7 +10,6 @@ class ImageFactory extends AbstractFactory {
 	
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Image image = new Image(attributes)	
-		def parent = builder.current
 
 		Paragraph paragraph
 
@@ -22,7 +21,7 @@ class ImageFactory extends AbstractFactory {
 				paragraph = builder.current
 				break
 		}
-		builder.addImageToParagraph(image, parent)
+		builder.addImageToParagraph(image, paragraph)
 		image
 	} 
 

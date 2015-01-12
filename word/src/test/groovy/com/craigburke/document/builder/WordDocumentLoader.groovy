@@ -66,8 +66,8 @@ class WordDocumentLoader {
         p.marginTop = twipToPoint(paragraph.spacingBefore)
 
         def indent = paragraph.CTP.PPr.ind
-        p.marginLeft = twipToPoint(indent.left)
-        p.marginRight = twipToPoint(indent.right)
+        p.marginLeft = twipToPoint(indent?.left ?: 0)
+        p.marginRight = twipToPoint(indent?.right ?: 0)
 
         p
     }

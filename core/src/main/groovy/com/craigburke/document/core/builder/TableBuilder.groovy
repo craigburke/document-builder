@@ -5,8 +5,6 @@ import com.craigburke.document.core.Table
 import com.craigburke.document.core.Row
 import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Paragraph
-import com.craigburke.document.core.Text
-import com.craigburke.document.core.Image
 
 trait TableBuilder {
 	def tablePosition = [cell: 0, row: 0]

@@ -1,8 +1,6 @@
 package com.craigburke.document.core
 
-class Paragraph {
-	def item
-	def parent
+class Paragraph extends BaseNode {
 	List<Text> children = []
 	
 	Font font

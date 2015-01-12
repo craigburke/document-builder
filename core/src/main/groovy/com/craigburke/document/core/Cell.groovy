@@ -1,9 +1,7 @@
 package com.craigburke.document.core
 
-class Cell {
-	def item
+class Cell extends BaseNode {
 	Font font
-	Row parent
 	List<Paragraph> paragraphs = []
 
 	Integer position = 0

@@ -1,8 +1,6 @@
 package com.craigburke.document.core
 
-class Text {
+class Text extends BaseNode {
 	Font font
-	Paragraph parent
-
 	String value
 }

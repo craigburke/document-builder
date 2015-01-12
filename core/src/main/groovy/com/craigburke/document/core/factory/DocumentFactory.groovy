@@ -1,8 +1,6 @@
 package com.craigburke.document.core.factory
 
 import com.craigburke.document.core.Document
-import com.craigburke.document.core.Paragraph
-import com.craigburke.document.core.Table
 
 class DocumentFactory extends AbstractFactory {
 	

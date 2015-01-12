@@ -109,7 +109,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 	}
 	
 	private static boolean isParagraphEmpty(paragraph) {
-		!(paragraph.runs.find { it.toString() })
+		!(paragraph.runs.find { it.toString() || it.embeddedPictures })
 	}
 	
 	private void createTextRun(paragraph, Font font, String runText) {
