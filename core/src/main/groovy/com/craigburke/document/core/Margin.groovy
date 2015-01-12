@@ -7,13 +7,11 @@ class Margin {
     BigDecimal left
     BigDecimal right
     
-    void setDefault(BigDecimal defaultValue) {
-        ['top', 'bottom', 'left', 'right'].each { property ->
-            if (this."${property}" == null) {
-                this."${property}" = defaultValue
-            }
-        }
-        
+    void setDefaults(BigDecimal vertical, BigDecimal horizontal) {
+        top = (top == null) ? vertical : top
+        bottom = (bottom == null) ? vertical : bottom
+        left = (left == null) ? horizontal : left
+        right = (right == null) ? horizontal : right
     }
     
 }
