@@ -2,6 +2,7 @@ package com.craigburke.document.core.test
 
 import com.craigburke.document.core.builder.DocumentBuilder
 import com.craigburke.document.core.Document
+import spock.lang.IgnoreRest
 import spock.lang.Specification
 import spock.lang.Shared
 import spock.lang.Unroll
@@ -124,7 +125,7 @@ abstract class DocumentBuilderSpec extends Specification {
 				text "Text override", font: [family: 'Times-Roman']
 			}
 
-			table(columns: 1, font: [family: 'Courier']) {
+			table(font: [family: 'Courier']) {
 				row {
 					cell("Override")
 				}
@@ -165,7 +166,7 @@ abstract class DocumentBuilderSpec extends Specification {
 	def "create table without a paragraph"() {
 		when:
 		builder.document {
-			table(columns: 1) {
+			table {
 				row {
 					cell {
 						text "FOOBAR"
@@ -184,7 +185,7 @@ abstract class DocumentBuilderSpec extends Specification {
 	def "set table options"() {
 		when:
 		builder.document {
-			table(columns: 2, width: 100, borderSize: 4) {
+			table(width: 100, borderSize: 4) {
 				row {
 					cell("Cell 1", width: 25)
 					cell("Cell 2", width: 75)
@@ -234,7 +235,7 @@ abstract class DocumentBuilderSpec extends Specification {
 	def "create a table with multiple cells"() {
 		when:
 		builder.document {
-			table(columns: 3) {
+			table {
 				row {
 					cell("Cell1")
 					cell("Cell2")

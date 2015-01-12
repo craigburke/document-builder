@@ -43,8 +43,7 @@ builder.document(font: [family: 'Helvetica', size: 14], marginTop: 144) {
         image(data: imageData, width: 200, height: 250)
     }
       
-    // A table. We need to specify column number (for now)
-    table(columns: 3) {
+    table {
         row {
             cell("Cell 1")
             cell("Cell 2")

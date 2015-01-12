@@ -15,8 +15,8 @@ class Font {
 	
 	void setColor(String color) {
 		if (color.startsWith('#')) {
-			hexColor = color[1..-1]
-			rgbColor = (hexColor =~ /.{2}/).collect { Integer.parseInt(it, 16) }
+			this.@hexColor = color[1..-1]
+			this.@rgbColor = (hexColor =~ /.{2}/).collect { Integer.parseInt(it, 16) }
 		}
 	}
 		
