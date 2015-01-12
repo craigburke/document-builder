@@ -7,8 +7,8 @@ A document builder for Groovy for PDF or Word documents. This is still very much
 **Dependencies:**
 
 ```
-compile 'com.craigburke.document:word:0.1.1'
-compile 'com.craigburke.document:pdf:0.1.1'
+compile 'com.craigburke.document:word:0.1.2'
+compile 'com.craigburke.document:pdf:0.1.2'
 ```
 
 
@@ -23,7 +23,7 @@ WordDocumentBuilder builder = new WordDocumentBuilder('myfile.docx')
 builder.document(font: [family: 'Helvetica', size: 14], marginTop: 144) {
     paragraph "Hello World"
     
-    // A more interesting version with each letter getting progressively bigger
+    // Each letter in this paragraph gets progressively bigger
     paragraph {
         text "look at this:"
         "HELLOOOOOOOOOO WORLD".each { letter ->
@@ -31,8 +31,13 @@ builder.document(font: [family: 'Helvetica', size: 14], marginTop: 144) {
             text letter
         }
     }
-        
+    
+    paragraph {
+        text "Font size is back to 14pt now"
+    }
+    
     paragraph(marginLeft: 144, marginRight: 144, marginTop: 288, marginBottom: 288) {
+        font << [bold: true, color: '#333333']
         text "A paragraph with some margins"
     }
       
