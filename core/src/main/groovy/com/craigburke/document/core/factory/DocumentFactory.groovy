@@ -1,6 +1,7 @@
 package com.craigburke.document.core.factory
 
 import com.craigburke.document.core.Document
+import com.craigburke.document.core.Font
 
 class DocumentFactory extends AbstractFactory {
 	
@@ -9,6 +10,7 @@ class DocumentFactory extends AbstractFactory {
 		
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Document document = new Document(attributes)
+		document.font = document.font ?: new Font()
 		document = builder.createDocument(document, builder.out)
 		builder.document = document
 		document

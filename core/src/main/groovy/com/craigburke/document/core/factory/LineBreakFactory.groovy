@@ -1,7 +1,5 @@
 package com.craigburke.document.core.factory
 
-import com.craigburke.document.core.BaseNode
-
 class LineBreakFactory extends AbstractFactory {
 	
 	boolean isLeaf() { true } 
@@ -11,7 +9,7 @@ class LineBreakFactory extends AbstractFactory {
 			builder.addLineBreakToParagraph(builder.current)
 		}
 		
-		new BaseNode()
+		[:]
 	}
 
 }

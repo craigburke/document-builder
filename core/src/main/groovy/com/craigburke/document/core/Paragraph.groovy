@@ -2,9 +2,7 @@ package com.craigburke.document.core
 
 class Paragraph extends BaseNode {
 	List<Text> children = []
-	
-	Font font
-	
+
 	String getText() {
 		String text = ""
 		children.each { text += it.value }

@@ -1,7 +1,6 @@
 package com.craigburke.document.core
 
 class Document extends BaseNode {
-	Font font = new Font()
 	List children = []
 
 	BigDecimal marginTop = 72
