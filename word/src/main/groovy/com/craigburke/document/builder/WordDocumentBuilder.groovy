@@ -139,7 +139,5 @@ class WordDocumentBuilder extends DocumentBuilder {
         def run = paragraph.createRun()
 	    run.addPicture(new ByteArrayInputStream(image.data), XWPFDocument.PICTURE_TYPE_PNG, image.name, Units.toEMU(image.width), Units.toEMU(image.height))
 	}
-
-
 	
 }

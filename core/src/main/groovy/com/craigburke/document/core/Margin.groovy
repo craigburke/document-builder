@@ -1,8 +1,19 @@
 package com.craigburke.document.core
 
 class Margin {
-    BigDecimal top = 12
-    BigDecimal bottom = 12
-    BigDecimal left = 12
-    BigDecimal right = 12
+    
+    BigDecimal top
+    BigDecimal bottom
+    BigDecimal left
+    BigDecimal right
+    
+    void setDefault(BigDecimal defaultValue) {
+        ['top', 'bottom', 'left', 'right'].each { property ->
+            if (this."${property}" == null) {
+                this."${property}" = defaultValue
+            }
+        }
+        
+    }
+    
 }

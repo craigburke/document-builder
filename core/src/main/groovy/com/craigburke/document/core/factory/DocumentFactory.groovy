@@ -11,6 +11,7 @@ class DocumentFactory extends AbstractFactory {
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Document document = new Document(attributes)
 		document.font = document.font ?: new Font()
+		document.margin.setDefault(72)
 		document = builder.createDocument(document, builder.out)
 		builder.document = document
 		document
