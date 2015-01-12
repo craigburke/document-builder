@@ -7,7 +7,7 @@ class DocumentFactory extends AbstractFactory {
 	
 	boolean isLeaf() { false } 
 	boolean onHandleNodeAttributes(builder, node, attributes) { false }
-		
+
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Document document = new Document(attributes)
 		document.font = document.font ?: new Font()
@@ -20,6 +20,7 @@ class DocumentFactory extends AbstractFactory {
 		child.parent = parent
 		parent.children << child
 	}
+
 	
  	void onNodeCompleted(FactoryBuilderSupport builder, parent, document) {
 		builder.write(builder.document, builder.out)

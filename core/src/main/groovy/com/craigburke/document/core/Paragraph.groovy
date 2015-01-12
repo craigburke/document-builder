@@ -1,6 +1,8 @@
 package com.craigburke.document.core
 
 class Paragraph extends BaseNode {
+	Margin margin = new Margin()
+	
 	List<Text> children = []
 
 	String getText() {
@@ -8,9 +10,4 @@ class Paragraph extends BaseNode {
 		children.each { text += it.value }
 		text
 	}
-	
-	BigDecimal marginTop = 12
-	BigDecimal marginRight = 12
-	BigDecimal marginBottom = 12
-	BigDecimal marginLeft = 12
 }

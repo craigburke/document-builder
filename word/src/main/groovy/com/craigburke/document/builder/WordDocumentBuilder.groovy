@@ -26,10 +26,10 @@ class WordDocumentBuilder extends DocumentBuilder {
 
 		def documentMargin = document.item.document.body.addNewSectPr().addNewPgMar()
 				
-		documentMargin.setLeft(pointToTwip(document.marginLeft).intValue())
-		documentMargin.setTop(pointToTwip(document.marginTop).intValue())
-		documentMargin.setRight(pointToTwip(document.marginRight).intValue())
-		documentMargin.setBottom(pointToTwip(document.marginBottom).intValue())
+		documentMargin.setLeft(pointToTwip(document.margin.left).intValue())
+		documentMargin.setTop(pointToTwip(document.margin.top).intValue())
+		documentMargin.setRight(pointToTwip(document.margin.right).intValue())
+		documentMargin.setBottom(pointToTwip(document.margin.bottom).intValue())
 		
 		document
 	}
@@ -47,13 +47,13 @@ class WordDocumentBuilder extends DocumentBuilder {
 	
 	private void setParagraphProperties(Paragraph paragraph) {		
 		paragraph.item.with {
-			spacingAfter = pointToTwip(paragraph.marginBottom)
-			spacingBefore = pointToTwip(paragraph.marginTop)
+			spacingAfter = pointToTwip(paragraph.margin.bottom)
+			spacingBefore = pointToTwip(paragraph.margin.top)
 		}
 		
 		def indent = paragraph.item.CTP.PPr.addNewInd()
-		indent.left = pointToTwip(paragraph.marginLeft)
-		indent.right = pointToTwip(paragraph.marginRight)
+		indent.left = pointToTwip(paragraph.margin.left)
+		indent.right = pointToTwip(paragraph.margin.right)
 	}
 	
 	void addTextToParagraph(Text text, Paragraph paragraph) {

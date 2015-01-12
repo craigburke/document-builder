@@ -97,10 +97,10 @@ class PdfContentExtractor extends PDFTextStripper {
 
         private void setParagraphProperties(paragraph, TextPosition text, Font font) {
             paragraph.font = font
-            paragraph.marginLeft = text.x - document.marginLeft
-            paragraph.marginRight = text.pageWidth - text.width - paragraph.marginLeft - document.marginRight - document.marginLeft
+            paragraph.margin.left = text.x - document.margin.left
+            paragraph.margin.right = text.pageWidth - text.width - paragraph.margin.left - document.margin.right - document.margin.left
 
-            paragraph.marginTop = text.y - document.marginTop
+            paragraph.margin.top = text.y - document.margin.top
         }
 
         private Text createText(paragraph, Font font) {

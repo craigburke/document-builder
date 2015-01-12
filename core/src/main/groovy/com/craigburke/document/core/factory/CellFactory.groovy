@@ -20,7 +20,7 @@ class CellFactory extends AbstractFactory {
 		builder.addCellToRow(cell, row)
 		
 		// Every cell has at least one paragraph
-		def paragraph = new Paragraph(font: cell.font, marginTop: 0, marginBottom: 0, marginRight: 0, marginLeft: 0)
+		def paragraph = new Paragraph(font: cell.font, margin: [top: 0, bottom: 0, right: 0, left: 0])
 		def text = new Text(value: value ?: "", font: cell.font)
 		paragraph.children << text
 		cell.paragraphs << paragraph

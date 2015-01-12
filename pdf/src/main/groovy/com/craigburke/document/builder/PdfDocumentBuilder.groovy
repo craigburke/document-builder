@@ -35,7 +35,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	Document createDocument(Document document, OutputStream out) {
 		document.item = new PdfDocument()
 
-		document.item.setMargins(document.marginLeft, document.marginRight, document.marginTop, document.marginBottom)
+		document.item.setMargins(document.margin.left, document.margin.right, document.margin.top, document.margin.bottom)
 
 		writer = PdfWriter.getInstance(document.item as PdfDocument, out)
 
@@ -54,10 +54,10 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	void addParagraphToDocument(Paragraph paragraph, Document document) {
 		def pdfParagraph = new PdfParagraph()
 
-		pdfParagraph.indentationLeft = paragraph.marginLeft as Float
-		pdfParagraph.indentationRight = paragraph.marginRight as Float
-		pdfParagraph.spacingAfter = paragraph.marginBottom as Float
-		pdfParagraph.leading = paragraph.marginTop
+		pdfParagraph.indentationLeft = paragraph.margin.left as Float
+		pdfParagraph.indentationRight = paragraph.margin.right as Float
+		pdfParagraph.spacingAfter = paragraph.margin.bottom as Float
+		pdfParagraph.leading = paragraph.margin.top as Float
 
 		paragraph.item = pdfParagraph
 	}
@@ -146,14 +146,14 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		def xmlWriter = new StringWriter()
 		def xml = new MarkupBuilder(xmlWriter)
 
-		xml.document(marginTop: "${document.marginTop}", marginBottom: "${document.marginBottom}", marginLeft: "${document.marginLeft}", marginRight: "${document.marginRight}") {
+		xml.document(marginTop: "${document.margin.top}", marginBottom: "${document.margin.bottom}", marginLeft: "${document.margin.left}", marginRight: "${document.margin.right}") {
 
 			delegate = xml
 			resolveStrategy = Closure.DELEGATE_FIRST
 
 			document.children.each { child ->
 				if (child.getClass() == Paragraph) {
-					paragraph(marginTop: "${child.marginTop}", marginBottom: "${child.marginBottom}", marginLeft: "${child.marginLeft}", marginRight: "${child.marginRight}") {
+					paragraph(marginTop: "${child.margin.top}", marginBottom: "${child.margin.bottom}", marginLeft: "${child.margin.left}", marginRight: "${child.margin.right}") {
 						child.children.findAll { it.getClass() == Image }.each {
 							image()
 						}

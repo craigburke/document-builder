@@ -65,23 +65,23 @@ abstract class DocumentBuilderSpec extends Specification {
 	@Unroll
 	def "set document margins"() {
 		when:
-		builder.document(marginTop: margin.top, marginBottom: margin.bottom, marginLeft: margin.left, marginRight: margin.right ) {
+		builder.document(margin : [top: margin.top, bottom: margin.bottom, left: margin.left, right: margin.right] ) {
 			paragraph "Content"
 		}
 		
 		def document = getDocument(data)
 
 		then:
-		document.marginLeft == margin.left
+		document.margin.left == margin.left
 
 		and:
-		document.marginRight == margin.right
+		document.margin.right == margin.right
 
 		and:
-		document.marginTop == margin.top
+		document.margin.top == margin.top
 		
 		and:
-		document.marginBottom == margin.bottom
+		document.margin.bottom == margin.bottom
 
 		where:
 		margin << MARGINS
@@ -91,7 +91,7 @@ abstract class DocumentBuilderSpec extends Specification {
 	def "set paragraph margins"() {
 		when:
 		builder.document() {
-			paragraph(marginTop: margin.top, marginBottom: margin.bottom, marginLeft: margin.left, marginRight: margin.right) {
+			paragraph(margin: [top: margin.top, bottom: margin.bottom, left: margin.left, right: margin.right]) {
 				font.size = fontSize
 				text "Foo"
 			}
@@ -99,13 +99,13 @@ abstract class DocumentBuilderSpec extends Specification {
 		def paragraph = getDocument(data).children[0]
 
 		then:
-		paragraph.marginLeft == margin.left
+		paragraph.margin.left == margin.left
 		
 		and:
-		paragraph.marginRight >= margin.right
+		paragraph.margin.right >= margin.right
 
 		and:
-		paragraph.marginTop == margin.top
+		paragraph.margin.top == margin.top
 
 		where:
 		fontSize << [12, 60, 120]

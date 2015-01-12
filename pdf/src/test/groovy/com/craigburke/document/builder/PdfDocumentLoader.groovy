@@ -21,18 +21,18 @@ class PdfDocumentLoader {
         def rdf = new Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#', 'rdf')
         def metaData = xmp[rdf.RDF][rdf.Description]['document'][0]
 
-        document.marginTop = new BigDecimal(metaData.'@marginTop')
-        document.marginBottom = new BigDecimal(metaData.'@marginBottom')
-        document.marginLeft = new BigDecimal(metaData.'@marginLeft')
-        document.marginRight = new BigDecimal(metaData.'@marginRight')
+        document.margin.top = new BigDecimal(metaData.'@marginTop')
+        document.margin.bottom = new BigDecimal(metaData.'@marginBottom')
+        document.margin.left = new BigDecimal(metaData.'@marginLeft')
+        document.margin.right = new BigDecimal(metaData.'@marginRight')
 
         metaData.each {
             if (it.name() == 'paragraph') {
                 def paragraph = new Paragraph(parent: document)
-                paragraph.marginTop = new BigDecimal(it.'@marginTop')
-                paragraph.marginBottom = new BigDecimal(it.'@marginBottom')
-                paragraph.marginLeft = new BigDecimal(it.'@marginLeft')
-                paragraph.marginRight = new BigDecimal(it.'@marginRight')
+                paragraph.margin.top = new BigDecimal(it.'@marginTop')
+                paragraph.margin.bottom = new BigDecimal(it.'@marginBottom')
+                paragraph.margin.left = new BigDecimal(it.'@marginLeft')
+                paragraph.margin.right = new BigDecimal(it.'@marginRight')
 
                 it.image.each {
                     paragraph.children << new Image(parent: paragraph)

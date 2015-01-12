@@ -19,10 +19,10 @@ class WordDocumentLoader {
         document.item = new XWPFDocument(new ByteArrayInputStream(data))
 
         def documentMargin = document.item.document.body.sectPr.pgMar
-        document.marginTop = twipToPoint(documentMargin.top)
-        document.marginBottom = twipToPoint(documentMargin.bottom)
-        document.marginLeft = twipToPoint(documentMargin.left)
-        document.marginRight = twipToPoint(documentMargin.right)
+        document.margin.top = twipToPoint(documentMargin.top)
+        document.margin.bottom = twipToPoint(documentMargin.bottom)
+        document.margin.left = twipToPoint(documentMargin.left)
+        document.margin.right = twipToPoint(documentMargin.right)
 
         loadParagraphs(document)
         loadTables(document)
@@ -62,12 +62,12 @@ class WordDocumentLoader {
     static private Paragraph getParagraph(paragraph) {
         Paragraph p = new Paragraph(item: paragraph)
         p.children = getParagraphChildren(p)
-        p.marginBottom = twipToPoint(paragraph.spacingAfter)
-        p.marginTop = twipToPoint(paragraph.spacingBefore)
+        p.margin.bottom = twipToPoint(paragraph.spacingAfter)
+        p.margin.top = twipToPoint(paragraph.spacingBefore)
 
         def indent = paragraph.CTP.PPr.ind
-        p.marginLeft = twipToPoint(indent?.left ?: 0)
-        p.marginRight = twipToPoint(indent?.right ?: 0)
+        p.margin.left = twipToPoint(indent?.left ?: 0)
+        p.margin.right = twipToPoint(indent?.right ?: 0)
 
         p
     }
