@@ -18,16 +18,19 @@ class TableFactory extends AbstractFactory {
 	}
 
 	boolean onNodeChildren( FactoryBuilderSupport builder, table, Closure childContent) {
-		Closure childClone = childContent.clone()
-		
-		// determine the number of columns
-		def cellCounter = new CellCounter()
-		
-		childClone.delegate = cellCounter
-		childClone.resolveStrategy = Closure.DELEGATE_ONLY
-		childClone()
+		if (!table.columns) {
+			Closure childClone = childContent.clone()
 
-		table.columns = cellCounter.totalCount
+			// determine the number of columns
+			def cellCounter = new CellCounter()
+
+			childClone.delegate = cellCounter
+			childClone.resolveStrategy = Closure.DELEGATE_ONLY
+			childClone()
+
+			table.columns = cellCounter.totalCount
+		}
+
 		builder.addTableToDocument(table, builder.current)
 
 		return true
@@ -55,7 +58,7 @@ class CellCounter {
 	def methodMissing(String name, args) {
 		if (name == "row" && args?.last() instanceof Closure) {
 			_currentRowCount = 0
-			Closure rowClosure = args?.last().clone()
+			Closure rowClosure = args.last().clone()
 			rowClosure.delegate = this
 			rowClosure.resolveStrategy = Closure.DELEGATE_ONLY
 			rowClosure()

@@ -29,13 +29,13 @@ abstract class DocumentBuilderSpec extends Specification {
 	
 	def "create empty document"() {
 		when:
-		def document = builder.document { }
+		builder.create { document() }
 		
 		then:
-		document != null
+		builder.document != null
 		
 		and:
-		document.item != null
+		builder.document.item != null
 	}
 	
 	def "load fonts"() {
@@ -49,10 +49,10 @@ abstract class DocumentBuilderSpec extends Specification {
 		fontFile << DocumentBuilderSpec.classLoader.getResourceAsStream("test/fonts/${fontFileName}")
 				
 		when:
-		builder.document {
+		builder.create { document {
 			addFont fontFile
 			addFontFolder fontFolder
-		}
+		}}
 		
 		then:
 		notThrown(Exception)
@@ -65,9 +65,9 @@ abstract class DocumentBuilderSpec extends Specification {
 	@Unroll
 	def "set document margins"() {
 		when:
-		builder.document(margin : [top: margin.top, bottom: margin.bottom, left: margin.left, right: margin.right] ) {
+		builder.create { document(margin : [top: margin.top, bottom: margin.bottom, left: margin.left, right: margin.right] ) {
 			paragraph "Content"
-		}
+		}}
 		
 		def document = getDocument(data)
 
@@ -90,12 +90,13 @@ abstract class DocumentBuilderSpec extends Specification {
 	@Unroll
 	def "set paragraph margins"() {
 		when:
-		builder.document() {
+		builder.create { document() {
 			paragraph(margin: [top: margin.top, bottom: margin.bottom, left: margin.left, right: margin.right]) {
 				font.size = fontSize
 				text "Foo"
 			}
-		}
+		}}
+		
 		def paragraph = getDocument(data).children[0]
 
 		then:
@@ -114,7 +115,7 @@ abstract class DocumentBuilderSpec extends Specification {
 
 	def "override or inherit font settings"() {
 		when:
-		builder.document(font: [family: 'Helvetica']) {
+		builder.create { document(font: [family: 'Helvetica']) {
 			
 			paragraph(font: [family: 'Courier']) {
 				text "Paragraph override"
@@ -136,7 +137,7 @@ abstract class DocumentBuilderSpec extends Specification {
 				}
 			}
 			
-		}
+		}}
 		
 		def document = getDocument(data)
 		
@@ -165,7 +166,7 @@ abstract class DocumentBuilderSpec extends Specification {
 
 	def "create table without a paragraph"() {
 		when:
-		builder.document {
+		builder.create { document {
 			table {
 				row {
 					cell {
@@ -173,7 +174,7 @@ abstract class DocumentBuilderSpec extends Specification {
 					}
 				}
 			}
-		}
+		}}
 
 		def table = getDocument(data).children[0]
 		
@@ -184,30 +185,30 @@ abstract class DocumentBuilderSpec extends Specification {
 	
 	def "set table options"() {
 		when:
-		builder.document {
-			table(width: 100, borderSize: 4) {
+		builder.create { document {
+			table(width: 4.inches, borderSize: 4) {
 				row {
-					cell("Cell 1", width: 25)
-					cell("Cell 2", width: 75)
+					cell("Cell 1", width: 1.inch)
+					cell("Cell 2", width: 3.inches)
 				}
 			}			
-		}
+		}}
 		
 		def table = getDocument(data).children[0]
 	
 		then:
-		table.width == 100
+		table.width == 288
 		
 		and:
-		table.rows[0].cells[0].width == 25
+		table.rows[0].cells[0].width == 72
 		
 		and:
-		table.rows[0].cells[1].width == 75
+		table.rows[0].cells[1].width == 216
 	}
 
 	def "set paragraph text"() {
 		when:
-		builder.document {
+		builder.create { document {
 			paragraph "Foo"
 			paragraph("Foo") {
 				text "Ba"
@@ -218,7 +219,7 @@ abstract class DocumentBuilderSpec extends Specification {
 				text "a"
 				text "r"
 			}
-		}
+		}}
 		
 		def paragraphs = getDocument(data).children
 		
@@ -234,7 +235,7 @@ abstract class DocumentBuilderSpec extends Specification {
 	
 	def "create a table with multiple cells"() {
 		when:
-		builder.document {
+		builder.create { document {
 			table {
 				row {
 					cell("Cell1")
@@ -245,7 +246,7 @@ abstract class DocumentBuilderSpec extends Specification {
 				}
 
 			}
-		}
+		}}
 
 		def table = getDocument(data).children[0]
 
@@ -261,11 +262,11 @@ abstract class DocumentBuilderSpec extends Specification {
 		imageData != null
 		
 		when:
-		builder.document {
+		builder.create { document {
 			paragraph {
 				image(data: imageData)
 			}
-		}
+		}}
 		
 		def image = getDocument(data).children[0].children[0]
 		

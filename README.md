@@ -20,7 +20,7 @@ import com.craigburke.document.builder.PdfDocumentBuilder
 WordDocumentBuilder builder = new WordDocumentBuilder('myfile.docx')
 // or PdfDocumentBuilder builder = new PdfDocumentBuilder('myfile.pdf')
 
-builder.document(font: [family: 'Helvetica', size: 14], margin: [top: 144]) {
+builder.create { document(font: [family: 'Helvetica', size: 14.pt], margin: [top: 2.inches]) {
     paragraph "Hello World"
     
     // Each letter in this paragraph gets progressively bigger
@@ -36,7 +36,7 @@ builder.document(font: [family: 'Helvetica', size: 14], margin: [top: 144]) {
         text "Font size is back to 14pt now"
     }
     
-    paragraph(margin: [left: 144, right: 144, top: 288, bottom: 288]) {
+    paragraph(margin: [left: 2.inches, right: 2.inches, top: 4.inches, bottom: 4.inches]) {
         font << [bold: true, color: '#333333']
         text "A paragraph with some margins"
     }
@@ -58,5 +58,5 @@ builder.document(font: [family: 'Helvetica', size: 14], margin: [top: 144]) {
         }
     }
         
-}
+}}
 ```

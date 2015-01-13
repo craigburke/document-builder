@@ -1,5 +1,6 @@
 package com.craigburke.document.core.builder
 
+import com.craigburke.document.core.UnitCategory
 import com.craigburke.document.core.factory.*
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Paragraph
@@ -23,12 +24,19 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements FontBuil
 		super(true)
 		this.out = new FileOutputStream(file)
 	}
+
+	def invokeMethod(String name, args) {
+		use(UnitCategory) {
+			return super.invokeMethod(name, args)
+		}
+	}
 	
 	abstract Document createDocument(Document document, OutputStream out)
 	abstract void addParagraphToDocument(Paragraph paragraph, Document document)
 	abstract void write(Document document, OutputStream out)
 
 	def registerObjectFactories() {
+		registerFactory("create", new CreateFactory())
 		registerFactory("document", new DocumentFactory())
 		registerFactory("paragraph", new ParagraphFactory())
 		registerFactory("lineBreak", new LineBreakFactory())
