@@ -44,7 +44,6 @@ builder.create { document(font: [family: 'Helvetica', size: 14.pt], margin: [top
     paragraph {
         // add an image
         byte[] imageData = getClass().classLoader.getResource('cheeseburger.jpg').bytes
-        
         image(data: imageData, width: 200, height: 250)
     }
       
