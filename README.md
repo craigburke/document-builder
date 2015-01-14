@@ -17,8 +17,8 @@ compile 'com.craigburke.document:pdf:0.1.3'
 import com.craigburke.document.builder.WordDocumentBuilder
 import com.craigburke.document.builder.PdfDocumentBuilder
 
-WordDocumentBuilder builder = new WordDocumentBuilder('myfile.docx')
-// or PdfDocumentBuilder builder = new PdfDocumentBuilder('myfile.pdf')
+WordDocumentBuilder builder = new WordDocumentBuilder(new File('myfile.docx'))
+// PdfDocumentBuilder builder = new PdfDocumentBuilder(new File('myfile.pdf'))
 
 builder.create { document(font: [family: 'Helvetica', size: 14.pt], margin: [top: 2.inches]) {
     paragraph "Hello World"
