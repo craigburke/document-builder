@@ -42,13 +42,9 @@ builder.create { document(font: [family: 'Helvetica', size: 14.pt], margin: [top
     }
       
     paragraph {
-<<<<<<< HEAD
-        image(data: imageData, width: 200.px, height: 250.px)
-=======
         // add an image
         byte[] imageData = getClass().classLoader.getResource('cheeseburger.jpg').bytes
-        image(data: imageData, width: 200, height: 250)
->>>>>>> 2f4fb4794cb5742a5274991679042746ae37a9b9
+        image(data: imageData, width: 200.px, height: 250.px)
     }
       
     table {
