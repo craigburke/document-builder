@@ -38,7 +38,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		document.item.setMargins(document.margin.left, document.margin.right, document.margin.top, document.margin.bottom)
 
 		writer = PdfWriter.getInstance(document.item as PdfDocument, out)
-
+		writer.strictImageSequence = true
+		
 		document.item.open()
 		document
 	}
@@ -56,15 +57,17 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
 		pdfParagraph.indentationLeft = paragraph.margin.left as Float
 		pdfParagraph.indentationRight = paragraph.margin.right as Float
+		pdfParagraph.spacingBefore = paragraph.margin.top
 		pdfParagraph.spacingAfter = paragraph.margin.bottom as Float
-		pdfParagraph.leading = paragraph.margin.top
-
+		pdfParagraph.setLeading(0, 1.5)
+		
 		paragraph.item = pdfParagraph
 	}
 	
 	void addImageToParagraph(Image image, Paragraph paragraph) {
 	    PdfImage img = PdfImage.getInstance(image.data)
-		paragraph.item.add(img)
+		img.scaleAbsolute(image.width, image.height)
+		paragraph.item.add(new Chunk(img, 0, 0, true))
 	}
 	
 	void addLineBreakToParagraph(Paragraph paragraph) {
