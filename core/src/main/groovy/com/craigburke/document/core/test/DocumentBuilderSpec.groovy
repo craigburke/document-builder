@@ -264,7 +264,7 @@ abstract class DocumentBuilderSpec extends Specification {
 		when:
 		builder.create { document {
 			paragraph {
-				image(data: imageData)
+				image(data: imageData, width: 500.px, height: 431.px)
 			}
 		}}
 		
