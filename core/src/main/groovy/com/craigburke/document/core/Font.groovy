@@ -4,11 +4,11 @@ import groovy.transform.AutoClone
 
 @AutoClone
 class Font {
+	
 	String family = "Helvetica"
 	BigDecimal size = 14
 	Boolean bold = false
 	Boolean italic = false
-	Boolean dropCap = false
 
 	String hexColor = '000000'
 	def rgbColor = [0, 0, 0]

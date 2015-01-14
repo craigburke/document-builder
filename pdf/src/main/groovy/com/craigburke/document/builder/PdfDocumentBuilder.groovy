@@ -17,12 +17,12 @@ import com.lowagie.text.Document as PdfDocument
 import com.lowagie.text.Paragraph as PdfParagraph
 import com.lowagie.text.Image as PdfImage
 import com.lowagie.text.Chunk
-import com.lowagie.text.Phrase
 
 import com.lowagie.text.pdf.PdfPTable
 import com.lowagie.text.pdf.PdfPCell
 import com.lowagie.text.pdf.PdfWriter
 import com.lowagie.text.FontFactory
+import com.lowagie.text.Font as PdfFont
 import groovy.xml.MarkupBuilder
 
 import java.awt.Color
@@ -57,7 +57,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		pdfParagraph.indentationLeft = paragraph.margin.left as Float
 		pdfParagraph.indentationRight = paragraph.margin.right as Float
 		pdfParagraph.spacingAfter = paragraph.margin.bottom as Float
-		pdfParagraph.leading = paragraph.margin.top as Float
+		pdfParagraph.leading = paragraph.margin.top
 
 		paragraph.item = pdfParagraph
 	}
@@ -78,7 +78,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	
 	def onParagraphComplete = { Paragraph paragraph ->
 		def parent = paragraph.parent
-		
+
 		if (parent instanceof Document) {
 			document.item.add(paragraph.item)
 		}
@@ -88,12 +88,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 
 	void addTableToDocument(Table table, Document document) {
-		PdfPTable pdfTable = new PdfPTable(table.columns)
-		pdfTable.totalWidth = table.width
-		pdfTable.spacingBefore = 0
-		pdfTable.spacingAfter = 0
-
-		table.item = pdfTable
+		// Create table in onTableComplete
 	}
 
 	void addRowToTable(Row row, Table table) {
@@ -101,7 +96,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 	
 	void addCellToRow(Cell cell, Row row) { 
-		cell.item = new PdfPCell()
+		PdfPCell pdfCell = new PdfPCell()
+		cell.item = pdfCell
 	}
 	
 	void addParagraphToCell(Paragraph paragraph, Cell cell) {
@@ -109,22 +105,44 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 
 	def onTableComplete = { Table table ->
+		PdfPTable pdfTable = new PdfPTable(table.columns)
+
+		pdfTable.lockedWidth = true
+		pdfTable.totalWidth = table.width
+		pdfTable.widths = getRelativeCellWidths(table)
+		
+		pdfTable.spacingBefore = 0
+		pdfTable.spacingAfter = 0
+		
+		table.item = pdfTable
+		
+		table.rows.each { row ->
+			row.item.each { cell ->
+				table.item.addCell(cell)
+			}
+			table.item.completeRow()
+		}
+
 		document.item.add(table.item)
 	}
 	
-	def onRowComplete = { Row row, Table table -> 
-		row.item.each { cell ->
-			table.item.addCell(cell)
-		}
-		table.item.completeRow()
+	private int[] getRelativeCellWidths(Table table) {
+		BigDecimal totalCellWidth = table.rows[0].cells.inject(0){ total, cell -> total + (cell.width ?: 0) }
+		Integer remainingWidth = (table.width - totalCellWidth).intValueExact()
+		table.rows[0].cells.collect { it.width?.intValueExact() ?: remainingWidth }
 	}
 	
-	def onCellComplete = { Cell cell, Row row -> 
-		def phrase = new Phrase()
+	def onCellComplete = { Cell cell, Row row ->
+		PdfPCell pdfCell = new PdfPCell()
+		Table table = row.parent
+		pdfCell.border = table.borderSize
+		pdfCell.padding = 0
+		
 		cell.paragraphs.each { paragraph ->
-			phrase.add(paragraph.item)
+			pdfCell.addElement(paragraph.item)
 		}
-		row.item << new PdfPCell(phrase)
+		
+		row.item << pdfCell
 	}
 	
 	void write(Document document, OutputStream out) {
@@ -180,9 +198,17 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 
 	private static Chunk getTextChunk(Font font, String text) {
-		def textFont = FontFactory.getFont(font.family, font.size)
+		PdfFont textFont = FontFactory.getFont(font.family, font.size)
 		textFont.color = font.rgbColor as Color
-	    new Chunk(text ?: "", textFont)
+		
+		if (font.bold && font.italic) {
+			textFont.style = PdfFont.BOLDITALIC
+		}
+		else if (font.bold) {
+			textFont.style = PdfFont.BOLD
+		}
+		
+		new Chunk(text ?: "", textFont)
 	}
 
 }

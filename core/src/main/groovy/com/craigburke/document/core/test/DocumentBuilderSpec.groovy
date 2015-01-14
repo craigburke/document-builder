@@ -91,7 +91,7 @@ abstract class DocumentBuilderSpec extends Specification {
 	def "set paragraph margins"() {
 		when:
 		builder.create { document() {
-			paragraph(margin: [top: margin.top, bottom: margin.bottom, left: margin.left, right: margin.right]) {
+			paragraph(margin: [top: currentMargin.top, bottom: currentMargin.bottom, left: currentMargin.left, right: currentMargin.right]) {
 				font.size = fontSize
 				text "Foo"
 			}
@@ -100,17 +100,17 @@ abstract class DocumentBuilderSpec extends Specification {
 		def paragraph = getDocument(data).children[0]
 
 		then:
-		paragraph.margin.left == margin.left
+		paragraph.margin.left == currentMargin.left
 		
 		and:
-		paragraph.margin.right >= margin.right
+		paragraph.margin.right >= currentMargin.right
 
 		and:
-		paragraph.margin.top == margin.top
+		paragraph.margin.top == currentMargin.top
 
 		where:
 		fontSize << [12, 60, 120]
-		margin << MARGINS
+		currentMargin << MARGINS
 	}
 
 	def "override or inherit font settings"() {
@@ -253,7 +253,6 @@ abstract class DocumentBuilderSpec extends Specification {
 		then:
 		notThrown(Exception)
 	}
-
 
 	def "add an image"() {
 		def imageData = getClass().classLoader.getResource('test/images/cheeseburger.jpg')?.bytes
