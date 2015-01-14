@@ -7,8 +7,8 @@ A document builder for Groovy for PDF or Word documents. This is still very much
 **Dependencies:**
 
 ```
-compile 'com.craigburke.document:word:0.1.2'
-compile 'com.craigburke.document:pdf:0.1.2'
+compile 'com.craigburke.document:word:0.1.3'
+compile 'com.craigburke.document:pdf:0.1.3'
 ```
 
 
@@ -41,11 +41,14 @@ builder.create { document(font: [family: 'Helvetica', size: 14.pt], margin: [top
         text "A paragraph with some margins"
     }
       
-    // add an image
-    byte[] imageData = getClass().classLoader.getResource('cheeseburger.jpg').bytes
-        
     paragraph {
+<<<<<<< HEAD
         image(data: imageData, width: 200.px, height: 250.px)
+=======
+        // add an image
+        byte[] imageData = getClass().classLoader.getResource('cheeseburger.jpg').bytes
+        image(data: imageData, width: 200, height: 250)
+>>>>>>> 2f4fb4794cb5742a5274991679042746ae37a9b9
     }
       
     table {
