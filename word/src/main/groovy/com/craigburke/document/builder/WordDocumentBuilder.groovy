@@ -98,7 +98,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 	
 	void addCellToRow(Cell cell, Row row) {
 		cell.item = row.item.getCell(cell.position)
-		
+		cell.padding = cell.padding
 		if (cell.width) {
 			cell.item.CTTc.addNewTcPr().addNewTcW().w = pointToTwip(cell.width)
 		}

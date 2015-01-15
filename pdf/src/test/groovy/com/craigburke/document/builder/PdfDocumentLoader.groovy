@@ -6,7 +6,6 @@ import com.craigburke.document.core.Image
 import com.craigburke.document.core.Paragraph
 import com.craigburke.document.core.Row
 import com.craigburke.document.core.Table
-import com.lowagie.text.pdf.PdfDocument
 import groovy.xml.Namespace
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
@@ -62,19 +61,6 @@ class PdfDocumentLoader {
     private static void loadChildren(Document document) {
         def pages = document.item.documentCatalog.allPages
 
-        // Images
-        pages.resources.images*.each { name, image ->
-            OutputStream out = new ByteArrayOutputStream()
-            image.write2OutputStream(out)
-
-            def imageNode
-            document.children.each {
-                imageNode = imageNode ?: it.children.find {it.getClass() == Image && !it.data}
-            }
-
-            imageNode?.data = out.toByteArray()
-        }
-
         // Set content and margins based on text position
         def extractor = new PdfContentExtractor(document)
         pages.each { PDPage page ->
@@ -84,8 +70,5 @@ class PdfDocumentLoader {
         }
 
     }
-
-
-
 
 }

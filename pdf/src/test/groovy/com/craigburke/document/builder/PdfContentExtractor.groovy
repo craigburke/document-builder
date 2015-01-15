@@ -35,6 +35,10 @@ class PdfContentExtractor extends PDFTextStripper {
 
         @Override
         void processTextPosition( TextPosition text )  {
+            if (text.character == ' ') {
+                return
+            }
+            
             updateChildNumber(text)
 
             def currentFont = new Font(family: text.font.baseFont, size: text.fontSizeInPt)
@@ -49,10 +53,7 @@ class PdfContentExtractor extends PDFTextStripper {
                     break
             }
 
-            if (text.character != ' ') {
-                textNode?.value += text.character
-            }
-
+            textNode?.value += text.character
             lastPosition = text
         }
 
@@ -100,7 +101,7 @@ class PdfContentExtractor extends PDFTextStripper {
             paragraph.margin.left = text.x - document.margin.left
             paragraph.margin.right = text.pageWidth - text.width - paragraph.margin.left - document.margin.right - document.margin.left
 
-            paragraph.margin.top = text.y - document.margin.top
+            paragraph.margin.top = (text.y - document.margin.top) - (font.size * 1.5)
         }
 
         private Text createText(paragraph, Font font) {

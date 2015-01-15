@@ -1,5 +1,7 @@
 package com.craigburke.document.builder
 
+import com.lowagie.text.pdf.PdfImage
+import com.lowagie.text.pdf.PdfIndirectObject
 import com.lowagie.text.xml.xmp.XmpWriter
 import groovy.transform.InheritConstructors
 
@@ -13,9 +15,9 @@ import com.craigburke.document.core.Image
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.Font
 
-import com.lowagie.text.Document as PdfDocument
-import com.lowagie.text.Paragraph as PdfParagraph
-import com.lowagie.text.Image as PdfImage
+import com.lowagie.text.Document as iTextDocument
+import com.lowagie.text.Paragraph as iTextParagraph
+import com.lowagie.text.Image as iTextImage
 import com.lowagie.text.Chunk
 
 import com.lowagie.text.pdf.PdfPTable
@@ -33,11 +35,10 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	private PdfWriter writer
 	
 	Document createDocument(Document document, OutputStream out) {
-		document.item = new PdfDocument()
+		document.item = new iTextDocument()
 
 		document.item.setMargins(document.margin.left, document.margin.right, document.margin.top, document.margin.bottom)
-
-		writer = PdfWriter.getInstance(document.item as PdfDocument, out)
+		writer = PdfWriter.getInstance(document.item as iTextDocument, out)
 		writer.strictImageSequence = true
 		
 		document.item.open()
@@ -53,19 +54,18 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 		
 	void addParagraphToDocument(Paragraph paragraph, Document document) {
-		def pdfParagraph = new PdfParagraph()
+		def pdfParagraph = new iTextParagraph()
 
 		pdfParagraph.indentationLeft = paragraph.margin.left as Float
 		pdfParagraph.indentationRight = paragraph.margin.right as Float
-		pdfParagraph.spacingBefore = paragraph.margin.top
+		pdfParagraph.spacingBefore = paragraph.margin.top as Float
 		pdfParagraph.spacingAfter = paragraph.margin.bottom as Float
-		pdfParagraph.setLeading(0, 1.5)
 		
 		paragraph.item = pdfParagraph
 	}
 	
 	void addImageToParagraph(Image image, Paragraph paragraph) {
-	    PdfImage img = PdfImage.getInstance(image.data)
+		def img = iTextImage.getInstance(image.data)
 		img.scaleAbsolute(image.width, image.height)
 		paragraph.item.add(new Chunk(img, 0, 0, true))
 	}
@@ -81,11 +81,24 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	
 	def onParagraphComplete = { Paragraph paragraph ->
 		def parent = paragraph.parent
-
+		
+		Integer leading = Math.round(1.5 * paragraph.children.inject(0f) { max, child -> Math.max(max, child.font?.size ?: 0 as Float) } )
+		paragraph.item.setLeading(leading, 0)
+		
+		// Dummy paragraph used to make sure spacingBefore on first paragraph renders correctly
+		def dummyParagraph = new iTextParagraph(" ")
+		dummyParagraph.setLeading(0)
+		
 		if (parent instanceof Document) {
+			if (parent.children[0] == paragraph) {
+				document.item.add(dummyParagraph)
+			}
 			document.item.add(paragraph.item)
 		}
 		else {
+			if (parent.paragraphs[0] == paragraph) {
+				parent.item.addElement(dummyParagraph)
+			}
 			parent.item.addElement(paragraph.item)
 		}
 	}
@@ -104,7 +117,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 	
 	void addParagraphToCell(Paragraph paragraph, Cell cell) {
-		paragraph.item = new PdfParagraph()
+		paragraph.item = new iTextParagraph()
 	}
 
 	def onTableComplete = { Table table ->
@@ -113,6 +126,9 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		pdfTable.lockedWidth = true
 		pdfTable.totalWidth = table.width
 		pdfTable.widths = getRelativeCellWidths(table)
+		
+		pdfTable.defaultCell.borderWidth = table.borderSize
+		pdfTable.defaultCell.borderColor = new Color(0, 0, 0)
 		
 		pdfTable.spacingBefore = 0
 		pdfTable.spacingAfter = 0
@@ -137,9 +153,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	
 	def onCellComplete = { Cell cell, Row row ->
 		PdfPCell pdfCell = new PdfPCell()
-		Table table = row.parent
-		pdfCell.border = table.borderSize
-		pdfCell.padding = 0
+		pdfCell.padding = cell.padding
 		
 		cell.paragraphs.each { paragraph ->
 			pdfCell.addElement(paragraph.item)
@@ -147,7 +161,26 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		
 		row.item << pdfCell
 	}
-	
+
+
+	private static Chunk getTextChunk(Font font, String text) {
+		PdfFont textFont = FontFactory.getFont(font.family, font.size)
+		textFont.color = font.rgbColor as Color
+
+		if (font.bold && font.italic) {
+			textFont.style = PdfFont.BOLDITALIC
+		}
+		else if (font.bold) {
+			textFont.style = PdfFont.BOLD
+		}
+		else if (font.italic) {
+			textFont.style = PdfFont.ITALIC
+		}
+
+		new Chunk(text ?: "", textFont)
+	}
+
+
 	void write(Document document, OutputStream out) {
 		if (document.item.pageNumber == 0) {
 			// Add a blank page if no content has been added
@@ -198,20 +231,6 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		xmpWriter.addRdfDescription("", xmlWriter.toString())
 		xmpWriter.close()
 		writer.xmpMetadata = xmpOut.toByteArray()
-	}
-
-	private static Chunk getTextChunk(Font font, String text) {
-		PdfFont textFont = FontFactory.getFont(font.family, font.size)
-		textFont.color = font.rgbColor as Color
-		
-		if (font.bold && font.italic) {
-			textFont.style = PdfFont.BOLDITALIC
-		}
-		else if (font.bold) {
-			textFont.style = PdfFont.BOLD
-		}
-		
-		new Chunk(text ?: "", textFont)
 	}
 
 }

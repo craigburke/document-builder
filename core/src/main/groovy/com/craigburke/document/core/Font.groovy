@@ -6,7 +6,7 @@ import groovy.transform.AutoClone
 class Font {
 	
 	String family = "Helvetica"
-	BigDecimal size = 14
+	BigDecimal size = 12
 	Boolean bold = false
 	Boolean italic = false
 
