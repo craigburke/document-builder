@@ -19,7 +19,7 @@ class TextFactory extends AbstractFactory {
 				paragraph = builder.current
 				break
 			case "cell":
-				paragraph = builder.current.paragraphs[0]
+				paragraph = builder.current.paragraphs.last()
 				break
 		}
 

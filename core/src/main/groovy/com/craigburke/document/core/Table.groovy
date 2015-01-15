@@ -5,5 +5,5 @@ class Table extends BaseNode {
 
 	Integer columns
 	BigDecimal width = (72 * 6)
-	BigDecimal borderSize = 1
+	Integer borderSize = 1
 }

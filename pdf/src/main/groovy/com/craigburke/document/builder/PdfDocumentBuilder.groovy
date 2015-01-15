@@ -1,7 +1,5 @@
 package com.craigburke.document.builder
 
-import com.lowagie.text.pdf.PdfImage
-import com.lowagie.text.pdf.PdfIndirectObject
 import com.lowagie.text.xml.xmp.XmpWriter
 import groovy.transform.InheritConstructors
 
@@ -112,8 +110,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 	
 	void addCellToRow(Cell cell, Row row) { 
-		PdfPCell pdfCell = new PdfPCell()
-		cell.item = pdfCell
+		// create cell in onCellComplete
 	}
 	
 	void addParagraphToCell(Paragraph paragraph, Cell cell) {
@@ -126,10 +123,6 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		pdfTable.lockedWidth = true
 		pdfTable.totalWidth = table.width
 		pdfTable.widths = getRelativeCellWidths(table)
-		
-		pdfTable.defaultCell.borderWidth = table.borderSize
-		pdfTable.defaultCell.borderColor = new Color(0, 0, 0)
-		
 		pdfTable.spacingBefore = 0
 		pdfTable.spacingAfter = 0
 		
@@ -153,7 +146,10 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	
 	def onCellComplete = { Cell cell, Row row ->
 		PdfPCell pdfCell = new PdfPCell()
+		
 		pdfCell.padding = cell.padding
+		pdfCell.border = row.parent.borderSize
+		pdfCell.borderColor = new Color(0, 0, 0)
 		
 		cell.paragraphs.each { paragraph ->
 			pdfCell.addElement(paragraph.item)
