@@ -109,8 +109,13 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		row.item = []
 	}
 	
-	void addCellToRow(Cell cell, Row row) { 
-		// create cell in onCellComplete
+	void addCellToRow(Cell cell, Row row) {
+		PdfPCell pdfCell = new PdfPCell()
+
+		pdfCell.padding = cell.padding
+		pdfCell.border = row.parent.borderSize
+		pdfCell.borderColor = new Color(0, 0, 0)
+		cell.item = pdfCell
 	}
 	
 	void addParagraphToCell(Paragraph paragraph, Cell cell) {
@@ -145,17 +150,11 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 	
 	def onCellComplete = { Cell cell, Row row ->
-		PdfPCell pdfCell = new PdfPCell()
-		
-		pdfCell.padding = cell.padding
-		pdfCell.border = row.parent.borderSize
-		pdfCell.borderColor = new Color(0, 0, 0)
-		
 		cell.paragraphs.each { paragraph ->
-			pdfCell.addElement(paragraph.item)
+			cell.item.addElement(paragraph.item)
 		}
 		
-		row.item << pdfCell
+		row.item << cell.item
 	}
 
 
