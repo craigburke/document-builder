@@ -33,6 +33,17 @@ class WordDocumentLoader {
         document.children += document.item.paragraphs.collect { getParagraph(it) }
     }
 
+    static private Paragraph getParagraph(paragraph) {
+        Paragraph p = new Paragraph(item: paragraph)
+        p.children = getChildren(paragraph)
+        p.margin.bottom = twipToPoint(paragraph.spacingAfter)
+        p.margin.top = twipToPoint(paragraph.spacingBefore)
+        def indent = paragraph.CTP.PPr.ind
+        p.margin.left = twipToPoint(indent?.left ?: 0)
+        p.margin.right = twipToPoint(indent?.right ?: 0)
+        p
+    }
+
     static private loadTables(Document document) {
 
         document.item.tables.each { tableItem ->
@@ -49,7 +60,7 @@ class WordDocumentLoader {
                         cell.width = twipToPoint(widthSettings.w)
                     }
 
-                    cell.paragraphs = cell.item.paragraphs.collect { getParagraph(it) }
+                    cell.children = getChildren(cell.item.paragraphs[0])
 
                     row.cells << cell
                 }
@@ -59,24 +70,11 @@ class WordDocumentLoader {
         }
     }
 
-    static private Paragraph getParagraph(paragraph) {
-        Paragraph p = new Paragraph(item: paragraph)
-        p.children = getParagraphChildren(p)
-        p.margin.bottom = twipToPoint(paragraph.spacingAfter)
-        p.margin.top = twipToPoint(paragraph.spacingBefore)
 
-        def indent = paragraph.CTP.PPr.ind
-        p.margin.left = twipToPoint(indent?.left ?: 0)
-        p.margin.right = twipToPoint(indent?.right ?: 0)
-
-        p
-    }
-
-
-    static private List getParagraphChildren(Paragraph paragraph) {
+    static private List getChildren(paragraph) {
         def items = []
 
-        paragraph.item.runs.each { run ->
+        paragraph.runs.each { run ->
             if (run.embeddedPictures) {
                 items << new Image(data: run.embeddedPictures[0].pictureData.data, parent: paragraph)
             }

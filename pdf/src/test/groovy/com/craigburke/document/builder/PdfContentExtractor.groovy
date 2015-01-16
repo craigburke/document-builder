@@ -44,13 +44,11 @@ class PdfContentExtractor extends PDFTextStripper {
             def currentFont = new Font(family: text.font.baseFont, size: text.fontSizeInPt)
             def textNode
 
-            switch (currentChild.getClass()) {
-                case Paragraph:
-                    textNode = processParagraph(text, currentFont)
-                    break
-                case Table:
-                    textNode = processTable(text, currentFont)
-                    break
+            if (currentChild instanceof Paragraph) {
+                textNode = processParagraph(text, currentFont)
+            }
+            else {
+                textNode = processTable(text, currentFont)
             }
 
             textNode?.value += text.character
@@ -61,17 +59,12 @@ class PdfContentExtractor extends PDFTextStripper {
             def textNode
             Cell cell = currentChild.rows[tablePosition.row].cells[tablePosition.cell]
 
-            if (!cell.paragraphs | isNewSection(text)) {
-                if (!cell.paragraphs) {
-                    cell.paragraphs << new Paragraph()
-                }
-                Paragraph paragraph = cell.paragraphs.last()
-                textNode = createText(paragraph, font)
-
-                paragraph.children << textNode
+            if (!cell.children || isNewSection(text)) {
+                textNode = new Text(value: '', font: font)
+                cell.children << textNode
             }
             else {
-                textNode = cell.paragraphs.last().children.last()
+                textNode = cell.children.last()
             }
 
             textNode

@@ -11,17 +11,15 @@ class ImageFactory extends AbstractFactory {
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Image image = new Image(attributes)	
 
-		Paragraph paragraph
-
 		switch (builder.parentName) {
 			case "cell":
-				paragraph = builder.current.paragraphs[0]
+				builder.addImageToCell(image, builder.current)
 				break
 			case "paragraph":
-				paragraph = builder.current
+				builder.addImageToParagraph(image, builder.current)
 				break
 		}
-		builder.addImageToParagraph(image, paragraph)
+
 		image
 	} 
 

@@ -41,14 +41,12 @@ class WordDocumentBuilder extends DocumentBuilder {
 		setParagraphProperties(paragraph)
 	}
 	
-	void addParagraphToCell(Paragraph paragraph, Cell cell) {
-		def firstParagraph = cell.item.paragraphs[0]
-        paragraph.item = isParagraphEmpty(firstParagraph) ? firstParagraph : cell.item.addParagraph()
-		setParagraphProperties(paragraph)
+	void addTextToCell(Text text, Cell cell) {
+		createTextRun(cell.item.paragraphs[0], text.font, text.value)
 	}
 
-	def onCellComplete = { Cell cell, Row row ->
-		fixParagraphMargins(cell.paragraphs)
+	void addImageToCell(Image image, Cell cell) {
+		createImageRun(cell.childre[0].item, image)
 	}
 
 	private void setParagraphProperties(Paragraph paragraph) {		
@@ -117,6 +115,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 		if (cell.width) {
 			cell.item.CTTc.addNewTcPr().addNewTcW().w = pointToTwip(cell.width)
 		}
+		cell.item.addParagraph()
 	}
 
 	private fixParagraphMargins(items) {

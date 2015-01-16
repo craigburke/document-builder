@@ -18,15 +18,12 @@ class CellFactory extends AbstractFactory {
 		cell.position = builder.tablePosition.cell
 		
 		builder.addCellToRow(cell, row)
-		
-		// Every cell has at least one paragraph
-		def paragraph = new Paragraph(font: cell.font, margin: [top: 0, bottom: 0, right: 0, left: 0], align: cell.align)
-		def text = new Text(value: value ?: "", font: cell.font)
-		paragraph.children << text
-		cell.paragraphs << paragraph
 
-		builder.addParagraphToCell(paragraph, cell)
-		builder.addTextToParagraph(text, paragraph)
+		if (value) {
+			Text text = new Text(value: value, font: cell.font, parent: cell)
+			cell.children << text
+			builder.addTextToCell(text, cell)
+		}
 
 		cell
 	}

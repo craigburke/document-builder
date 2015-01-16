@@ -1,6 +1,5 @@
 package com.craigburke.document.core.factory
 
-import com.craigburke.document.core.Paragraph
 import com.craigburke.document.core.Text
 
 class TextFactory extends AbstractFactory {
@@ -12,18 +11,15 @@ class TextFactory extends AbstractFactory {
 		Text text = new Text(value: value, font: attributes.font)
 		text.font = text.font ?: builder.current.font
 
-		Paragraph paragraph
-
 		switch (builder.parentName) {
 			case "paragraph":
-				paragraph = builder.current
+				builder.addTextToParagraph(text, builder.current)
 				break
 			case "cell":
-				paragraph = builder.current.paragraphs.last()
+				builder.addTextToCell(text, builder.current)
 				break
 		}
 
-		builder.addTextToParagraph(text, paragraph)
 		text
 	}
 

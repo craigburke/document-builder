@@ -54,10 +54,10 @@ class PdfDocumentLoader {
         }
 
         loadChildren(document)
+        pdfDoc.close()
         document
     }
 
-    // The order of children could be wrong, might become an issue later
     private static void loadChildren(Document document) {
         def pages = document.item.documentCatalog.allPages
 

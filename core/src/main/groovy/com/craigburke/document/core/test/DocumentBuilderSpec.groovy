@@ -3,6 +3,7 @@ package com.craigburke.document.core.test
 import com.craigburke.document.core.builder.DocumentBuilder
 import com.craigburke.document.core.Document
 import spock.lang.Ignore
+import spock.lang.IgnoreRest
 import spock.lang.Specification
 import spock.lang.Shared
 import spock.lang.Unroll
@@ -145,8 +146,8 @@ abstract class DocumentBuilderSpec extends Specification {
 		def paragraph2 = document.children[1].children[0]
 		def paragraph3 = document.children[2].children[0]
 
-		def table1 = document.children[3].rows[0].cells[0].paragraphs[0].children[0]
-		def table2 = document.children[4].rows[0].cells[0].paragraphs[0].children[0]
+		def table1 = document.children[3].rows[0].cells[0].children[0]
+		def table2 = document.children[4].rows[0].cells[0].children[0]
 
 		then:
 		paragraph1.font.family == 'Courier'
@@ -164,7 +165,7 @@ abstract class DocumentBuilderSpec extends Specification {
 		table2.font.family == 'Helvetica'
 	}
 
-	def "create table without a paragraph"() {
+	def "create a simple table"() {
 		when:
 		builder.create { document {
 			table {
@@ -179,7 +180,7 @@ abstract class DocumentBuilderSpec extends Specification {
 		def table = getDocument(data).children[0]
 		
 		then:
-		table.rows[0].cells[0].paragraphs[0].text == "FOOBAR"
+		table.rows[0].cells[0].children[0].value == "FOOBAR"
 
 	}
 	
@@ -241,7 +242,7 @@ abstract class DocumentBuilderSpec extends Specification {
 					cell("Cell1")
 					cell("Cell2")
 					cell {
-						paragraph "Cell3"
+						text "Cell3"
 					}
 				}
 

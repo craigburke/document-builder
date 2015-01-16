@@ -131,8 +131,15 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		cell.item = pdfCell
 	}
 	
-	void addParagraphToCell(Paragraph paragraph, Cell cell) {
-		paragraph.item = new iTextParagraph()
+	void addTextToCell(Text text, Cell cell) {
+		def chunk = getTextChunk(text.font, text.value)
+		cell.item.addElement(chunk)
+	}
+
+	void addImageToCell(Image image, Cell cell) {
+		def img = iTextImage.getInstance(image.data)
+		img.scaleAbsolute(image.width, image.height)
+		cell.item.addElement(new Chunk(img, 0, 0, true))
 	}
 
 	def onTableComplete = { Table table ->
@@ -163,8 +170,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 	
 	def onCellComplete = { Cell cell, Row row ->
-		cell.paragraphs.each { paragraph ->
-			cell.item.addElement(paragraph.item)
+		cell.children.each { child ->
+			cell.item.addElement(child.item)
 		}
 		
 		row.item << cell.item
