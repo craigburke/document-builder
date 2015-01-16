@@ -33,7 +33,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 		
 		document
 	}
-		
+
 	void addParagraphToDocument(Paragraph paragraph, Document document) {
         paragraph.item = document.item.createParagraph()
 		setParagraphProperties(paragraph)
@@ -44,7 +44,11 @@ class WordDocumentBuilder extends DocumentBuilder {
         paragraph.item = isParagraphEmpty(firstParagraph) ? firstParagraph : cell.item.addParagraph()
 		setParagraphProperties(paragraph)
 	}
-	
+
+	def onCellComplete = { Cell cell, Row row ->
+		fixParagraphMargins(cell.paragraphs)
+	}
+
 	private void setParagraphProperties(Paragraph paragraph) {		
 		paragraph.item.with {
 			spacingAfter = pointToTwip(paragraph.margin.bottom)
@@ -103,8 +107,20 @@ class WordDocumentBuilder extends DocumentBuilder {
 			cell.item.CTTc.addNewTcPr().addNewTcW().w = pointToTwip(cell.width)
 		}
 	}
-	
+
+	private fixParagraphMargins(items) {
+		items.eachWithIndex { child, index ->
+			if (index > 0) {
+				def previousChild = items[index - 1]
+				if (child instanceof Paragraph && previousChild instanceof Paragraph) {
+					previousChild.item.spacingAfter += child.item.spacingBefore
+				}
+			}
+		}
+	}
+
 	void write(Document document, OutputStream out) {
+		fixParagraphMargins(document.children)
 		document.item.write(out)
 	}
 	
