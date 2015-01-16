@@ -1,5 +1,7 @@
 package com.craigburke.document.builder
 
+import com.craigburke.document.core.Align
+import com.lowagie.text.Element
 import com.lowagie.text.xml.xmp.XmpWriter
 import groovy.transform.InheritConstructors
 
@@ -58,7 +60,18 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		pdfParagraph.indentationRight = paragraph.margin.right as Float
 		pdfParagraph.spacingBefore = paragraph.margin.top as Float
 		pdfParagraph.spacingAfter = paragraph.margin.bottom as Float
-		
+
+		if (paragraph.align == Align.RIGHT) {
+			paragraph.item.alignment = Element.ALIGN_RIGHT
+		}
+		else if (paragraph.align == Align.CENTER) {
+			paragraph.item.alignment = Element.ALIGN_MIDDLE
+		}
+		else if (paragraph.align == Align.JUSTIFY) {
+			paragraph.item.alignment = Element.ALIGN_JUSTIFIED
+		}
+
+
 		paragraph.item = pdfParagraph
 	}
 	
@@ -113,8 +126,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		PdfPCell pdfCell = new PdfPCell()
 
 		pdfCell.padding = cell.padding
-		pdfCell.border = row.parent.borderSize
-		pdfCell.borderColor = new Color(0, 0, 0)
+		pdfCell.border = row.parent.border.size
+		pdfCell.borderColor = row.parent.border.color.RGB
 		cell.item = pdfCell
 	}
 	
@@ -160,7 +173,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
 	private static Chunk getTextChunk(Font font, String text) {
 		PdfFont textFont = FontFactory.getFont(font.family, font.size)
-		textFont.color = font.rgbColor as Color
+		textFont.color = font.color.RGB as Color
 
 		if (font.bold && font.italic) {
 			textFont.style = PdfFont.BOLDITALIC
@@ -209,7 +222,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 					}
 				}
 				else {
-					table(columns: child.columns, width: child.width, borderSize: child.borderSize) {
+					table(columns: child.columns, width: child.width, borderSize: child.border.size) {
 						child.rows.each {
 							def cells = it.cells
 							row() {

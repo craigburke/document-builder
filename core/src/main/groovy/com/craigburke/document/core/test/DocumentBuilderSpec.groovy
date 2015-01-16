@@ -186,7 +186,7 @@ abstract class DocumentBuilderSpec extends Specification {
 	def "set table options"() {
 		when:
 		builder.create { document {
-			table(width: 4.inches, borderSize: 4) {
+			table(width: 4.inches, border: [size: 4.px]) {
 				row {
 					cell("Cell 1", width: 1.inch)
 					cell("Cell 2", width: 3.inches)

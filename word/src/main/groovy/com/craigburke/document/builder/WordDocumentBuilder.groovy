@@ -1,5 +1,6 @@
 package com.craigburke.document.builder
 
+import com.craigburke.document.core.Align
 import groovy.transform.InheritConstructors
 
 import com.craigburke.document.core.builder.DocumentBuilder
@@ -11,6 +12,7 @@ import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Image
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.Font
+import org.apache.poi.xwpf.usermodel.ParagraphAlignment
 
 import static com.craigburke.document.core.UnitUtil.*
 
@@ -54,7 +56,17 @@ class WordDocumentBuilder extends DocumentBuilder {
 			spacingAfter = pointToTwip(paragraph.margin.bottom)
 			spacingBefore = pointToTwip(paragraph.margin.top)
 		}
-		
+
+		if (paragraph.align == Align.RIGHT) {
+			paragraph.item.alignment = ParagraphAlignment.RIGHT
+		}
+		else if (paragraph.align == Align.CENTER) {
+			paragraph.item.alignment = ParagraphAlignment.CENTER
+		}
+		else if (paragraph.align == Align.JUSTIFY) {
+			paragraph.item.alignment = ParagraphAlignment.BOTH
+		}
+
 		def indent = paragraph.item.CTP.PPr.addNewInd()
 		indent.left = pointToTwip(paragraph.margin.left)
 		indent.right = pointToTwip(paragraph.margin.right)
@@ -82,18 +94,17 @@ class WordDocumentBuilder extends DocumentBuilder {
 			tableProperties.tblW.w = pointToTwip(table.width)
 		}
 		
-		if (table.borderSize != null) {
-			def tableBorder = tableProperties.tblBorders
-			def properties = ['top', 'right', 'bottom', 'left', 'insideH', 'insideV']
-			
-			properties.each { property ->
-				def tableBorderSection = tableBorder."${property}"
-								
-				tableBorderSection.sz = pointToEigthPoint(table.borderSize)
-				tableBorderSection.color = "auto"
-				tableBorderSection.val = table.borderSize == 0 ? STBorder.NONE : STBorder.SINGLE
-			}
+		def tableBorder = tableProperties.tblBorders
+		def properties = ['top', 'right', 'bottom', 'left', 'insideH', 'insideV']
+
+		properties.each { property ->
+			def tableBorderSection = tableBorder."${property}"
+
+			tableBorderSection.sz = pointToEigthPoint(table.border.size)
+			tableBorderSection.color = table.border.color.hex
+			tableBorderSection.val = table.border.size == 0 ? STBorder.NONE : STBorder.SINGLE
 		}
+
 	}
 	
 	void addRowToTable(Row row, Table table) {
@@ -143,7 +154,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 		run.with {
 			fontFamily = font.family
 			fontSize = font.size
-			color = font.hexColor
+			color = font.color.hex
 			bold = font.bold
 			italic = font.italic
 			text = runText

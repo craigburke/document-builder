@@ -1,5 +1,6 @@
 package com.craigburke.document.core.factory
 
+import com.craigburke.document.core.Align
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.Paragraph
 
@@ -15,9 +16,11 @@ class ParagraphFactory extends AbstractFactory {
 		
 		switch (builder.parentName) {
 			case "document":
+				paragraph.align = paragraph.align ?: Align.LEFT
 				builder.addParagraphToDocument(paragraph, builder.current)
 				break
 			case "cell":
+				paragraph.align = paragraph.align ?: builder.current.align
 				builder.addParagraphToCell(paragraph, builder.current)
 				break
 		}
