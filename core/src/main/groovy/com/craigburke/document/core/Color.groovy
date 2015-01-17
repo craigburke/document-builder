@@ -1,27 +1,28 @@
 package com.craigburke.document.core
 
+import groovy.transform.AutoClone
+
+@AutoClone
 class Color {
-    private String _hex
-    private def _rgb
-
-    Color(String color) {
-        set(color)
-    }
-
-    void set(String color) {
-        if (color.startsWith('#')) {
-            this._hex = color[1..-1]
-            this._rgb = (_hex =~ /.{2}/).collect { Integer.parseInt(it, 16) }
+    String hex = "000000"
+    def RGB = [0, 0, 0]
+    
+    void setColor(String value) {
+        if (value.startsWith('#')) {
+            String hexString = value[1..-1]
+            
+            setHex(hexString)
         }
     }
 
-    String getHex() {
-        _hex
+    void setHex(String value) {
+        this.hex = value
+        this.RGB = (value =~ /.{2}/).collect { Integer.parseInt(it, 16) }
     }
-
-    def getRGB() {
-        _rgb
+    
+    void setRGB(value) {
+        this.RGB = value
+        this.hex = value.collect { Integer.toHexString(it) }.join('')
     }
-
 
 }

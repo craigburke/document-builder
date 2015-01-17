@@ -17,7 +17,8 @@ trait TableBuilder {
 	abstract void addCellToRow(Cell cell, Row row)
 	abstract void addTextToCell(Text text, Cell cell)
 	abstract void addImageToCell(Image image, Cell cell)
-
+	abstract void addLineBreakToCell(Cell cell)
+	
 	def onTableComplete
 	def onRowComplete
 	def onCellComplete

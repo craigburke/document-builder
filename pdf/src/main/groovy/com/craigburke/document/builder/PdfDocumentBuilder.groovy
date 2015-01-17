@@ -71,7 +71,6 @@ class PdfDocumentBuilder extends DocumentBuilder {
 			paragraph.item.alignment = Element.ALIGN_JUSTIFIED
 		}
 
-
 		paragraph.item = pdfParagraph
 	}
 	
@@ -93,9 +92,14 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	def onParagraphComplete = { Paragraph paragraph ->
 		def parent = paragraph.parent
 		
-		Integer leading = Math.round(1.5 * paragraph.children.inject(0f) { max, child -> Math.max(max, child.font?.size ?: 0 as Float) } )
-		paragraph.item.setLeading(leading, 0)
-		
+		if (paragraph.leading != null) {
+			paragraph.item.setLeading(paragraph.leading, 0)
+		}
+		else {
+			Integer leading = Math.round(1.5 * paragraph.children.inject(0f) { max, child -> Math.max(max, child.font?.size ?: 0 as Float) } )
+			paragraph.item.setLeading(leading, 0)
+		}
+
 		// Dummy paragraph used to make sure spacingBefore on first paragraph renders correctly
 		def dummyParagraph = new iTextParagraph(" ")
 		dummyParagraph.setLeading(0)
@@ -140,6 +144,10 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		def img = iTextImage.getInstance(image.data)
 		img.scaleAbsolute(image.width, image.height)
 		cell.item.addElement(new Chunk(img, 0, 0, true))
+	}
+
+	void addLineBreakToCell(Cell cell) {
+		cell.item.addElement(Chunk.NEWLINE)
 	}
 
 	def onTableComplete = { Table table ->

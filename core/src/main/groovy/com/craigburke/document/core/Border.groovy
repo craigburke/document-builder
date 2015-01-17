@@ -1,6 +1,5 @@
 package com.craigburke.document.core
 
-class Border {
-    Color color = new Color('#000000')
+class Border implements AssignableColor {
     BigDecimal size = 1
 }

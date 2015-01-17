@@ -38,6 +38,10 @@ class WordDocumentBuilder extends DocumentBuilder {
 
 	void addParagraphToDocument(Paragraph paragraph, Document document) {
         paragraph.item = document.item.createParagraph()
+		if (paragraph.leading != null) {
+			document.item.spacingAfterLines = paragraph.leading
+		}
+
 		setParagraphProperties(paragraph)
 	}
 	
@@ -46,10 +50,15 @@ class WordDocumentBuilder extends DocumentBuilder {
 	}
 
 	void addImageToCell(Image image, Cell cell) {
-		createImageRun(cell.childre[0].item, image)
+		createImageRun(cell.item.paragraphs[0], image)
 	}
 
-	private void setParagraphProperties(Paragraph paragraph) {		
+	void addLineBreakToCell(Cell cell) {
+		def run = cell.item.paragraphs[0].createRun()
+		run.addBreak()
+	}
+
+	private void setParagraphProperties(Paragraph paragraph) {
 		paragraph.item.with {
 			spacingAfter = pointToTwip(paragraph.margin.bottom)
 			spacingBefore = pointToTwip(paragraph.margin.top)

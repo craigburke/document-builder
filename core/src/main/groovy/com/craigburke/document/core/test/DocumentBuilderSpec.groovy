@@ -1,5 +1,6 @@
 package com.craigburke.document.core.test
 
+import com.craigburke.document.core.Color
 import com.craigburke.document.core.builder.DocumentBuilder
 import com.craigburke.document.core.Document
 import spock.lang.Ignore
@@ -14,6 +15,8 @@ abstract class DocumentBuilderSpec extends Specification {
 
 	@Shared ByteArrayOutputStream out
 	@Shared DocumentBuilder builder
+	@Shared byte[] imageData = getClass().classLoader.getResource('test/images/cheeseburger.jpg')?.bytes
+
 	@Shared MARGINS = [
 			[top: 0, bottom: 0, left: 0, right: 0],
 			[top: 2 * 72, bottom: 3 * 72, left: 1.25 * 72, right: 2.5 * 72],
@@ -114,20 +117,21 @@ abstract class DocumentBuilderSpec extends Specification {
 		currentMargin << MARGINS
 	}
 
+	@IgnoreRest
 	def "override or inherit font settings"() {
 		when:
-		builder.create { document(font: [family: 'Helvetica']) {
+		builder.create { document(font: [family: 'Helvetica', color: '#121212']) {
 			
-			paragraph(font: [family: 'Courier']) {
+			paragraph(font: [family: 'Courier', color: '#333333']) {
 				text "Paragraph override"
 			}
 			paragraph "Inherit doc font"
 
 			paragraph {
-				text "Text override", font: [family: 'Times-Roman']
+				text "Text override", font: [family: 'Times-Roman', color: '#FFFFFF']
 			}
 
-			table(font: [family: 'Courier']) {
+			table(font: [family: 'Courier', color: '#111111']) {
 				row {
 					cell("Override")
 				}
@@ -151,7 +155,7 @@ abstract class DocumentBuilderSpec extends Specification {
 
 		then:
 		paragraph1.font.family == 'Courier'
-		
+
 		and:
 		paragraph2.font.family == 'Helvetica'
 
@@ -160,7 +164,7 @@ abstract class DocumentBuilderSpec extends Specification {
 
 		and:
 		table1.font.family == 'Courier'
-		
+
 		and:
 		table2.font.family == 'Helvetica'
 	}
@@ -255,12 +259,28 @@ abstract class DocumentBuilderSpec extends Specification {
 		notThrown(Exception)
 	}
 
+	def "create a table with that contains an image and text"() {
+		when:
+		builder.create { document {
+			table {
+				row {
+					cell {
+						image(data: imageData, width: 500.px, height: 431.px)
+						lineBreak()
+						text "A cheeseburger"
+					}
+				}
+
+			}
+		}}
+
+		def table = getDocument(data).children[0]
+
+		then:
+		notThrown(Exception)
+	}
+
 	def "add an image"() {
-		def imageData = getClass().classLoader.getResource('test/images/cheeseburger.jpg')?.bytes
-		
-		given:
-		imageData != null
-		
 		when:
 		builder.create { document {
 			paragraph {
@@ -272,6 +292,5 @@ abstract class DocumentBuilderSpec extends Specification {
 		notThrown(Exception)
 	}
 	
-	
-	
+
 }

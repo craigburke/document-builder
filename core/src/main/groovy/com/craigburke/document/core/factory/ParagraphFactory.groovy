@@ -26,7 +26,7 @@ class ParagraphFactory extends AbstractFactory {
 		}
 		
 		if (value) {
-			Text text = new Text(value: value, font: paragraph.font, parent: paragraph)
+			Text text = new Text(value: value, font: paragraph.font.clone(), parent: paragraph)
 			builder.addTextToParagraph(text, paragraph)
 			paragraph.children << text
 		}

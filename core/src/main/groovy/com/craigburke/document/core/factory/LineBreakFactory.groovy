@@ -5,17 +5,14 @@ class LineBreakFactory extends AbstractFactory {
 	boolean isLeaf() { true } 
 	
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
-		def paragraph
 		
 		if (builder.parentName == "paragraph") {
-			paragraph = builder.current
+			builder.addLineBreakToParagraph(builder.current)
 		}
 		else if (builder.parentName == "cell") {
-			paragraph = builder.current.paragraphs.last()
+			builder.addLineBreakToCell(builder.current)
 		}
-		
-		builder.addLineBreakToParagraph(paragraph)
-		
+
 		[:]
 	}
 

@@ -1,5 +1,6 @@
 package com.craigburke.document.core.factory
 
+import com.craigburke.document.core.Font
 import com.craigburke.document.core.Text
 
 class TextFactory extends AbstractFactory {
@@ -8,8 +9,8 @@ class TextFactory extends AbstractFactory {
 	boolean onHandleNodeAttributes(builder, node, attributes) { false }
 	
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
-		Text text = new Text(value: value, font: attributes.font)
-		text.font = text.font ?: builder.current.font
+		Text text = new Text(value: value)
+		text.font = attributes.font ? new Font(attributes.font) : builder.current.font.clone()
 
 		switch (builder.parentName) {
 			case "paragraph":
