@@ -47,11 +47,11 @@ builder.create { document(font: [family: 'Helvetica', size: 14.pt], margin: [top
         image(data: imageData, width: 200.px, height: 250.px)
     }
       
-    table {
+    table(width: 5.inches , border: [size: 1, color: '#000000']) {
         row {
-            cell("Cell 1")
-            cell("Cell 2")
-            cell {
+            cell("Cell 1", width: 1.inch)
+            cell("Cell 2", width: 2.inches)
+            cell(width: 2.inches) {
                 text "Cell 3"
             }
         }

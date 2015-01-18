@@ -92,13 +92,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	def onParagraphComplete = { Paragraph paragraph ->
 		def parent = paragraph.parent
 		
-		if (paragraph.leading != null) {
-			paragraph.item.setLeading(paragraph.leading, 0)
-		}
-		else {
-			Integer leading = Math.round(1.5 * paragraph.children.inject(0f) { max, child -> Math.max(max, child.font?.size ?: 0 as Float) } )
-			paragraph.item.setLeading(leading, 0)
-		}
+		paragraph.item.setLeading(paragraph.leading, 0)
+		paragraph.item.spacingBefore -= paragraph.leading
 
 		// Dummy paragraph used to make sure spacingBefore on first paragraph renders correctly
 		def dummyParagraph = new iTextParagraph(" ")
@@ -181,7 +176,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		cell.children.each { child ->
 			cell.item.addElement(child.item)
 		}
-		
+
 		row.item << cell.item
 	}
 
@@ -199,7 +194,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		else if (font.italic) {
 			textFont.style = PdfFont.ITALIC
 		}
-
+		
 		new Chunk(text ?: "", textFont)
 	}
 

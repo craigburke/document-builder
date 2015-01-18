@@ -38,9 +38,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 
 	void addParagraphToDocument(Paragraph paragraph, Document document) {
         paragraph.item = document.item.createParagraph()
-		if (paragraph.leading != null) {
-			document.item.spacingAfterLines = paragraph.leading
-		}
+		paragraph.item.spacingAfterLines = paragraph.leading
 
 		setParagraphProperties(paragraph)
 	}
