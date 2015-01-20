@@ -94,7 +94,7 @@ class PdfContentExtractor extends PDFTextStripper {
             paragraph.margin.left = text.x - document.margin.left
             paragraph.margin.right = text.pageWidth - text.width - paragraph.margin.left - document.margin.right - document.margin.left
 
-            paragraph.margin.top = (text.y - document.margin.top) - (font.size * 1.5)
+            paragraph.margin.top = Math.round(text.y - document.margin.top - paragraph.leading)
         }
 
         private Text createText(paragraph, Font font) {

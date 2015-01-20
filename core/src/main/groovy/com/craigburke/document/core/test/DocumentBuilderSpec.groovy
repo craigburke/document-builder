@@ -117,7 +117,6 @@ abstract class DocumentBuilderSpec extends Specification {
 		currentMargin << MARGINS
 	}
 
-	@IgnoreRest
 	def "override or inherit font settings"() {
 		when:
 		builder.create { document(font: [family: 'Helvetica', color: '#121212']) {

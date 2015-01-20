@@ -40,7 +40,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		document.item.setMargins(document.margin.left, document.margin.right, document.margin.top, document.margin.bottom)
 		writer = PdfWriter.getInstance(document.item as iTextDocument, out)
 		writer.strictImageSequence = true
-		
+
 		document.item.open()
 		document
 	}
@@ -60,7 +60,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		pdfParagraph.indentationRight = paragraph.margin.right as Float
 		pdfParagraph.spacingBefore = paragraph.margin.top as Float
 		pdfParagraph.spacingAfter = paragraph.margin.bottom as Float
-
+		pdfParagraph.extraParagraphSpace = 0
+		
 		if (paragraph.align == Align.RIGHT) {
 			paragraph.item.alignment = Element.ALIGN_RIGHT
 		}
@@ -92,8 +93,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	def onParagraphComplete = { Paragraph paragraph ->
 		def parent = paragraph.parent
 		
-		paragraph.item.setLeading(paragraph.leading, 0)
-		paragraph.item.spacingBefore -= paragraph.leading
+		paragraph.item.leading = paragraph.leading
 
 		// Dummy paragraph used to make sure spacingBefore on first paragraph renders correctly
 		def dummyParagraph = new iTextParagraph(" ")
@@ -127,6 +127,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		pdfCell.padding = cell.padding
 		pdfCell.border = row.parent.border.size
 		pdfCell.borderColor = row.parent.border.color.RGB
+		pdfCell.useAscender = false
+		pdfCell.useDescender = false
 		cell.item = pdfCell
 	}
 	

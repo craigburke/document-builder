@@ -5,7 +5,7 @@ class Paragraph extends BaseNode {
 	Align align
 	
 	BigDecimal leading
-	BigDecimal leadingMultiplier = 1.2
+	BigDecimal leadingMultiplier = 1.1
 	
 	List children = []
 
