@@ -118,11 +118,18 @@ class WordDocumentBuilder extends DocumentBuilder {
 	
 	void addCellToRow(Cell cell, Row row) {
 		cell.item = row.item.getCell(cell.position)
-		cell.padding = cell.padding
+
+		def cellProperties = cell.item.CTTc.addNewTcPr()
+		def padding = cellProperties.addNewTcMar()
+		
+		padding.addNewTop().w = pointToTwip(cell.padding)
+		padding.addNewBottom().w = pointToTwip(cell.padding)
+		padding.addNewLeft().w = pointToTwip(cell.padding)
+		padding.addNewRight().w = pointToTwip(cell.padding)
+
 		if (cell.width) {
-			cell.item.CTTc.addNewTcPr().addNewTcW().w = pointToTwip(cell.width)
+			cellProperties.addNewTcW().w = pointToTwip(cell.width)
 		}
-		cell.item.addParagraph()
 	}
 
 	private fixParagraphMargins(items) {
@@ -139,10 +146,6 @@ class WordDocumentBuilder extends DocumentBuilder {
 	void write(Document document, OutputStream out) {
 		fixParagraphMargins(document.children)
 		document.item.write(out)
-	}
-	
-	private static boolean isParagraphEmpty(paragraph) {
-		!(paragraph.runs.find { it.toString() || it.embeddedPictures })
 	}
 	
 	private void createTextRun(paragraph, Font font, String runText) {

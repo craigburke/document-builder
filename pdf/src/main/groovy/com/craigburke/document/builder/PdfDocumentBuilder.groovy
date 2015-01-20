@@ -154,6 +154,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		pdfTable.widths = getRelativeCellWidths(table)
 		pdfTable.spacingBefore = 0
 		pdfTable.spacingAfter = 0
+		pdfTable.horizontalAlignment = Element.ALIGN_LEFT
 		
 		table.item = pdfTable
 		
