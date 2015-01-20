@@ -174,7 +174,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 	
 	def onCellComplete = { Cell cell, Row row ->
-		BigDecimal cellLeading = cell.children.findAll { it.getClass() == Text }.inject(0, { max, text -> Math.max(max, text.font.size) }) * 1.2
+		BigDecimal cellLeading = cell.children.findAll { it.getClass() == Text }.inject(0F, { max, text -> Math.max(max, text.font.size) }) * 1.2
 		cell.item.setLeading(cellLeading, 0)
 
 		cell.children.each { child ->
