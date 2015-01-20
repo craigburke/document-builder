@@ -60,8 +60,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		pdfParagraph.indentationRight = paragraph.margin.right as Float
 		pdfParagraph.spacingBefore = paragraph.margin.top as Float
 		pdfParagraph.spacingAfter = paragraph.margin.bottom as Float
-		pdfParagraph.extraParagraphSpace = 0
-		
+
 		if (paragraph.align == Align.RIGHT) {
 			paragraph.item.alignment = Element.ALIGN_RIGHT
 		}
@@ -125,10 +124,10 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		PdfPCell pdfCell = new PdfPCell()
 
 		pdfCell.padding = cell.padding
-		pdfCell.border = row.parent.border.size
+		pdfCell.borderWidth = row.parent.border.size
 		pdfCell.borderColor = row.parent.border.color.RGB
-		pdfCell.useAscender = false
-		pdfCell.useDescender = false
+		pdfCell.useAscender = true
+		pdfCell.useDescender = true
 		cell.item = pdfCell
 	}
 	
@@ -175,6 +174,9 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 	
 	def onCellComplete = { Cell cell, Row row ->
+		BigDecimal cellLeading = cell.children.findAll { it.getClass() == Text }.inject(0, { max, text -> Math.max(max, text.font.size) }) * 1.2
+		cell.item.setLeading(cellLeading, 0)
+
 		cell.children.each { child ->
 			cell.item.addElement(child.item)
 		}
