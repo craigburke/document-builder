@@ -90,13 +90,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	
 	void addTextToParagraph(Text text, Paragraph paragraph) {
 		Chunk chunk = getTextChunk(text)
-
-		if (text.font.characterSpacing != null) {
-			writer.spaceCharRatio = text.font.characterSpacing
-		}
-		
 		paragraph.item.add(chunk)
-		writer.spaceCharRatio = PdfWriter.SPACE_CHAR_RATIO_DEFAULT
 	}
 	
 	def onParagraphComplete = { Paragraph paragraph ->
