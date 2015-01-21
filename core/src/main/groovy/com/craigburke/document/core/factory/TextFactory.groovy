@@ -1,6 +1,7 @@
 package com.craigburke.document.core.factory
 
 import com.craigburke.document.core.Font
+import com.craigburke.document.core.Paragraph
 import com.craigburke.document.core.Text
 
 class TextFactory extends AbstractFactory {
@@ -17,7 +18,7 @@ class TextFactory extends AbstractFactory {
 				builder.addTextToParagraph(text, builder.current)
 				break
 			case "cell":
-				builder.addTextToCell(text, builder.current)
+				builder.addTextToParagraph(text, builder.current.children[0])
 				break
 		}
 

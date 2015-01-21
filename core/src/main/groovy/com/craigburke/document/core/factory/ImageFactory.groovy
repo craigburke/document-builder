@@ -13,7 +13,7 @@ class ImageFactory extends AbstractFactory {
 
 		switch (builder.parentName) {
 			case "cell":
-				builder.addImageToCell(image, builder.current)
+				builder.addImageToParagraph(image, builder.current.children[0])
 				break
 			case "paragraph":
 				builder.addImageToParagraph(image, builder.current)

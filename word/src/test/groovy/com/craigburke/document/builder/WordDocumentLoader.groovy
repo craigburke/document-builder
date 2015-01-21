@@ -30,18 +30,7 @@ class WordDocumentLoader {
     }
 
     static private loadParagraphs(Document document) {
-        document.children += document.item.paragraphs.collect { getParagraph(it) }
-    }
-
-    static private Paragraph getParagraph(paragraph) {
-        Paragraph p = new Paragraph(item: paragraph)
-        p.children = getChildren(paragraph)
-        p.margin.bottom = twipToPoint(paragraph.spacingAfter)
-        p.margin.top = twipToPoint(paragraph.spacingBefore)
-        def indent = paragraph.CTP.PPr.ind
-        p.margin.left = twipToPoint(indent?.left ?: 0)
-        p.margin.right = twipToPoint(indent?.right ?: 0)
-        p
+        document.children = getParagraphs(document.item.paragraphs)
     }
 
     static private loadTables(Document document) {
@@ -60,29 +49,43 @@ class WordDocumentLoader {
                         cell.width = twipToPoint(widthSettings.w)
                     }
 
-                    cell.children = getChildren(cell.item.paragraphs[0])
+                    cell.children = getParagraphs(cellItem.paragraphs)
 
                     row.cells << cell
                 }
             }
 
-            document.children += table
+            document.children << table
         }
     }
 
 
-    static private List getChildren(paragraph) {
+    static private List getParagraphs(paragraphs) {
         def items = []
 
-        paragraph.runs.each { run ->
-            if (run.embeddedPictures) {
-                items << new Image(data: run.embeddedPictures[0].pictureData.data, parent: paragraph)
-            }
-            else {
-                def text = new Text(value: run.toString(), parent: paragraph)
-                text.font = new Font(family: run.fontFamily, size: run.fontSize)
-                items << text
-            }
+        paragraphs.each { paragraph ->
+            Paragraph p = new Paragraph()
+            p.margin.bottom = twipToPoint(paragraph.spacingAfter)
+            p.margin.top = twipToPoint(paragraph.spacingBefore)
+            def indent = paragraph.CTP.PPr.ind
+            p.margin.left = twipToPoint(indent?.left ?: 0)
+            p.margin.right = twipToPoint(indent?.right ?: 0)
+
+            items << p
+            
+            paragraph.runs.each { run ->
+                Font font =  new Font(family: run.fontFamily, size: run.fontSize)
+                p.font = p.font ?: font
+                
+                if (run.embeddedPictures) {
+                    p.children << new Image(data: run.embeddedPictures[0].pictureData.data, parent: p)
+                }
+                else {
+                    def text = new Text(value: run.toString(), parent: p)
+                    text.font = font
+                    p.children << text
+                }
+            }  
         }
 
         items

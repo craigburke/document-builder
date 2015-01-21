@@ -5,7 +5,8 @@ class Font implements AssignableColor, Cloneable {
 	BigDecimal size = 12
 	Boolean bold = false
 	Boolean italic = false
-
+	BigDecimal characterSpacing
+	
 	def leftShift(Map properties) {
 		properties.each { key, value -> this[key] = value }
 	}

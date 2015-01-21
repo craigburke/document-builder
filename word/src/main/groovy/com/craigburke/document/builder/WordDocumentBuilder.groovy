@@ -38,28 +38,22 @@ class WordDocumentBuilder extends DocumentBuilder {
 
 	void addParagraphToDocument(Paragraph paragraph, Document document) {
         paragraph.item = document.item.createParagraph()
-		paragraph.item.spacingAfterLines = paragraph.leading
-
 		setParagraphProperties(paragraph)
 	}
 	
-	void addTextToCell(Text text, Cell cell) {
-		createTextRun(cell.item.paragraphs[0], text.font, text.value)
-	}
+	void addParagraphToCell(Paragraph paragraph, Cell cell) {
+		def firstParagraph = cell.item.paragraphs[0]
 
-	void addImageToCell(Image image, Cell cell) {
-		createImageRun(cell.item.paragraphs[0], image)
-	}
-
-	void addLineBreakToCell(Cell cell) {
-		def run = cell.item.paragraphs[0].createRun()
-		run.addBreak()
+		paragraph.item = firstParagraph.isEmpty() ? firstParagraph : cell.item.addParagraph()
+		setParagraphProperties(paragraph)
 	}
 
 	private void setParagraphProperties(Paragraph paragraph) {
+		
 		paragraph.item.with {
 			spacingAfter = pointToTwip(paragraph.margin.bottom)
 			spacingBefore = pointToTwip(paragraph.margin.top)
+			spacingAfterLines = paragraph.leading
 		}
 
 		if (paragraph.align == Align.RIGHT) {
@@ -78,7 +72,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 	}
 	
 	void addTextToParagraph(Text text, Paragraph paragraph) {
-        createTextRun(paragraph.item, text.font, text.value)
+        createTextRun(paragraph.item, text)
 	}
 	
 	void addImageToParagraph(Image image, Paragraph paragraph) {
@@ -148,7 +142,9 @@ class WordDocumentBuilder extends DocumentBuilder {
 		document.item.write(out)
 	}
 	
-	private void createTextRun(paragraph, Font font, String runText) {
+	private void createTextRun(paragraph, Text text) {
+		Font font = text.font
+		
 		def run 
 		def currentRuns = paragraph.runs
 		
@@ -160,14 +156,12 @@ class WordDocumentBuilder extends DocumentBuilder {
 			run = paragraph.createRun()
 		}
 		
-		run.with {
-			fontFamily = font.family
-			fontSize = font.size
-			color = font.color.hex
-			bold = font.bold
-			italic = font.italic
-			text = runText
-		}		
+		run.fontFamily = font.family
+		run.fontSize = font.size
+		run.color = font.color.hex
+		run.bold = font.bold
+		run.italic = font.italic
+		run.text = text.value
 
 	}
 	

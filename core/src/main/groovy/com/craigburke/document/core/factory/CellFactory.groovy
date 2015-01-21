@@ -16,13 +16,16 @@ class CellFactory extends AbstractFactory {
 		
 		cell.font = cell.font ?: row.font.clone()
 		cell.position = builder.tablePosition.cell
-		
 		builder.addCellToRow(cell, row)
 
+		Paragraph paragraph = new Paragraph()
+		paragraph.margin.setDefaults(0, 0)
+		builder.addParagraphToCell(paragraph, cell)
+		cell.children << paragraph
+		
 		if (value) {
 			Text text = new Text(value: value, font: cell.font, parent: cell)
-			cell.children << text
-			builder.addTextToCell(text, cell)
+			builder.addTextToParagraph(text, paragraph)
 		}
 
 		cell

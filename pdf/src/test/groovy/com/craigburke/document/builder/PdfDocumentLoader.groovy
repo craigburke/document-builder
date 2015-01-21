@@ -44,8 +44,10 @@ class PdfDocumentLoader {
                 def table = new Table(parent: document, width: new BigDecimal(it.'@width'))
                 it.row.each { rowNode ->
                     Row row = new Row()
-                    rowNode.cell.each {
-                        row.cells << new Cell(width: new BigDecimal(it.'@width'))
+                    rowNode.cell.each { cellNode ->
+                        def cell = new Cell(width: new BigDecimal(cellNode.'@width'))
+                        cell.children << new Paragraph()
+                        row.cells << cell
                     }
                     table.rows << row
                 }

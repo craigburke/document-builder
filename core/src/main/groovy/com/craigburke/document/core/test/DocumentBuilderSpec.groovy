@@ -183,7 +183,7 @@ abstract class DocumentBuilderSpec extends Specification {
 		def table = getDocument(data).children[0]
 		
 		then:
-		table.rows[0].cells[0].children[0].value == "FOOBAR"
+		table.rows[0].cells[0].children[0].text == "FOOBAR"
 
 	}
 	

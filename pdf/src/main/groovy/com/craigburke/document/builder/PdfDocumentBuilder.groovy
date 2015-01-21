@@ -54,23 +54,27 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 		
 	void addParagraphToDocument(Paragraph paragraph, Document document) {
+		createParagraph(paragraph)
+	}
+	
+	private void createParagraph(Paragraph paragraph) {
 		def pdfParagraph = new iTextParagraph()
-
+		
 		pdfParagraph.indentationLeft = paragraph.margin.left as Float
 		pdfParagraph.indentationRight = paragraph.margin.right as Float
 		pdfParagraph.spacingBefore = paragraph.margin.top as Float
 		pdfParagraph.spacingAfter = paragraph.margin.bottom as Float
 
 		if (paragraph.align == Align.RIGHT) {
-			paragraph.item.alignment = Element.ALIGN_RIGHT
+			pdfParagraph.alignment = Element.ALIGN_RIGHT
 		}
 		else if (paragraph.align == Align.CENTER) {
-			paragraph.item.alignment = Element.ALIGN_MIDDLE
+			pdfParagraph.alignment = Element.ALIGN_MIDDLE
 		}
 		else if (paragraph.align == Align.JUSTIFY) {
-			paragraph.item.alignment = Element.ALIGN_JUSTIFIED
+			pdfParagraph.alignment = Element.ALIGN_JUSTIFIED
 		}
-
+		
 		paragraph.item = pdfParagraph
 	}
 	
@@ -85,8 +89,14 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 	
 	void addTextToParagraph(Text text, Paragraph paragraph) {
-		Chunk chunk = getTextChunk(text.font, text.value)
+		Chunk chunk = getTextChunk(text)
+
+		if (text.font.characterSpacing != null) {
+			writer.spaceCharRatio = text.font.characterSpacing
+		}
+		
 		paragraph.item.add(chunk)
+		writer.spaceCharRatio = PdfWriter.SPACE_CHAR_RATIO_DEFAULT
 	}
 	
 	def onParagraphComplete = { Paragraph paragraph ->
@@ -131,19 +141,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		cell.item = pdfCell
 	}
 	
-	void addTextToCell(Text text, Cell cell) {
-		def chunk = getTextChunk(text.font, text.value)
-		cell.item.addElement(chunk)
-	}
-
-	void addImageToCell(Image image, Cell cell) {
-		def img = iTextImage.getInstance(image.data)
-		img.scaleAbsolute(image.width, image.height)
-		cell.item.addElement(new Chunk(img, 0, 0, true))
-	}
-
-	void addLineBreakToCell(Cell cell) {
-		cell.item.addElement(Chunk.NEWLINE)
+	void addParagraphToCell(Paragraph paragraph, Cell cell) {
+		createParagraph(paragraph)
 	}
 
 	def onTableComplete = { Table table ->
@@ -175,7 +174,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 	
 	def onCellComplete = { Cell cell, Row row ->
-		BigDecimal cellLeading = cell.children.findAll { it.getClass() == Text }.inject(0F, { max, text -> Math.max(max, text.font.size) }) * 1.2
+		BigDecimal cellLeading = cell.children.children.findAll { it.getClass() == Text }.inject(0F, { max, text -> Math.max(max, text.font.size) }) * 1.2
 		cell.item.setLeading(cellLeading, 0)
 
 		cell.children.each { child ->
@@ -186,7 +185,9 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 
 
-	private static Chunk getTextChunk(Font font, String text) {
+	private Chunk getTextChunk(Text text) {
+		Font font = text.font
+		
 		PdfFont textFont = FontFactory.getFont(font.family, font.size)
 		textFont.color = font.color.RGB as Color
 
@@ -199,8 +200,9 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		else if (font.italic) {
 			textFont.style = PdfFont.ITALIC
 		}
-		
-		new Chunk(text ?: "", textFont)
+
+		Chunk chunk = new Chunk(text.value ?: "", textFont)
+		chunk
 	}
 
 

@@ -10,7 +10,7 @@ class LineBreakFactory extends AbstractFactory {
 			builder.addLineBreakToParagraph(builder.current)
 		}
 		else if (builder.parentName == "cell") {
-			builder.addLineBreakToCell(builder.current)
+			builder.addLineBreakToParagraph(builder.current.children[0])
 		}
 
 		[:]
