@@ -30,14 +30,7 @@ class CellFactory extends AbstractFactory {
 
 		cell
 	}
-	
-	void setChild(FactoryBuilderSupport builder, parent, child) {
-		if (child instanceof Paragraph) {
-			child.parent = parent
-			parent.paragraphs << child
-		}
-	}
-	
+
 	void onNodeCompleted(FactoryBuilderSupport builder, row, cell) {
 		if (builder.onCellComplete instanceof Closure) {
 			builder.onCellComplete(cell, row)
