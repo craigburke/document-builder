@@ -16,9 +16,7 @@ class PdfDocumentLoader {
         PDDocument pdfDoc = PDDocument.load(new ByteArrayInputStream(data))
         Document document = new Document(item: pdfDoc)
 
-        def xmp = new XmlParser().parse(pdfDoc.documentCatalog.metadata.createInputStream())
-        def rdf = new Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#', 'rdf')
-        def metaData = xmp[rdf.RDF][rdf.Description]['document'][0]
+        def metaData = new XmlParser().parse(pdfDoc.documentCatalog.metadata.createInputStream())
 
         document.margin.top = new BigDecimal(metaData.'@marginTop')
         document.margin.bottom = new BigDecimal(metaData.'@marginBottom')

@@ -1,8 +1,9 @@
 package com.craigburke.document.builder
 
 import com.craigburke.document.core.Align
-import com.lowagie.text.Element
-import com.lowagie.text.xml.xmp.XmpWriter
+import com.itextpdf.text.BaseColor
+import com.itextpdf.text.Element
+import com.itextpdf.text.xml.xmp.XmpWriter
 import groovy.transform.InheritConstructors
 
 import com.craigburke.document.core.builder.DocumentBuilder
@@ -15,19 +16,17 @@ import com.craigburke.document.core.Image
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.Font
 
-import com.lowagie.text.Document as iTextDocument
-import com.lowagie.text.Paragraph as iTextParagraph
-import com.lowagie.text.Image as iTextImage
-import com.lowagie.text.Chunk
+import com.itextpdf.text.Document as iTextDocument
+import com.itextpdf.text.Paragraph as iTextParagraph
+import com.itextpdf.text.Image as iTextImage
+import com.itextpdf.text.Chunk
 
-import com.lowagie.text.pdf.PdfPTable
-import com.lowagie.text.pdf.PdfPCell
-import com.lowagie.text.pdf.PdfWriter
-import com.lowagie.text.FontFactory
-import com.lowagie.text.Font as PdfFont
+import com.itextpdf.text.pdf.PdfPTable
+import com.itextpdf.text.pdf.PdfPCell
+import com.itextpdf.text.pdf.PdfWriter
+import com.itextpdf.text.FontFactory
+import com.itextpdf.text.Font as PdfFont
 import groovy.xml.MarkupBuilder
-
-import java.awt.Color
 
 @InheritConstructors
 class PdfDocumentBuilder extends DocumentBuilder {
@@ -129,7 +128,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
 		pdfCell.padding = cell.padding
 		pdfCell.borderWidth = row.parent.border.size
-		pdfCell.borderColor = row.parent.border.color.RGB
+		pdfCell.borderColor = row.parent.border.color.RGB as BaseColor
 		pdfCell.useAscender = true
 		pdfCell.useDescender = true
 		cell.item = pdfCell
@@ -183,7 +182,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		Font font = text.font
 		
 		PdfFont textFont = FontFactory.getFont(font.family, font.size)
-		textFont.color = font.color.RGB as Color
+		textFont.color = font.color.RGB as BaseColor
 
 		if (font.bold && font.italic) {
 			textFont.style = PdfFont.BOLDITALIC
@@ -214,10 +213,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
 	private void addMetadata() {
 		ByteArrayOutputStream xmpOut = new ByteArrayOutputStream()
-		XmpWriter xmpWriter = new XmpWriter(xmpOut)
-
-		def xmlWriter = new StringWriter()
-		def xml = new MarkupBuilder(xmlWriter)
+		def xml = new MarkupBuilder(xmpOut.newWriter())
 
 		xml.document(marginTop: "${document.margin.top}", marginBottom: "${document.margin.bottom}", marginLeft: "${document.margin.left}", marginRight: "${document.margin.right}") {
 
@@ -246,9 +242,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 				}
 			}
 		}
-
-		xmpWriter.addRdfDescription("", xmlWriter.toString())
-		xmpWriter.close()
+		
 		writer.xmpMetadata = xmpOut.toByteArray()
 	}
 
