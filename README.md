@@ -60,6 +60,7 @@ builder.create { document(font: [family: 'Helvetica', size: 14.pt], margin: [top
 }}
 ```
 **Licences**
+
 The core project as well as the Word document builder are available under the MPL2 license.
 However, because of the use of iText, the PDF document builder is currently only available under a more restrictive AGPL license.
 
