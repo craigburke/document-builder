@@ -4,60 +4,67 @@ Groovy Document Builder
 
 A document builder for Groovy for PDF or Word documents. This is still very much a work in progress.
 
-**Dependencies:**
-
-```groovy
-compile 'com.craigburke.document:word:0.1.6'
-compile 'com.craigburke.document:pdf:0.1.6'
-```
-
-
 **Example:**
 ```groovy
-import com.craigburke.document.builder.WordDocumentBuilder
+@Grab(group='com.craigburke.document', module='pdf', version='0.1.6')
+@Grab(group='com.craigburke.document', module='word', version='0.1.6')
+
 import com.craigburke.document.builder.PdfDocumentBuilder
+import com.craigburke.document.builder.WordDocumentBuilder
 
-WordDocumentBuilder builder = new WordDocumentBuilder(new File('myfile.docx'))
-// PdfDocumentBuilder builder = new PdfDocumentBuilder(new File('myfile.pdf'))
+def builders = [
+        new PdfDocumentBuilder(new File('example.pdf')),
+        new WordDocumentBuilder(new File('example.docx')),
+]
 
-builder.create { document(font: [family: 'Helvetica', size: 14.pt], margin: [top: 2.inches]) {
-    paragraph "Hello World"
-    
-    // Each letter in this paragraph gets progressively bigger
-    paragraph {
-        text "look at this:"
-        "HELLOOOOOOOOOO WORLD".each { letter ->
-            font.size++
-            text letter
+def RAINBOW_COLORS = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8B00FF']
+
+String GROOVY_IMAGE_URL = 'http://www.craigburke.com/images/posts/groovy-logo.png'
+byte[] groovyImageData = new URL(GROOVY_IMAGE_URL).bytes
+
+builders.each { builder ->
+    builder.create { 
+		document(font: [family: 'Helvetica', size: 14.pt], margin: [top: 0.75.inches]) {
+
+        paragraph "Groovy Document Builder", font: [size: 22.pt]
+
+        paragraph {
+            font.size = 42.pt
+            "Hello Woooorld!!!!!".toUpperCase().eachWithIndex { letter, index ->
+                font.size--
+                font.color = RAINBOW_COLORS[ index % RAINBOW_COLORS.size() ]
+                text letter
+            }
+            lineBreak()
+            text "Current font size is ${font.size}pt"
         }
-    }
-    
-    paragraph {
-        text "Font size is back to 14pt now"
-    }
-    
-    paragraph(margin: [left: 2.inches, right: 2.inches, top: 4.inches, bottom: 4.inches]) {
-        font << [bold: true, color: '#333333']
-        text "A paragraph with some margins"
-    }
-      
-    paragraph {
-        // add an image
-        byte[] imageData = getClass().classLoader.getResource('cheeseburger.jpg').bytes
-        image(data: imageData, width: 200.px, height: 250.px)
-    }
-      
-    table(width: 5.inches , border: [size: 1, color: '#000000']) {
-        row {
-            cell("Cell 1", width: 1.inch)
-            cell("Cell 2", width: 2.inches)
-            cell(width: 2.inches) {
-                text "Cell 3"
+
+        paragraph "Font size is back to 14pt now with the default black font"
+
+        paragraph(margin: [left: 1.25.inches, right: 1.inch, top: 0.25.inches, bottom: 0.25.inches]) {
+            font << [family: 'Times-Roman', bold: true, italic: true, color: '#333333']
+            text "A paragraph with a different font and margins"
+        }
+
+        paragraph(margin: [left: 1.inch]) {
+            image(data: groovyImageData, width: 250.px, height: 125.px)
+            lineBreak()
+            text "Figure 1: Groovy Logo", font: [italic: true, size: 9.pt]
+        }
+
+        paragraph("Suddenly, a table...", font: [size: 22.pt], margin: [bottom: 0.25.inches])
+
+        table(width: 5.inches) {
+            row {
+                cell("Cell 1", width: 1.inch)
+                cell("Cell 2", width: 2.inches)
+                cell(width: 2.inches) {
+                    text "Cell 3"
+                }
             }
         }
-    }
-        
-}}
+    }}
+}
 ```
 **Licences**
 
