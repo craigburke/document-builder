@@ -1,10 +1,7 @@
 package com.craigburke.document.builder
 
-import com.craigburke.document.core.Align
-import com.itextpdf.text.BaseColor
-import com.itextpdf.text.Element
-import com.itextpdf.text.xml.xmp.XmpWriter
 import groovy.transform.InheritConstructors
+import groovy.xml.MarkupBuilder
 
 import com.craigburke.document.core.builder.DocumentBuilder
 import com.craigburke.document.core.Document
@@ -14,200 +11,86 @@ import com.craigburke.document.core.Row
 import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Image
 import com.craigburke.document.core.Text
-import com.craigburke.document.core.Font
 
-import com.itextpdf.text.Document as iTextDocument
-import com.itextpdf.text.Paragraph as iTextParagraph
-import com.itextpdf.text.Image as iTextImage
-import com.itextpdf.text.Chunk
-
-import com.itextpdf.text.pdf.PdfPTable
-import com.itextpdf.text.pdf.PdfPCell
-import com.itextpdf.text.pdf.PdfWriter
-import com.itextpdf.text.FontFactory
-import com.itextpdf.text.Font as PdfFont
-import groovy.xml.MarkupBuilder
+import org.apache.pdfbox.pdmodel.PDDocument
+import org.apache.pdfbox.pdmodel.PDPage
+import org.apache.pdfbox.pdmodel.common.PDMetadata
+import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
+import org.apache.pdfbox.pdmodel.font.PDFont
+import org.apache.pdfbox.pdmodel.font.PDType1Font
 
 @InheritConstructors
 class PdfDocumentBuilder extends DocumentBuilder {
 
-	private PdfWriter writer
+	private def pagePosition = [x: 0, y: 0]
 	
-	Document createDocument(Document document, OutputStream out) {
-		document.item = new iTextDocument()
+	private PDPage currentPage
+	private PDPageContentStream contentStream
 
-		document.item.setMargins(document.margin.left, document.margin.right, document.margin.top, document.margin.bottom)
-		writer = PdfWriter.getInstance(document.item as iTextDocument, out)
-		writer.strictImageSequence = true
-
-		document.item.open()
-		document
-	}
-
-	void addFontFolder(File folder) {
-	 	FontFactory.registerDirectory(folder.path)
-	}
-	
-	void addFont(File font) {
-		FontFactory.register(font.path)
-	}
+	void createDocument(Document document, OutputStream out) {
+		document.item = new PDDocument()
+		currentPage = new PDPage()
 		
+		document.item.addPage(currentPage)
+		pagePosition.x = document.margin.top
+		pagePosition.y = document.margin.left
+		
+		contentStream = new PDPageContentStream(document.item as PDDocument, currentPage)
+	}
+
+	private int translateY(int y) {
+		currentPage.mediaBox.height - y
+	}
+	
+	
 	void addParagraphToDocument(Paragraph paragraph, Document document) {
-		createParagraph(paragraph)
+		pagePosition.x += paragraph.margin.left
+		pagePosition.y += paragraph.margin.top
 	}
-	
-	private void createParagraph(Paragraph paragraph) {
-		def pdfParagraph = new iTextParagraph()
-		
-		pdfParagraph.indentationLeft = paragraph.margin.left as Float
-		pdfParagraph.indentationRight = paragraph.margin.right as Float
-		pdfParagraph.spacingBefore = paragraph.margin.top as Float
-		pdfParagraph.spacingAfter = paragraph.margin.bottom as Float
 
-		if (paragraph.align == Align.RIGHT) {
-			pdfParagraph.alignment = Element.ALIGN_RIGHT
-		}
-		else if (paragraph.align == Align.CENTER) {
-			pdfParagraph.alignment = Element.ALIGN_MIDDLE
-		}
-		else if (paragraph.align == Align.JUSTIFY) {
-			pdfParagraph.alignment = Element.ALIGN_JUSTIFIED
-		}
-		
-		paragraph.item = pdfParagraph
-	}
-	
 	void addImageToParagraph(Image image, Paragraph paragraph) {
-		def img = iTextImage.getInstance(image.data)
-		img.scaleAbsolute(image.width, image.height)
-		paragraph.item.add(new Chunk(img, 0, 0, true))
+	
 	}
 	
 	void addLineBreakToParagraph(Paragraph paragraph) {
-		paragraph.item.add(Chunk.NEWLINE)
+	
 	}
 	
 	void addTextToParagraph(Text text, Paragraph paragraph) {
-		Chunk chunk = getTextChunk(text)
-		paragraph.item.add(chunk)
+		PDFont font = PDType1Font.HELVETICA_BOLD
+		
+		contentStream.beginText()
+		contentStream.moveTextPositionByAmount(pagePosition.x, translateY(pagePosition.y))
+		contentStream.setFont(font,text.font.size)
+		contentStream.drawString(text.value)
+		contentStream.endText()
+		
+		pagePosition.y += paragraph.leading
 	}
 	
-	def onParagraphComplete = { Paragraph paragraph ->
-		def parent = paragraph.parent
-		
-		paragraph.item.leading = paragraph.leading
-
-		// Dummy paragraph used to make sure spacingBefore on first paragraph renders correctly
-		def dummyParagraph = new iTextParagraph(" ")
-		dummyParagraph.setLeading(0)
-		
-		if (parent instanceof Document) {
-			if (parent.children[0] == paragraph) {
-				document.item.add(dummyParagraph)
-			}
-			document.item.add(paragraph.item)
-		}
-		else {
-			if (parent.paragraphs[0] == paragraph) {
-				parent.item.addElement(dummyParagraph)
-			}
-			parent.item.addElement(paragraph.item)
-		}
+	def onParagraphComplete = {Paragraph paragraph ->
+		//pagePosition.y += paragraph.margin.bottom
 	}
-
+	
 	void addTableToDocument(Table table, Document document) {
 		// Create table in onTableComplete
 	}
 
 	void addRowToTable(Row row, Table table) {
-		row.item = []
 	}
 	
 	void addCellToRow(Cell cell, Row row) {
-		PdfPCell pdfCell = new PdfPCell()
 
-		pdfCell.padding = cell.padding
-		pdfCell.borderWidth = row.parent.border.size
-		pdfCell.borderColor = row.parent.border.color.RGB as BaseColor
-		pdfCell.useAscender = true
-		pdfCell.useDescender = true
-		cell.item = pdfCell
 	}
 	
 	void addParagraphToCell(Paragraph paragraph, Cell cell) {
-		createParagraph(paragraph)
-	}
-
-	def onTableComplete = { Table table ->
-		PdfPTable pdfTable = new PdfPTable(table.columns)
-
-		pdfTable.lockedWidth = true
-		pdfTable.totalWidth = table.width
-		pdfTable.widths = getRelativeCellWidths(table)
-		pdfTable.spacingBefore = 0
-		pdfTable.spacingAfter = 0
-		pdfTable.horizontalAlignment = Element.ALIGN_LEFT
-		
-		table.item = pdfTable
-		
-		table.rows.each { row ->
-			row.item.each { cell ->
-				table.item.addCell(cell)
-			}
-			table.item.completeRow()
-		}
-
-		document.item.add(table.item)
 	}
 	
-	private int[] getRelativeCellWidths(Table table) {
-		BigDecimal totalCellWidth = table.rows[0].cells.inject(0){ total, cell -> total + (cell.width ?: 0) }
-		Integer remainingWidth = (table.width - totalCellWidth).intValueExact()
-		table.rows[0].cells.collect { it.width?.intValueExact() ?: remainingWidth }
-	}
-	
-	def onCellComplete = { Cell cell, Row row ->
-		BigDecimal cellLeading = cell.children.children.findAll { it.getClass() == Text }.inject(0F, { max, text -> Math.max(max, text.font.size) }) * 1.2
-		cell.item.setLeading(cellLeading, 0)
-
-		cell.children.each { child ->
-			cell.item.addElement(child.item)
-		}
-
-		row.item << cell.item
-	}
-
-
-	private Chunk getTextChunk(Text text) {
-		Font font = text.font
-		
-		PdfFont textFont = FontFactory.getFont(font.family, font.size)
-		textFont.color = font.color.RGB as BaseColor
-
-		if (font.bold && font.italic) {
-			textFont.style = PdfFont.BOLDITALIC
-		}
-		else if (font.bold) {
-			textFont.style = PdfFont.BOLD
-		}
-		else if (font.italic) {
-			textFont.style = PdfFont.ITALIC
-		}
-
-		Chunk chunk = new Chunk(text.value ?: "", textFont)
-		chunk
-	}
-
 
 	void write(Document document, OutputStream out) {
-		if (document.item.pageNumber == 0) {
-			// Add a blank page if no content has been added
-			writer.pageEmpty = false
-			document.item.newPage()
-		}
-
 		addMetadata()
-
+		contentStream.close()
+		document.item.save(out)
 		document.item.close()
 	}
 
@@ -242,8 +125,10 @@ class PdfDocumentBuilder extends DocumentBuilder {
 				}
 			}
 		}
-		
-		writer.xmpMetadata = xmpOut.toByteArray()
+
+		def catalog = document.item.documentCatalog
+		PDMetadata metadata = new PDMetadata(document.item as PDDocument, new ByteArrayInputStream(xmpOut.toByteArray()), false)
+		catalog.metadata = metadata
 	}
 
 }
