@@ -71,4 +71,4 @@ builders.each { builder ->
 The core project as well as the Word document builder are available under the MPL2 license.
 However, because of the use of iText, the PDF document builder is currently only available under a more restrictive AGPL license.
 
-I'm currently looking into the possibility of developing a PDF builder that uses PdfBox as a dependency and could be made available under the same MPL2 licence as the rest of the project.
+I'm currently looking into the possibility of developing a PDF builder that uses PdfBox as a dependency and could be made available under the same MPL2 licence as the rest of the project (currently no ETA on that).
