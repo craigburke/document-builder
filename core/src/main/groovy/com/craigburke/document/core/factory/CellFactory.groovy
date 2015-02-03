@@ -7,8 +7,8 @@ import com.craigburke.document.core.Cell
 
 class CellFactory extends AbstractFactory {
 	
-	boolean isLeaf() { false } 
-	boolean onHandleNodeAttributes(builder, node, attributes) { false }
+	boolean isLeaf() { false }
+    boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
 	
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Cell cell = new Cell(attributes)

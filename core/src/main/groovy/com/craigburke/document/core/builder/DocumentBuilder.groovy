@@ -31,7 +31,7 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements FontBuil
 		}
 	}
 	
-	abstract Document createDocument(Document document, OutputStream out)
+	abstract void createDocument(Document document, OutputStream out)
 	abstract void addParagraphToDocument(Paragraph paragraph, Document document)
 	abstract void write(Document document, OutputStream out)
 

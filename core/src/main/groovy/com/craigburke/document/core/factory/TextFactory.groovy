@@ -6,8 +6,8 @@ import com.craigburke.document.core.Text
 
 class TextFactory extends AbstractFactory {
 	
-	boolean isLeaf() { true } 
-	boolean onHandleNodeAttributes(builder, node, attributes) { false }
+	boolean isLeaf() { true }
+    boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
 	
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Text text = new Text(value: value)

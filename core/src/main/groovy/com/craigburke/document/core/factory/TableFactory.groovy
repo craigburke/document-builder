@@ -5,7 +5,7 @@ import com.craigburke.document.core.Table
 class TableFactory extends AbstractFactory {
 	
 	boolean isLeaf() { false }
-	boolean onHandleNodeAttributes(builder, node, attributes) { false }
+    boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
 	boolean isHandlesNodeChildren() { true }
 	
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {

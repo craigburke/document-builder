@@ -2,16 +2,19 @@ package com.craigburke.document.core
 
 class Margin {
     
-    BigDecimal top
-    BigDecimal bottom
-    BigDecimal left
-    BigDecimal right
-    
-    void setDefaults(BigDecimal vertical, BigDecimal horizontal) {
-        top = (top == null) ? vertical : top
-        bottom = (bottom == null) ? vertical : bottom
-        left = (left == null) ? horizontal : left
-        right = (right == null) ? horizontal : right
+    Integer top
+    Integer bottom
+    Integer left
+    Integer right
+
+    void setDefaults(int vertical, int horizontal) {
+        top = (top == null) ? horizontal : top
+        bottom = (bottom == null) ? horizontal : horizontal
+        left = (left == null) ? vertical : left
+        right = (right == null) ? vertical : right
     }
-    
+
+
+
+
 }

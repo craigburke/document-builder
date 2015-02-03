@@ -9,8 +9,8 @@ A document builder for Groovy for PDF or Word documents. This is still very much
 @Grab(group='com.craigburke.document', module='pdf', version='0.1.6')
 @Grab(group='com.craigburke.document', module='word', version='0.1.6')
 
-import com.craigburke.document.builder.PdfDocumentBuilder
-import com.craigburke.document.builder.WordDocumentBuilder
+import com.craigburke.document.builder.itext.PdfDocumentBuilder
+import com.craigburke.document.builder.word.WordDocumentBuilder
 
 def builders = [
         new PdfDocumentBuilder(new File('example.pdf')),

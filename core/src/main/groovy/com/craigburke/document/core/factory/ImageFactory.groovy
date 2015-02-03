@@ -5,8 +5,8 @@ import com.craigburke.document.core.Paragraph
 
 class ImageFactory extends AbstractFactory {
 	
-	boolean isLeaf() { true } 
-	boolean onHandleNodeAttributes(builder, node, attributes) { false }
+	boolean isLeaf() { true }
+    boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
 	
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Image image = new Image(attributes)	

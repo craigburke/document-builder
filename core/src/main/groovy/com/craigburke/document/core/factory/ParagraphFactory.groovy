@@ -1,20 +1,22 @@
 package com.craigburke.document.core.factory
 
 import com.craigburke.document.core.Align
+import com.craigburke.document.core.Font
+import com.craigburke.document.core.Margin
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.Paragraph
 
 class ParagraphFactory extends AbstractFactory {
 	
 	boolean isLeaf() { false }
-	boolean onHandleNodeAttributes(builder, node, attributes) { false }
+    boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
 	
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Paragraph paragraph = new Paragraph(attributes)
-		paragraph.font = paragraph.font ?: builder.current.font.clone()
-		paragraph.margin.setDefaults(6, 0)
-		
-		switch (builder.parentName) {
+        paragraph.margin.setDefaults(6, 0)
+        paragraph.font = paragraph.font ?: builder.current.font.clone()
+
+        switch (builder.parentName) {
 			case "document":
 				paragraph.align = paragraph.align ?: Align.LEFT
 				builder.addParagraphToDocument(paragraph, builder.current)

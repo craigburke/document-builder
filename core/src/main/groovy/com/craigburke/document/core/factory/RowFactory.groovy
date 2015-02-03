@@ -4,8 +4,8 @@ import com.craigburke.document.core.Row
 
 class RowFactory extends AbstractFactory {
 	
-	boolean isLeaf() { false } 
-	boolean onHandleNodeAttributes(builder, node, attributes) { false }
+	boolean isLeaf() { false }
+    boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
 	
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		builder.tablePosition.cell = 0
