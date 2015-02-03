@@ -1,4 +1,4 @@
-package com.craigburke.document.builder.pdfbox
+package com.craigburke.document.builder.pdf
 
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage

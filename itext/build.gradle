@@ -5,8 +5,8 @@ dependencies {
 }
 
 project.ext {
-	artifactId = 'pdf'
-	description = 'Groovy PDF Document Builder'
+	artifactId = 'itext'
+	description = 'Groovy PDF Document Builder (iText)'
 	license = [
 		name: 'GNU Affero General Public License version 3.0',
 		url: 'http://www.gnu.org/licenses/agpl-3.0.html'

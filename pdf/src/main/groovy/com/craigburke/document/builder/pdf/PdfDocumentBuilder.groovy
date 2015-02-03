@@ -1,4 +1,4 @@
-package com.craigburke.document.builder.pdfbox
+package com.craigburke.document.builder.pdf
 
 import groovy.transform.InheritConstructors
 import groovy.xml.MarkupBuilder

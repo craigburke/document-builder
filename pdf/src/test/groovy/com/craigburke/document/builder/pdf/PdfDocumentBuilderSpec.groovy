@@ -1,4 +1,4 @@
-package com.craigburke.document.builder.pdfbox
+package com.craigburke.document.builder.pdf
 
 import com.craigburke.document.core.Document
 
