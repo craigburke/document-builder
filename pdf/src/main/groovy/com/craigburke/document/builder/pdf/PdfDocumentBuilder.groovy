@@ -52,23 +52,29 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	
 	def onParagraphComplete = { Paragraph paragraph ->
         PdfDocument pdfDocument = document.item
-        PDFont font = PDType1Font.HELVETICA_BOLD
 
         PDPageContentStream contentStream = document.item.contentStream
 
-        paragraph.children.each { Text text ->
-            contentStream.beginText()
-            def color = text.font.color.RGB
+        contentStream.beginText()
+        contentStream.moveTextPositionByAmount(pdfDocument.x, pdfDocument.translatedY - paragraph.leading)
 
+        int xDiff = 0
+        paragraph.children.each { Text text ->
+            contentStream.moveTextPositionByAmount(xDiff, 0)
+
+            PDFont font = PDType1Font.HELVETICA_BOLD
+
+            def color = text.font.color.RGB
             contentStream.setNonStrokingColor(color[0], color[1], color[2])
-            contentStream.moveTextPositionByAmount(pdfDocument.x, pdfDocument.translatedY)
             contentStream.setFont(font,text.font.size)
             contentStream.drawString(text.value)
-            contentStream.endText()
-            pdfDocument.x += font.getStringWidth(text.value)
-        }
 
-	    document.item.y += paragraph.leading + paragraph.margin.bottom
+            xDiff = font.getStringWidth(text.value) / 1000 * text.font.size
+
+        }
+        contentStream.endText()
+
+        document.item.y += (paragraph.leading + paragraph.margin.bottom)
 	    document.item.x = document.margin.left
     }
 	
