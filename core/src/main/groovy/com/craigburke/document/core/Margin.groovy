@@ -9,7 +9,7 @@ class Margin {
 
     void setDefaults(int vertical, int horizontal) {
         top = (top == null) ? horizontal : top
-        bottom = (bottom == null) ? horizontal : horizontal
+        bottom = (bottom == null) ? horizontal : bottom
         left = (left == null) ? vertical : left
         right = (right == null) ? vertical : right
     }

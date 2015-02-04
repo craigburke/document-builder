@@ -1,5 +1,6 @@
 package com.craigburke.document.builder.pdf
 
+import com.craigburke.document.core.LineBreak
 import groovy.transform.InheritConstructors
 import groovy.xml.MarkupBuilder
 
@@ -34,23 +35,42 @@ class PdfDocumentBuilder extends DocumentBuilder {
     }
 	
 	void addParagraphToDocument(Paragraph paragraph, Document document) {
-		document.item.x += paragraph.margin.left
+		document.item.x = paragraph.margin.left + document.margin.left
 		document.item.y += paragraph.margin.top
 	}
 
 	void addImageToParagraph(Image image, Paragraph paragraph) {
-
+        // Handle in onParagraphComplete
 	}
 	
-	void addLineBreakToParagraph(Paragraph paragraph) {
-	
+	void addLineBreakToParagraph(LineBreak lineBreak, Paragraph paragraph) {
+        // Handle in onParagraphComplete
 	}
 	
 	void addTextToParagraph(Text text, Paragraph paragraph) {
-	    //
+        // Handle in onParagraphComplete
 	}
 	
 	def onParagraphComplete = { Paragraph paragraph ->
+
+        paragraph.children.each { child ->
+            switch(child.getClass()) {
+                case Text:
+                    renderText(child, paragraph)
+                    break
+                case LineBreak:
+                    renderLineBreak(paragraph)
+                    break
+                case Image:
+                    renderImage(child, paragraph)
+                    break
+            }
+        }
+
+        document.item.y += (paragraph.leading + paragraph.margin.bottom)
+    }
+
+    private void renderText(Text text, Paragraph paragraph) {
         PdfDocument pdfDocument = document.item
 
         PDPageContentStream contentStream = document.item.contentStream
@@ -58,28 +78,29 @@ class PdfDocumentBuilder extends DocumentBuilder {
         contentStream.beginText()
         contentStream.moveTextPositionByAmount(pdfDocument.x, pdfDocument.translatedY - paragraph.leading)
 
-        int xDiff = 0
-        paragraph.children.each { Text text ->
-            contentStream.moveTextPositionByAmount(xDiff, 0)
+        PDFont font = PDType1Font.HELVETICA
+        def color = text.font.color.RGB
+        contentStream.setNonStrokingColor(color[0], color[1], color[2])
+        contentStream.setFont(font, text.font.size)
+        contentStream.drawString(text.value)
 
-            PDFont font = PDType1Font.HELVETICA_BOLD
-
-            def color = text.font.color.RGB
-            contentStream.setNonStrokingColor(color[0], color[1], color[2])
-            contentStream.setFont(font,text.font.size)
-            contentStream.drawString(text.value)
-
-            xDiff = font.getStringWidth(text.value) / 1000 * text.font.size
-
-        }
+        pdfDocument.x += font.getStringWidth(text.value) / 1000 * text.font.size
         contentStream.endText()
-
-        document.item.y += (paragraph.leading + paragraph.margin.bottom)
-	    document.item.x = document.margin.left
     }
+
+    private void renderLineBreak(Paragraph paragraph) {
+        PdfDocument pdfDocument = document.item
+
+        pdfDocument.x = document.margin.left + paragraph.margin.left
+        pdfDocument.y += paragraph.leading
+    }
+
+    private void renderImage(Image image, Paragraph paragraph) {
+
+    }
+
 	
 	void addTableToDocument(Table table, Document document) {
-		// Create table in onTableComplete
 	}
 
 	void addRowToTable(Row row, Table table) {

@@ -1,6 +1,7 @@
 package com.craigburke.document.builder.itext
 
 import com.craigburke.document.core.Align
+import com.craigburke.document.core.LineBreak
 import com.itextpdf.text.BaseColor
 import com.itextpdf.text.Element
 import groovy.transform.InheritConstructors
@@ -81,7 +82,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		paragraph.item.add(new Chunk(img, 0, 0, true))
 	}
 	
-	void addLineBreakToParagraph(Paragraph paragraph) {
+	void addLineBreakToParagraph(LineBreak lineBreak, Paragraph paragraph) {
 		paragraph.item.add(Chunk.NEWLINE)
 	}
 	

@@ -1,6 +1,7 @@
 package com.craigburke.document.builder.poi
 
 import com.craigburke.document.core.Align
+import com.craigburke.document.core.LineBreak
 import groovy.transform.InheritConstructors
 
 import com.craigburke.document.core.builder.DocumentBuilder
@@ -77,7 +78,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 		createImageRun(paragraph.item, image)
 	}
 	
-	void addLineBreakToParagraph(Paragraph paragraph) {
+	void addLineBreakToParagraph(LineBreak lineBreak, Paragraph paragraph) {
 		def run = paragraph.item.createRun()
 		run.addBreak()
 	}
