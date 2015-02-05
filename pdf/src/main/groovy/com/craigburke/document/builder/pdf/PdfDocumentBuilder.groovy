@@ -15,9 +15,6 @@ import com.craigburke.document.core.Text
 
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.common.PDMetadata
-import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
-import org.apache.pdfbox.pdmodel.font.PDFont
-import org.apache.pdfbox.pdmodel.font.PDType1Font
 
 @InheritConstructors
 class PdfDocumentBuilder extends DocumentBuilder {
@@ -52,52 +49,10 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 	
 	def onParagraphComplete = { Paragraph paragraph ->
-
-        paragraph.children.each { child ->
-            switch(child.getClass()) {
-                case Text:
-                    renderText(child, paragraph)
-                    break
-                case LineBreak:
-                    renderLineBreak(paragraph)
-                    break
-                case Image:
-                    renderImage(child, paragraph)
-                    break
-            }
-        }
-
-        document.item.y += (paragraph.leading + paragraph.margin.bottom)
+        ParagraphRenderer paragraphRenderer = new ParagraphRenderer(paragraph, document)
+        paragraphRenderer.render()
     }
 
-    private void renderText(Text text, Paragraph paragraph) {
-        PdfDocument pdfDocument = document.item
-
-        PDPageContentStream contentStream = document.item.contentStream
-
-        contentStream.beginText()
-        contentStream.moveTextPositionByAmount(pdfDocument.x, pdfDocument.translatedY - paragraph.leading)
-
-        PDFont font = PDType1Font.HELVETICA
-        def color = text.font.color.RGB
-        contentStream.setNonStrokingColor(color[0], color[1], color[2])
-        contentStream.setFont(font, text.font.size)
-        contentStream.drawString(text.value)
-
-        pdfDocument.x += font.getStringWidth(text.value) / 1000 * text.font.size
-        contentStream.endText()
-    }
-
-    private void renderLineBreak(Paragraph paragraph) {
-        PdfDocument pdfDocument = document.item
-
-        pdfDocument.x = document.margin.left + paragraph.margin.left
-        pdfDocument.y += paragraph.leading
-    }
-
-    private void renderImage(Image image, Paragraph paragraph) {
-
-    }
 
 	
 	void addTableToDocument(Table table, Document document) {
