@@ -122,6 +122,10 @@ class ParagraphRenderer {
 
     void render() {
         lines.each { ParagraphLine line ->
+            if (pdfDocument.remainingPageHeight < line.height) {
+                pdfDocument.addPage()
+            }
+
             document.item.x = document.margin.left + paragraph.margin.left
             document.item.y += line.height
 
@@ -141,7 +145,7 @@ class ParagraphRenderer {
 
         }
 
-        document.item.y += (paragraph.leading + paragraph.margin.bottom)
+        document.item.y += paragraph.margin.bottom
     }
 
 
@@ -167,10 +171,10 @@ class ParagraphRenderer {
 
         PDXObjectImage img
         if (element.node.name.endsWith('png')) {
-            img = new PDPixelMap(pdfDocument.document, bufferedImage)
+            img = new PDPixelMap(pdfDocument.pdDocument, bufferedImage)
         }
         else {
-            img = new PDJpeg(pdfDocument.document, bufferedImage)
+            img = new PDJpeg(pdfDocument.pdDocument, bufferedImage)
         }
 
         img.width = element.node.width

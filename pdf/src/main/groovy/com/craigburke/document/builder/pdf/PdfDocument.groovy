@@ -1,5 +1,6 @@
 package com.craigburke.document.builder.pdf
 
+import com.craigburke.document.core.Document
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
@@ -8,20 +9,35 @@ class PdfDocument {
     int x = 0
     int y = 0
 
-    PDDocument document
+    Document document
+    PDDocument pdDocument
     PDPage currentPage
     PDPageContentStream contentStream
 
+    PdfDocument(Document document) {
+        pdDocument = new PDDocument()
+        this.document = document
+        addPage()
+    }
+
     void addPage() {
+        x = document.margin.top
+        y = document.margin.left
+
         currentPage = new PDPage()
-        document.addPage(currentPage)
+        pdDocument.addPage(currentPage)
 
         contentStream?.close()
-        contentStream = new PDPageContentStream(document, currentPage)
+        contentStream = new PDPageContentStream(pdDocument, currentPage)
     }
 
     int getTranslatedY() {
         currentPage.mediaBox.height - y
+    }
+
+    int getRemainingPageHeight() {
+        int distanceToBottomMargin = currentPage.mediaBox.height - document.margin.bottom
+        distanceToBottomMargin - y
     }
 
 }

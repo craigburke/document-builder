@@ -20,8 +20,7 @@ import org.apache.pdfbox.pdmodel.common.PDMetadata
 class PdfDocumentBuilder extends DocumentBuilder {
 
 	void createDocument(Document document, OutputStream out) {
-        PdfDocument pdfDocument = new PdfDocument(document: new PDDocument())
-        pdfDocument.addPage()
+        PdfDocument pdfDocument = new PdfDocument(document)
         document.item = pdfDocument
 
         pdfDocument.x = document.margin.left
@@ -73,8 +72,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	void write(Document document, OutputStream out) {
 		addMetadata()
 		document.item.contentStream?.close()
-		document.item.document.save(out)
-		document.item.document.close()
+		document.item.pdDocument.save(out)
+		document.item.pdDocument.close()
 	}
 
 	private void addMetadata() {
@@ -109,8 +108,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
 			}
 		}
 
-		def catalog = document.item.document.documentCatalog
-		PDMetadata metadata = new PDMetadata(document.item.document as PDDocument, new ByteArrayInputStream(xmpOut.toByteArray()), false)
+		def catalog = document.item.pdDocument.documentCatalog
+		PDMetadata metadata = new PDMetadata(document.item.pdDocument as PDDocument, new ByteArrayInputStream(xmpOut.toByteArray()), false)
 		catalog.metadata = metadata
 	}
 
