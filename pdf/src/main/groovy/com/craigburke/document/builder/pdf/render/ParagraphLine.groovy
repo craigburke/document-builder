@@ -1,10 +1,16 @@
 package com.craigburke.document.builder.pdf.render
 
+import com.craigburke.document.core.Document
+import com.craigburke.document.core.Paragraph
+
 class ParagraphLine {
     final int maxWidth
     int contentWidth = 0
+    List elements = []
+    Paragraph paragraph
 
-    ParagraphLine(int maxWidth) {
+    ParagraphLine(Paragraph paragraph, int maxWidth) {
+        this.paragraph = paragraph
         this.maxWidth = maxWidth
     }
 
@@ -16,5 +22,4 @@ class ParagraphLine {
         elements.collect { (it instanceof ImageElement) ? it.node.height : it.node.parent.leading }.max()
     }
 
-    List elements = []
 }
