@@ -1,5 +1,6 @@
 package com.craigburke.document.builder.pdf
 
+import com.craigburke.document.builder.pdf.render.ParagraphRenderer
 import com.craigburke.document.core.LineBreak
 import groovy.transform.InheritConstructors
 import groovy.xml.MarkupBuilder

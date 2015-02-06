@@ -1,8 +1,8 @@
-package com.craigburke.document.builder.pdf
+package com.craigburke.document.builder.pdf.render
 
+import com.craigburke.document.builder.pdf.PdfDocument
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Font
-import com.craigburke.document.core.Image
 import com.craigburke.document.core.LineBreak
 import com.craigburke.document.core.Paragraph
 import com.craigburke.document.core.Text
@@ -30,10 +30,9 @@ class ParagraphRenderer {
         parseLines()
     }
 
-    PdfDocument getPdfDocument() {
+    private PdfDocument getPdfDocument() {
         document.item
     }
-
 
     private void parseLines() {
         def currentChunk = []
@@ -62,7 +61,6 @@ class ParagraphRenderer {
         PDFont pdfFont
 
         chunk.each { node ->
-
             if (node instanceof Text) {
                 Font font = node.font
                 pdfFont = PDType1Font.HELVETICA
@@ -72,7 +70,7 @@ class ParagraphRenderer {
                     BigDecimal textWidth = pdfFont.getStringWidth(remainingText)  / 1000 * font.size
 
                     if (currentLine.contentWidth + textWidth > maxLineWidth) {
-                        String splitText = getTextUntilBreakPoint(remainingText, pdfFont, font.size, currentLine.remainingWidth)
+                        String splitText = getTextUntilBreakpoint(remainingText, pdfFont, font.size, currentLine.remainingWidth)
 
                         remainingText = remainingText - splitText
                         int elementWidth = pdfFont.getStringWidth(splitText)  / 1000 * font.size
@@ -98,27 +96,55 @@ class ParagraphRenderer {
 
                 currentLine.elements << new ImageElement(node: node)
             }
-
-
         }
 
         chunkLines
     }
 
-    private String getTextUntilBreakPoint(String text, PDFont font, BigDecimal fontSize, BigDecimal width) {
+    private String getTextUntilBreakpoint(String text, PDFont font, BigDecimal fontSize, BigDecimal width) {
         String result = ""
+        String previousResult
+        boolean spaceBreakpointFound = false
+
+        String[] words = text.split()*.trim()
+        int wordIndex = 0
         int resultWidth = 0
-        int currentLetter = 0
+        while (words && resultWidth < width && wordIndex < words.size()) {
+            previousResult = result
+            result += (wordIndex == 0 ? '' : ' ') + words[wordIndex]
+            resultWidth = getTextWidth(result, font, fontSize)
 
+            if (resultWidth == width) {
+                spaceBreakpointFound = true
+                break
+            }
+            else if (resultWidth < width) {
+                spaceBreakpointFound = true
+            }
+            else if (spaceBreakpointFound) {
+                result = previousResult
+                break
+            }
+            wordIndex++
+        }
 
-        while (resultWidth < width) {
-            result += text[currentLetter]
-            resultWidth = font.getStringWidth(result) / 1000 * fontSize
-            currentLetter++
+        if (!spaceBreakpointFound) {
+            // Fall back to breaking line in the middle of a word
+            int currentCharacter = 0
+            while (getTextWidth(result, font, fontSize) < width) {
+                result += text[currentCharacter]
+                currentCharacter++
+            }
         }
 
         result
     }
+
+
+    private BigDecimal getTextWidth(String text, PDFont font, BigDecimal fontSize) {
+        font.getStringWidth(text) / 1000 * fontSize
+    }
+
 
     void render() {
         lines.each { ParagraphLine line ->
@@ -185,32 +211,5 @@ class ParagraphRenderer {
 
 }
 
-class TextElement {
-    PDFont pdfFont
-    Text node
-    String text
-    int width
-}
 
-class ImageElement {
-    Image node
-}
 
-class ParagraphLine {
-    final int maxWidth
-    int contentWidth = 0
-
-    ParagraphLine(int maxWidth) {
-        this.maxWidth = maxWidth
-    }
-
-    int getRemainingWidth() {
-        maxWidth - contentWidth
-    }
-
-    int getHeight() {
-        elements.collect { (it instanceof ImageElement) ? it.node.height : it.node.parent.leading }.max()
-    }
-
-    List elements = []
-}
