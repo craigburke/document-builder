@@ -6,12 +6,13 @@ import com.craigburke.document.core.Table
 
 class TableRenderer {
 
-    int tableStartX
+    int renderStartY
 
     Document document
     Table table
 
     TableRenderer(Table table, Document document) {
+        renderStartY = document.item.translatedY
         this.document = document
         this.table = table
     }
@@ -26,8 +27,10 @@ class TableRenderer {
         while (!rowElement.fullyRendered) {
             rowElement.cellElements.each { cellElement ->
                 renderUntilEndPoint(cellElement)
+                document.x = cellElement
             }
             if (!rowElement.fullyRendered) {
+                renderStartY = document.margin.top
                 document.item.addPage()
             }
         }
