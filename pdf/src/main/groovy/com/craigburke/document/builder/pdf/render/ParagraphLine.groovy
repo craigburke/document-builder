@@ -1,6 +1,5 @@
 package com.craigburke.document.builder.pdf.render
 
-import com.craigburke.document.core.Document
 import com.craigburke.document.core.Paragraph
 
 class ParagraphLine {
@@ -19,7 +18,7 @@ class ParagraphLine {
     }
 
     int getHeight() {
-        elements.collect { (it instanceof ImageElement) ? it.node.height : it.node.parent.leading }.max()
+        elements.collect { (it instanceof ImageElement) ? it.node.height : paragraph.leading }.max() ?: 0
     }
 
 }

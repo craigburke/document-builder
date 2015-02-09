@@ -6,5 +6,5 @@ class Cell extends BaseNode {
 	Align align = Align.LEFT
 
 	Integer position = 0
-	BigDecimal width
+	Integer width
 }

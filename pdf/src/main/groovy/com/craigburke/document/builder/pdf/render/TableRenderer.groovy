@@ -3,6 +3,7 @@ package com.craigburke.document.builder.pdf.render
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Row
 import com.craigburke.document.core.Table
+import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
 
 class TableRenderer {
 
@@ -12,41 +13,57 @@ class TableRenderer {
     Table table
 
     TableRenderer(Table table, Document document) {
-        renderStartY = document.item.translatedY
         this.document = document
         this.table = table
     }
 
     void render() {
+        renderStartY = document.item.translatedY
         table.rows.each { renderRow(it) }
     }
 
-    private void renderRow(Row row) {
+   private void renderRow(Row row) {
         RowElement rowElement = new RowElement(row)
 
         while (!rowElement.fullyRendered) {
+            document.item.x = document.margin.left
+
             rowElement.cellElements.each { cellElement ->
-                renderUntilEndPoint(cellElement)
-                document.x = cellElement
+                document.item.y = renderStartY
+                renderContentUntilEndPoint(cellElement)
+                document.item.x += cellElement.node.width
             }
             if (!rowElement.fullyRendered) {
                 renderStartY = document.margin.top
                 document.item.addPage()
             }
         }
-
     }
 
-    private void renderUntilEndPoint(CellElement cellElement) {
+    private void renderContentUntilEndPoint(CellElement cellElement) {
         boolean finished = false
 
         while (!finished) {
-            ParagraphLine line = cellElement.nextLine
-            ParagraphRenderer.renderLine(document, line)
+            ParagraphLine line = cellElement.currentLine
 
-            if (cellElement.fullyRendered || line.height > document.item.remainingPageHeight) {
+            if (line.height > document.item.remainingPageHeight) {
+                cellElement.moveToPreviousLine()
                 finished = true
             }
+            else {
+                int renderStartX = document.item.x
+                ParagraphRenderer.renderLine(document, line, renderStartX)
+            }
+
+            if (cellElement.onLastLine) {
+                cellElement.fullyRendered = true
+                finished = true
+            }
+
+            if (!finished) {
+                cellElement.moveToNextLine()
+            }
+
         }
     }
 

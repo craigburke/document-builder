@@ -1,6 +1,7 @@
 package com.craigburke.document.builder.pdf
 
 import com.craigburke.document.builder.pdf.render.ParagraphRenderer
+import com.craigburke.document.builder.pdf.render.TableRenderer
 import com.craigburke.document.core.LineBreak
 import groovy.transform.InheritConstructors
 import groovy.xml.MarkupBuilder
@@ -37,24 +38,26 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 
 	void addImageToParagraph(Image image, Paragraph paragraph) {
-        // Handle in onParagraphComplete
+        // Handled in onParagraphComplete
 	}
 	
 	void addLineBreakToParagraph(LineBreak lineBreak, Paragraph paragraph) {
-        // Handle in onParagraphComplete
+        // Handled in onParagraphComplete
 	}
 	
 	void addTextToParagraph(Text text, Paragraph paragraph) {
-        // Handle in onParagraphComplete
+        // Handled in onParagraphComplete
 	}
 	
 	def onParagraphComplete = { Paragraph paragraph ->
-        ParagraphRenderer paragraphRenderer = new ParagraphRenderer(paragraph, document)
+        int maxLineWidth = document.item.currentPage.mediaBox.width - document.margin.left - document.margin.right - paragraph.margin.left - paragraph.margin.right
+        int renderStartX = document.margin.left
+
+        ParagraphRenderer paragraphRenderer = new ParagraphRenderer(paragraph, document, renderStartX, maxLineWidth)
         paragraphRenderer.render()
+        document.item.y += paragraph.margin.bottom
     }
 
-
-	
 	void addTableToDocument(Table table, Document document) {
 	}
 
@@ -68,6 +71,11 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	
 	void addParagraphToCell(Paragraph paragraph, Cell cell) {
 	}
+
+    def onTableComplete = { Table table ->
+        TableRenderer tableRenderer = new TableRenderer(table, document)
+        tableRenderer.render()
+    }
 	
 
 	void write(Document document, OutputStream out) {

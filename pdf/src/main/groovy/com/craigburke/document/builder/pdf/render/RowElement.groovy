@@ -5,7 +5,7 @@ import com.craigburke.document.core.Row
 class RowElement {
 
     Row node
-    List<CellElement> cellElements
+    List<CellElement> cellElements = []
 
     RowElement(Row row) {
         this.node = row
@@ -14,7 +14,15 @@ class RowElement {
         }
     }
 
+    int getHeight() {
+        cellElements.max { it.height }
+    }
+
+    int getWidth() {
+        cellElements.add { it.node.with }
+    }
+
     boolean isFullyRendered() {
-        cellElements.every { it.isFullyRendered }
+        cellElements.every { it.fullyRendered }
     }
 }

@@ -5,5 +5,5 @@ class Table extends BaseNode {
 
 	Border border = new Border()
 	Integer columns
-	BigDecimal width = (72 * 6)
+	Integer width = (72 * 6)
 }

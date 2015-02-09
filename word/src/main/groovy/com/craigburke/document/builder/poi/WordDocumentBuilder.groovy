@@ -61,9 +61,6 @@ class WordDocumentBuilder extends DocumentBuilder {
 		else if (paragraph.align == Align.CENTER) {
 			paragraph.item.alignment = ParagraphAlignment.CENTER
 		}
-		else if (paragraph.align == Align.JUSTIFY) {
-			paragraph.item.alignment = ParagraphAlignment.BOTH
-		}
 
 		def indent = paragraph.item.CTP.PPr.addNewInd()
 		indent.left = pointToTwip(paragraph.margin.left)

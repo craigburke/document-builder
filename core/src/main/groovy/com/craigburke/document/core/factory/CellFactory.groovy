@@ -25,6 +25,7 @@ class CellFactory extends AbstractFactory {
 		
 		if (value) {
 			Text text = new Text(value: value, font: cell.font, parent: cell)
+		    paragraph.children << text
 			builder.addTextToParagraph(text, paragraph)
 		}
 

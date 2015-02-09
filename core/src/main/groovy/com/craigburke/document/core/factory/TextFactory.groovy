@@ -13,21 +13,11 @@ class TextFactory extends AbstractFactory {
 		Text text = new Text(value: value)
 		text.font = attributes.font ? new Font(attributes.font) : builder.current.font.clone()
 
-		switch (builder.parentName) {
-			case "paragraph":
-				builder.addTextToParagraph(text, builder.current)
-				break
-			case "cell":
-				builder.addTextToParagraph(text, builder.current.children[0])
-				break
-		}
+        Paragraph paragraph = (builder.parentName == "paragraph") ? builder.current : builder.current.children[0]
+        builder.addTextToParagraph(text, paragraph)
+        paragraph.children << text
 
 		text
 	}
 
-	void setChild(FactoryBuilderSupport builder, parent, child) {
-		child.parent = parent
-		parent.children << child
-	}
-	
 }

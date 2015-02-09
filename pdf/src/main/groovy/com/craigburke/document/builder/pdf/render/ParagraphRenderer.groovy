@@ -17,31 +17,33 @@ class ParagraphRenderer {
     Document document
     Paragraph paragraph
     private final int maxLineWidth
+    private final int renderStartX
     private ParagraphElement paragraphElement
 
-    ParagraphRenderer(Paragraph paragraph, Document document) {
+    ParagraphRenderer(Paragraph paragraph, Document document, int renderStartX, int maxLineWidth) {
         this.paragraph = paragraph
         this.document = document
-        maxLineWidth = document.item.currentPage.mediaBox.width - document.margin.left - document.margin.right - paragraph.margin.left - paragraph.margin.right
+        this.renderStartX = renderStartX
+        this.maxLineWidth = maxLineWidth
         paragraphElement = new ParagraphElement(paragraph, maxLineWidth)
     }
 
     void render() {
         paragraphElement.lines.each { ParagraphLine line ->
-            ParagraphRenderer.renderLine(document, line)
+            ParagraphRenderer.renderLine(document, line, renderStartX)
         }
 
         document.item.y += paragraph.margin.bottom
     }
 
-    static void renderLine(Document document, ParagraphLine line) {
+    static void renderLine(Document document, ParagraphLine line, int renderStartX) {
         PdfDocument pdfDocument = document.item
 
         if (pdfDocument.remainingPageHeight < line.height) {
             pdfDocument.addPage()
         }
 
-        pdfDocument.x = document.margin.left + line.paragraph.margin.left
+        pdfDocument.x = renderStartX + line.paragraph.margin.left
         pdfDocument.y += line.height
 
         line.elements.each { element ->

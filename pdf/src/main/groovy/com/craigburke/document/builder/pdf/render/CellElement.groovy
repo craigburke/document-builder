@@ -4,24 +4,52 @@ import com.craigburke.document.core.Cell
 
 class CellElement {
 
-    ParagraphElement currentElement
-    ParagraphLine currentLine
     Cell node
-    List<ParagraphElement> paragraphElements
+    List<ParagraphElement> paragraphElements = []
+    private def currentPosition = [element: 0, line: 0]
+    boolean fullyRendered = false
 
     CellElement(Cell cell) {
         this.node = cell
         cell.children.each { paragraph ->
-            paragraphElements << new ParagraphElement(paragraph, cell.width)
+            paragraphElements << new ParagraphElement(paragraph, cell.width.intValue())
         }
     }
 
-    ParagraphLine getNextLine() {
-
+    void moveToNextLine() {
+        if (currentPosition.line == currentElement.lines.size() - 1) {
+            currentPosition.element++
+            currentPosition.line = 0
+        }
+        else {
+            currentPosition.line++
+        }
     }
 
-    boolean isFullyRendered() {
-        (currentElement == paragraphElements.last() && currentElement?.lines?.size() == currentLine)
+    void moveToPreviousLine() {
+        if (currentPosition.line > 0) {
+            currentPosition.line--
+        }
+        else if (currentPosition.element > 0) {
+            currentPosition.element--
+            currentPosition.line = paragraphElements[currentPosition.element].lines.size() - 1
+        }
+    }
+
+    boolean isOnLastLine() {
+        (currentElement == paragraphElements.last())
+    }
+
+    int getHeight() {
+        paragraphElements.sum { it.height }
+    }
+
+    ParagraphElement getCurrentElement() {
+        paragraphElements[currentPosition.element]
+    }
+
+    ParagraphLine getCurrentLine() {
+        currentElement.lines[currentPosition.line]
     }
 
 }

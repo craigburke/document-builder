@@ -4,12 +4,12 @@ class Paragraph extends BaseNode {
 	Margin margin = new Margin()
 	Align align
 	
-	BigDecimal leading
-	BigDecimal leadingMultiplier = 1.1
+	Integer leading
+	Integer leadingMultiplier = 1.1
 	
 	List children = []
 
-	BigDecimal getLeading() {
+	Integer getLeading() {
 		if (leading) {
 			leading
 		}

@@ -2,8 +2,6 @@ package com.craigburke.document.core
 
 class UnitUtil {
 	
-
-	
 	static BigDecimal inchToPoint(BigDecimal inch) {
 		inch * 72
 	}
