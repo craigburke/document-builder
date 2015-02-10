@@ -36,7 +36,6 @@ class TableFactory extends AbstractFactory {
 		return true
 	}
 
-
 	void setChild(FactoryBuilderSupport builder, table, row) {
 		row.parent = table
 		table.rows << row
@@ -44,10 +43,13 @@ class TableFactory extends AbstractFactory {
 	}
 
  	void onNodeCompleted(FactoryBuilderSupport builder, parent, table) {
+        table.updateColumnWidths()
+
 		if (builder.onTableComplete instanceof Closure) {
 			builder.onTableComplete(table)
 		}
    	}
+
 	
 }
 

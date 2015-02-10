@@ -12,7 +12,7 @@ class CellElement {
     CellElement(Cell cell) {
         this.node = cell
         cell.children.each { paragraph ->
-            paragraphElements << new ParagraphElement(paragraph, cell.width.intValue())
+            paragraphElements << new ParagraphElement(paragraph, cell.width)
         }
     }
 
@@ -37,7 +37,7 @@ class CellElement {
     }
 
     boolean isOnLastLine() {
-        (currentElement == paragraphElements.last())
+        (currentElement == paragraphElements.last() && currentLine == currentElement.lines.last())
     }
 
     int getHeight() {
