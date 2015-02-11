@@ -1,5 +1,7 @@
 package com.craigburke.document.builder.pdf.render
 
+import com.craigburke.document.core.Border
+import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Row
 import com.craigburke.document.core.Table
@@ -7,7 +9,7 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
 
 class TableRenderer {
 
-    int renderStartY
+    int rowStartY
 
     Document document
     Table table
@@ -18,11 +20,22 @@ class TableRenderer {
     }
 
     void render() {
-        renderStartY = document.item.translatedY
+        rowStartY = document.item.translatedY
+        renderTopTableBorder()
         table.rows.each { renderRow(it) }
     }
 
+    private void renderTopTableBorder() {
+        PDPageContentStream contentStream = document.item.contentStream
+        int xStart = document.margin.left
+        int xEnd = table.width + xStart
+        int translatedY = document.item.translateY(rowStartY)
+
+        contentStream.drawLine(xStart, translatedY, xEnd, translatedY)
+    }
+
    private void renderRow(Row row) {
+       Table table = row.parent
        int rowStartX = document.margin.left
        document.item.x = rowStartX
 
@@ -32,21 +45,45 @@ class TableRenderer {
             document.item.x = rowStartX
 
             rowElement.cellElements.each { cellElement ->
+                Cell cell = cellElement.node
+
                 document.item.x += cellElement.node.padding
-                document.item.y = renderStartY + cellElement.node.padding
+                document.item.y = rowStartY + cell.padding + table.border.size
                 renderContentUntilEndPoint(cellElement)
                 document.item.x += cellElement.node.width + cellElement.node.padding
             }
+            renderBorders(rowElement, table.border)
 
-            int maxCellPadding = row.cells.max { it.padding }.padding
-            renderStartY += rowElement.renderedHeight + maxCellPadding
+            rowStartY += rowElement.renderedHeight + rowElement.node.maxCellPadding
 
             if (!rowElement.fullyRendered) {
-                renderStartY = document.margin.top
+                rowStartY = document.margin.top
                 document.item.addPage()
                 rowElement.renderedHeight = 0
             }
         }
+    }
+
+    private renderBorders(RowElement rowElement, Border border) {
+        Table table = rowElement.node.parent
+        PDPageContentStream contentStream = document.item.contentStream
+
+        int xStart = document.margin.left
+        int xEnd = xStart + table.width
+        int y = document.item.translateY(rowStartY)
+
+        int yBottom = document.item.translateY(rowStartY + rowElement.renderedHeight + (rowElement.node.maxCellPadding * 2))
+        contentStream.drawLine(xStart, y, xStart, yBottom)
+        contentStream.drawLine(xEnd, y, xEnd, yBottom)
+
+        contentStream.drawLine(xStart, yBottom, xEnd, yBottom)
+
+        int currentX = xStart
+        rowElement.cellElements.each {
+            currentX += it.node.width + (it.node.padding * 2)
+            contentStream.drawLine(currentX, y, currentX, yBottom)
+        }
+
     }
 
     private void renderContentUntilEndPoint(CellElement cellElement) {

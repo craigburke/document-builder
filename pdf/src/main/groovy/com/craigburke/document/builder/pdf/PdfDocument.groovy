@@ -35,6 +35,10 @@ class PdfDocument {
         currentPage.mediaBox.height - y
     }
 
+    int translateY(int value) {
+        currentPage.mediaBox.height - value
+    }
+
     int getRemainingPageHeight() {
         int distanceToBottomMargin = currentPage.mediaBox.height - document.margin.bottom
         distanceToBottomMargin - y
