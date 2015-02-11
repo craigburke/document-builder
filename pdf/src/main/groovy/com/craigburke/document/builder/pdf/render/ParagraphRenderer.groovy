@@ -43,7 +43,7 @@ class ParagraphRenderer {
             pdfDocument.addPage()
         }
 
-        pdfDocument.x = renderStartX + line.paragraph.margin.left
+        pdfDocument.x = renderStartX
         pdfDocument.y += line.height
 
         line.elements.each { element ->

@@ -6,7 +6,7 @@ class CellElement {
 
     Cell node
     List<ParagraphElement> paragraphElements = []
-    private def currentPosition = [element: 0, line: 0]
+    private def currentPosition = [element: 0, line: -1]
     boolean fullyRendered = false
     int renderedHeight = 0
 

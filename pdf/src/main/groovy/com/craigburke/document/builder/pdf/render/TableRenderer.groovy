@@ -23,20 +23,23 @@ class TableRenderer {
     }
 
    private void renderRow(Row row) {
-       document.item.x = document.margin.left
+       int rowStartX = document.margin.left
+       document.item.x = rowStartX
 
        RowElement rowElement = new RowElement(row)
 
         while (!rowElement.fullyRendered) {
-            document.item.x = document.margin.left
+            document.item.x = rowStartX
 
             rowElement.cellElements.each { cellElement ->
-                document.item.y = renderStartY
+                document.item.x += cellElement.node.padding
+                document.item.y = renderStartY + cellElement.node.padding
                 renderContentUntilEndPoint(cellElement)
-                document.item.x += cellElement.node.width
+                document.item.x += cellElement.node.width + cellElement.node.padding
             }
 
-            renderStartY += rowElement.renderedHeight
+            int maxCellPadding = row.cells.max { it.padding }.padding
+            renderStartY += rowElement.renderedHeight + maxCellPadding
 
             if (!rowElement.fullyRendered) {
                 renderStartY = document.margin.top
@@ -50,6 +53,7 @@ class TableRenderer {
         boolean finished = false
 
         while (!finished) {
+            cellElement.moveToNextLine()
             ParagraphLine line = cellElement.currentLine
 
             if (line.height > document.item.remainingPageHeight) {
@@ -67,11 +71,6 @@ class TableRenderer {
                 cellElement.fullyRendered = true
                 finished = true
             }
-
-            if (!finished) {
-                cellElement.moveToNextLine()
-            }
-
         }
     }
 

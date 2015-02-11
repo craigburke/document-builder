@@ -50,7 +50,7 @@ class ParagraphParser {
                     if (currentLine.contentWidth + textWidth > maxLineWidth) {
                         String splitText = getTextUntilBreakpoint(remainingText, pdfFont, font.size, currentLine.remainingWidth)
 
-                        remainingText = remainingText - splitText
+                        remainingText = (remainingText - splitText).trim()
                         int elementWidth = pdfFont.getStringWidth(splitText)  / 1000 * font.size
                         currentLine.contentWidth += elementWidth
                         currentLine.elements << new TextElement(pdfFont: pdfFont, text: splitText, node: node, width: elementWidth)
@@ -85,6 +85,7 @@ class ParagraphParser {
         boolean spaceBreakpointFound = false
 
         String[] words = text.split()*.trim()
+
         int wordIndex = 0
         int resultWidth = 0
         while (words && resultWidth < width && wordIndex < words.size()) {
