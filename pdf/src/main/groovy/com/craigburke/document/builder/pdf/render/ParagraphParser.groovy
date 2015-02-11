@@ -81,14 +81,13 @@ class ParagraphParser {
 
     private static String getTextUntilBreakpoint(String text, PDFont font, BigDecimal fontSize, BigDecimal width) {
         String result = ""
-        String previousResult
+        String previousResult = ""
         boolean spaceBreakpointFound = false
 
         String[] words = text.split()*.trim()
         int wordIndex = 0
         int resultWidth = 0
         while (words && resultWidth < width && wordIndex < words.size()) {
-            previousResult = result
             result += (wordIndex == 0 ? '' : ' ') + words[wordIndex]
             resultWidth = getTextWidth(result, font, fontSize)
 
@@ -99,11 +98,12 @@ class ParagraphParser {
             else if (resultWidth < width) {
                 spaceBreakpointFound = true
             }
-            else if (spaceBreakpointFound) {
+            else if (resultWidth > width) {
                 result = previousResult
                 break
             }
             wordIndex++
+            previousResult = result
         }
 
         if (!spaceBreakpointFound) {
@@ -113,6 +113,7 @@ class ParagraphParser {
                 result += text[currentCharacter]
                 currentCharacter++
             }
+            result = result.subSequence(0, result.length() - 1)
         }
 
         result

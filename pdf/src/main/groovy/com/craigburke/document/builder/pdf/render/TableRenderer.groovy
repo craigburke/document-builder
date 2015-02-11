@@ -23,7 +23,9 @@ class TableRenderer {
     }
 
    private void renderRow(Row row) {
-        RowElement rowElement = new RowElement(row)
+       document.item.x = document.margin.left
+
+       RowElement rowElement = new RowElement(row)
 
         while (!rowElement.fullyRendered) {
             document.item.x = document.margin.left
@@ -33,9 +35,13 @@ class TableRenderer {
                 renderContentUntilEndPoint(cellElement)
                 document.item.x += cellElement.node.width
             }
+
+            renderStartY += rowElement.renderedHeight
+
             if (!rowElement.fullyRendered) {
                 renderStartY = document.margin.top
                 document.item.addPage()
+                rowElement.renderedHeight = 0
             }
         }
     }
@@ -53,6 +59,8 @@ class TableRenderer {
             else {
                 int renderStartX = document.item.x
                 ParagraphRenderer.renderLine(document, line, renderStartX)
+                document.item.x = renderStartX
+                cellElement.renderedHeight += line.height
             }
 
             if (cellElement.onLastLine) {

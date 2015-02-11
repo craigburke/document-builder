@@ -14,12 +14,16 @@ class RowElement {
         }
     }
 
-    int getHeight() {
-        cellElements.max { it.height }
-    }
-
     int getWidth() {
         cellElements.add { it.node.with }
+    }
+
+    int getRenderedHeight() {
+        cellElements.max { it.renderedHeight }.renderedHeight
+    }
+
+    void setRenderedHeight(int height) {
+        cellElements.each { it.renderedHeight = height }
     }
 
     boolean isFullyRendered() {

@@ -16,17 +16,22 @@ class Table extends BaseNode {
         def columnWidths = []
         int totalColumnWidth = 0
         def cells = this.rows.first()?.cells
+
         cells?.each {
             columnWidths << it.width
             totalColumnWidth += it.width ?: 0
         }
+
         int unspecifiedColumnCount = columnWidths.count { it == null }
 
         if (unspecifiedColumnCount) {
             int remainingWidth = this.width - totalColumnWidth
-            int calculatedColumnWidth = Math.round(remainingWidth / columnWidths.count { it == null })
+            int calculatedColumnWidth = Math.round(remainingWidth / unspecifiedColumnCount)
+            columnWidths = columnWidths.collect { it != null ? it : calculatedColumnWidth}
             rows.each { row ->
-                row.cells.findAll { it.width == null }.each { it.width = calculatedColumnWidth }
+                row.cells.eachWithIndex { cell, index ->
+                    cell.width = columnWidths[index]
+                }
             }
         }
     }
