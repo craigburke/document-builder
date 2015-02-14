@@ -6,7 +6,8 @@ class CellElement {
 
     Cell node
     List<ParagraphElement> paragraphElements = []
-    private def currentPosition = [element: 0, line: -1]
+
+    private LinePosition position
     boolean fullyRendered = false
     int renderedHeight = 0
 
@@ -15,25 +16,29 @@ class CellElement {
         cell.children.each { paragraph ->
             paragraphElements << new ParagraphElement(paragraph, cell.width)
         }
+        position = new LinePosition(element: 0, line: 0)
     }
 
     void moveToNextLine() {
-        if (currentPosition.line == currentElement.lines.size() - 1) {
-            currentPosition.element++
-            currentPosition.line = 0
+
+        if (position.line == (currentElement.lines.size() - 1)) {
+            if (position.element < (paragraphElements.size() - 1)) {
+                position.element++
+                position.line = 0
+            }
         }
         else {
-            currentPosition.line++
+            position.line++
         }
     }
 
     void moveToPreviousLine() {
-        if (currentPosition.line > 0) {
-            currentPosition.line--
+        if (position.line > 0) {
+            position.line--
         }
-        else if (currentPosition.element > 0) {
-            currentPosition.element--
-            currentPosition.line = paragraphElements[currentPosition.element].lines.size() - 1
+        else if (position.element > 0) {
+            position.element--
+            position.line = paragraphElements[position.element].lines.size() - 1
         }
     }
 
@@ -41,16 +46,17 @@ class CellElement {
         (currentElement == paragraphElements.last() && currentLine == currentElement.lines.last())
     }
 
-    int getHeight() {
-        paragraphElements.sum { it.height }
-    }
-
     ParagraphElement getCurrentElement() {
-        paragraphElements[currentPosition.element]
+        paragraphElements[position.element]
     }
 
     ParagraphLine getCurrentLine() {
-        currentElement.lines[currentPosition.line]
+        currentElement.lines[position.line]
     }
 
+}
+
+class LinePosition {
+    int line
+    int element
 }

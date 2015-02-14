@@ -1,15 +1,10 @@
 package com.craigburke.document.core.test
 
-import com.craigburke.document.core.Color
 import com.craigburke.document.core.builder.DocumentBuilder
 import com.craigburke.document.core.Document
-import spock.lang.Ignore
-import spock.lang.IgnoreRest
 import spock.lang.Specification
 import spock.lang.Shared
 import spock.lang.Unroll
-
-import java.util.concurrent.ExecutionException
 
 abstract class DocumentBuilderSpec extends Specification {
 
@@ -278,6 +273,33 @@ abstract class DocumentBuilderSpec extends Specification {
 		then:
 		notThrown(Exception)
 	}
+
+    def "create a table with lots of rows"() {
+        when:
+        builder.create { document {
+            table {
+                50.times { i ->
+                    row {
+                        cell {
+                            text "TEST " * (i + 1)
+                        }
+                        cell {
+                            text "FOO " * (i + 1)
+                        }
+                        cell {
+                            text "BAR " * (i + 1)
+                        }
+                    }
+                }
+
+
+            }
+        }}
+
+        then:
+        notThrown(Exception)
+    }
+
 
 	def "add an image"() {
 		when:

@@ -90,10 +90,9 @@ class TableRenderer {
         boolean finished = false
 
         while (!finished) {
-            cellElement.moveToNextLine()
             ParagraphLine line = cellElement.currentLine
 
-            if (line.height > document.item.remainingPageHeight) {
+            if (line?.height > document.item.remainingPageHeight) {
                 cellElement.moveToPreviousLine()
                 finished = true
             }
@@ -108,6 +107,10 @@ class TableRenderer {
                 cellElement.fullyRendered = true
                 finished = true
             }
+            else {
+                cellElement.moveToNextLine()
+            }
+
         }
     }
 
