@@ -1,13 +1,17 @@
-Groovy Document Builder
-================
-[ ![Codeship Status for craigburke/document-builder](https://codeship.com/projects/c4c04780-74d2-0132-8185-6662d475f668/status?branch=master)](https://codeship.com/projects/55079)
+:version: 0.1.6
+
+= Groovy Document Builder
+
+image::https://codeship.com/projects/c4c04780-74d2-0132-8185-6662d475f668/status?branch=master[link="https://codeship.com/projects/55079"]
 
 A document builder for Groovy for PDF or Word documents. This is still very much a work in progress.
 
-**Example:**
-```groovy
-@Grab(group='com.craigburke.document', module='pdf', version='0.1.6')
-@Grab(group='com.craigburke.document', module='word', version='0.1.6')
+== Example
+
+[source,groovy,subs='attributes']
+----
+@Grab(group='com.craigburke.document', module='pdf', version='{version}')
+@Grab(group='com.craigburke.document', module='word', version='{version}')
 
 import com.craigburke.document.builder.PdfDocumentBuilder
 import com.craigburke.document.builder.WordDocumentBuilder
@@ -65,15 +69,17 @@ builders.each { builder ->
         }
     }}
 }
-```
-**Licences**
+----
+
+== Licence
 
 The core project as well as the Word document builder are available under the MPL2 license.
 However, because of the use of iText, the PDF document builder is currently only available under a more restrictive AGPL license.
 
 I'm currently looking into the possibility of developing a PDF builder that uses PdfBox as a dependency and could be made available under the same MPL2 licence as the rest of the project (currently no ETA on that).
 
-**TODO**
+== TODO
+
    * Implement PdfBox builder
    * Add sections/headers
    * Add links
