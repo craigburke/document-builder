@@ -28,7 +28,7 @@ byte[] groovyImageData = new URL(GROOVY_IMAGE_URL).bytes
 
 builders.each { builder ->
     builder.create { 
-		document(font: [family: 'Helvetica', size: 14.pt], margin: [top: 0.75.inches]) {
+	document(font: [family: 'Helvetica', size: 14.pt], margin: [top: 0.75.inches]) {
 
         paragraph "Groovy Document Builder", font: [size: 22.pt]
 
