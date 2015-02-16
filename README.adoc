@@ -46,7 +46,7 @@ builders.each { builder ->
         paragraph "Font size is back to 14pt now with the default black font"
 
         paragraph(margin: [left: 1.25.inches, right: 1.inch, top: 0.25.inches, bottom: 0.25.inches]) {
-            font << [family: 'Times-Roman', bold: true, italic: true, color: '#333333']
+            font &#060;&#060; [family: 'Times-Roman', bold: true, italic: true, color: '#333333']
             text "A paragraph with a different font and margins"
         }
 
