@@ -91,8 +91,9 @@ class TableRenderer {
 
         while (!finished) {
             ParagraphLine line = cellElement.currentLine
+            int remainingHeight = document.item.remainingPageHeight
 
-            if (line?.height > document.item.remainingPageHeight) {
+            if (remainingHeight < line?.height) {
                 cellElement.moveToPreviousLine()
                 finished = true
             }
