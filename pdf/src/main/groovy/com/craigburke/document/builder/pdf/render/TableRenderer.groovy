@@ -1,6 +1,5 @@
 package com.craigburke.document.builder.pdf.render
 
-import com.craigburke.document.core.Border
 import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Row
@@ -21,17 +20,37 @@ class TableRenderer {
 
     void render() {
         rowStartY = document.item.translatedY
-        renderTopTableBorder()
+        renderTopBorder()
         table.rows.each { renderRow(it) }
     }
 
-    private void renderTopTableBorder() {
+    private void renderTopBorder() {
         PDPageContentStream contentStream = document.item.contentStream
         int xStart = document.margin.left
         int xEnd = table.width + xStart
         int translatedY = document.item.translateY(rowStartY)
 
+        setBorderOptions(contentStream)
         contentStream.drawLine(xStart, translatedY, xEnd, translatedY)
+    }
+
+    private void renderBottomBorder() {
+        PDPageContentStream contentStream = document.item.contentStream
+
+        int xStart = document.margin.left
+        int xEnd = xStart + table.width
+        int yBottom = document.item.translateY(document.item.y)
+
+        setBorderOptions(contentStream)
+        contentStream.drawLine(xStart, yBottom, xEnd, yBottom)
+        document.item.y += table.border.size
+    }
+
+
+    private setBorderOptions(PDPageContentStream contentStream) {
+        def borderColor = table.border.color.RGB
+        contentStream.setStrokingColor(*borderColor)
+        contentStream.setLineWidth(table.border.size)
     }
 
    private void renderRow(Row row) {
@@ -45,42 +64,49 @@ class TableRenderer {
             document.item.x = rowStartX
 
             rowElement.cellElements.each { cellElement ->
-                Cell cell = cellElement.node
-
-                document.item.x += cellElement.node.padding
-                document.item.y = rowStartY + cell.padding + table.border.size
+                document.item.x += table.padding
+                document.item.y = rowStartY + table.padding
                 renderContentUntilEndPoint(cellElement)
-                document.item.x += cellElement.node.width + cellElement.node.padding
+                document.item.y += table.padding
+                document.item.x += cellElement.node.width + table.padding
             }
-            renderBorders(rowElement, table.border)
 
-            rowStartY += rowElement.renderedHeight + rowElement.node.maxCellPadding
+            if (rowElement.renderedHeight) {
+                renderSideBorders(rowElement)
+            }
 
-            if (!rowElement.fullyRendered) {
+            if (rowElement.fullyRendered) {
+                renderBottomBorder()
+                rowStartY = document.item.y
+            }
+            else {
                 rowStartY = document.margin.top
                 document.item.addPage()
+                renderTopBorder()
                 rowElement.renderedHeight = 0
             }
+
+
         }
    }
 
-    private renderBorders(RowElement rowElement, Border border) {
-        Table table = rowElement.node.parent
+    private renderSideBorders(RowElement rowElement) {
         PDPageContentStream contentStream = document.item.contentStream
+        setBorderOptions(contentStream)
 
         int xStart = document.margin.left
-        int xEnd = xStart + table.width
-        int y = document.item.translateY(rowStartY)
-
-        int yBottom = document.item.translateY(rowStartY + rowElement.renderedHeight + (rowElement.node.maxCellPadding * 2))
-        contentStream.drawLine(xStart, y, xStart, yBottom)
-        contentStream.drawLine(xEnd, y, xEnd, yBottom)
-
-        contentStream.drawLine(xStart, yBottom, xEnd, yBottom)
+        int topOffset = Math.floor(table.border.size.doubleValue() / 2)
+        int y = document.item.translateY(rowStartY - topOffset)
 
         int currentX = xStart
-        rowElement.cellElements.each {
-            currentX += it.node.width + (it.node.padding * 2)
+        rowElement.cellElements.eachWithIndex { cellElement, i ->
+            int yBottom = document.item.translateY(rowStartY + rowElement.renderedHeight + (table.padding * 2) + (table.border.size * 2))
+
+            if (i == 0) {
+                contentStream.drawLine(xStart, y, xStart, yBottom)
+            }
+
+            currentX += cellElement.node.width
             contentStream.drawLine(currentX, y, currentX, yBottom)
         }
 
@@ -91,17 +117,16 @@ class TableRenderer {
 
         while (!finished) {
             ParagraphLine line = cellElement.currentLine
-            int remainingHeight = document.item.remainingPageHeight
 
-            if (remainingHeight < line?.height) {
-                cellElement.moveToPreviousLine()
-                finished = true
-            }
-            else {
+            if (canRenderCurrentLineOnPage(cellElement)) {
                 int renderStartX = document.item.x
                 ParagraphRenderer.renderLine(document, line, renderStartX)
                 document.item.x = renderStartX
                 cellElement.renderedHeight += line.height
+            }
+            else {
+                cellElement.moveToPreviousLine()
+                finished = true
             }
 
             if (!finished && cellElement.onLastLine) {
@@ -113,6 +138,18 @@ class TableRenderer {
             }
 
         }
+    }
+
+    boolean canRenderCurrentLineOnPage(CellElement cellElement) {
+        ParagraphLine line = cellElement.currentLine
+        Cell cell = cellElement.node
+        Table table = cell.parent.parent
+
+        int remainingHeight = document.item.remainingPageHeight
+
+        int totalRequiredHeight = line.height + (cellElement.onLastLine ? table.padding : 0) + table.border.size
+
+        (totalRequiredHeight <= remainingHeight)
     }
 
 }
