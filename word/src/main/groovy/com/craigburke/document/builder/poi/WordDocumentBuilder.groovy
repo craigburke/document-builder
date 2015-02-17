@@ -107,15 +107,16 @@ class WordDocumentBuilder extends DocumentBuilder {
 	}
 	
 	void addCellToRow(Cell cell, Row row) {
+        Table table = row.parent
 		cell.item = row.item.getCell(cell.position)
 
 		def cellProperties = cell.item.CTTc.addNewTcPr()
 		def padding = cellProperties.addNewTcMar()
 		
-		padding.addNewTop().w = pointToTwip(cell.padding)
-		padding.addNewBottom().w = pointToTwip(cell.padding)
-		padding.addNewLeft().w = pointToTwip(cell.padding)
-		padding.addNewRight().w = pointToTwip(cell.padding)
+		padding.addNewTop().w = pointToTwip(table.padding)
+		padding.addNewBottom().w = pointToTwip(table.padding)
+		padding.addNewLeft().w = pointToTwip(table.padding)
+		padding.addNewRight().w = pointToTwip(table.padding)
 
 		if (cell.width) {
 			cellProperties.addNewTcW().w = pointToTwip(cell.width)
