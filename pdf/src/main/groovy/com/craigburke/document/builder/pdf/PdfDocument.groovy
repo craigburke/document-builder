@@ -40,8 +40,7 @@ class PdfDocument {
     }
 
     int getRemainingPageHeight() {
-        int distanceToBottomMargin = currentPage.mediaBox.height - document.margin.bottom
-        distanceToBottomMargin - translatedY
+        currentPage.mediaBox.height - y - document.margin.top
     }
 
 }

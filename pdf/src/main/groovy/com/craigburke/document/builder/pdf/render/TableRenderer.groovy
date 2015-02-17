@@ -62,7 +62,7 @@ class TableRenderer {
                 rowElement.renderedHeight = 0
             }
         }
-    }
+   }
 
     private renderBorders(RowElement rowElement, Border border) {
         Table table = rowElement.node.parent
@@ -104,7 +104,7 @@ class TableRenderer {
                 cellElement.renderedHeight += line.height
             }
 
-            if (cellElement.onLastLine) {
+            if (!finished && cellElement.onLastLine) {
                 cellElement.fullyRendered = true
                 finished = true
             }
