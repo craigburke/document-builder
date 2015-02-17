@@ -51,7 +51,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	
 	def onParagraphComplete = { Paragraph paragraph ->
         int maxLineWidth = document.item.currentPage.mediaBox.width - document.margin.left - document.margin.right - paragraph.margin.left - paragraph.margin.right
-        int renderStartX = document.margin.left
+        int renderStartX = document.margin.left + paragraph.margin.left
 
         ParagraphRenderer paragraphRenderer = new ParagraphRenderer(paragraph, document, renderStartX, maxLineWidth)
         paragraphRenderer.render()
