@@ -39,7 +39,7 @@ class TableRenderer {
 
         int xStart = document.margin.left
         int xEnd = xStart + table.width
-        int yBottom = document.item.translateY(document.item.y)
+        int yBottom = document.item.translateY(document.item.y + table.padding)
 
         setBorderOptions(contentStream)
         contentStream.drawLine(xStart, yBottom, xEnd, yBottom)
@@ -95,12 +95,12 @@ class TableRenderer {
         setBorderOptions(contentStream)
 
         int xStart = document.margin.left
-        int topOffset = Math.floor(table.border.size.doubleValue() / 2)
-        int y = document.item.translateY(rowStartY - topOffset)
+        int offset = Math.floor(table.border.size.doubleValue() / 2)
+        int y = document.item.translateY(rowStartY - offset)
 
         int currentX = xStart
         rowElement.cellElements.eachWithIndex { cellElement, i ->
-            int yBottom = document.item.translateY(rowStartY + rowElement.renderedHeight + (table.padding * 2) + (table.border.size * 2))
+            int yBottom = document.item.translateY(rowStartY + rowElement.renderedHeight + (table.padding * 2) + table.border.size + offset)
 
             if (i == 0) {
                 contentStream.drawLine(xStart, y, xStart, yBottom)

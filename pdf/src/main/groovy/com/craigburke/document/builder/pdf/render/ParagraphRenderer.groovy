@@ -46,6 +46,7 @@ class ParagraphRenderer {
         pdfDocument.x = renderStartX
         pdfDocument.y += line.height
 
+
         line.elements.each { element ->
 
             switch (element.getClass()) {

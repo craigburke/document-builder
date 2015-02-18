@@ -55,7 +55,16 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
         ParagraphRenderer paragraphRenderer = new ParagraphRenderer(paragraph, document, renderStartX, maxLineWidth)
         paragraphRenderer.render()
-        document.item.y += paragraph.margin.bottom
+
+        if (document.item.remainingPageHeight < paragraph.margin.bottom) {
+            int marginDiff = paragraph.margin.bottom - document.item.remainingPageHeight
+            document.item.addPage()
+            document.item.y += marginDiff
+        }
+        else {
+            document.item.y += paragraph.margin.bottom
+        }
+
     }
 
 	void addTableToDocument(Table table, Document document) {
