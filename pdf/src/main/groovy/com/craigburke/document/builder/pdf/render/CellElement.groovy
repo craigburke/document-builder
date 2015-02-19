@@ -1,6 +1,7 @@
 package com.craigburke.document.builder.pdf.render
 
 import com.craigburke.document.core.Cell
+import com.craigburke.document.core.Table
 
 class CellElement {
 
@@ -13,8 +14,11 @@ class CellElement {
 
     CellElement(Cell cell) {
         this.node = cell
+        Table table = cell.parent.parent
+
         cell.children.each { paragraph ->
-            paragraphElements << new ParagraphElement(paragraph, cell.width)
+            int renderWidth = cell.width - (table.padding * 2)
+            paragraphElements << new ParagraphElement(paragraph, renderWidth)
         }
         position = new LinePosition(element: 0, line: 0)
     }
@@ -43,7 +47,11 @@ class CellElement {
     }
 
     boolean isOnLastLine() {
-        (currentElement == paragraphElements.last() && currentLine == currentElement.lines.last())
+        (currentElement == paragraphElements?.last() && currentLine == currentElement?.lines?.last())
+    }
+
+    boolean isOnFirstLine() {
+        (currentElement == paragraphElements?.first() && currentLine == currentElement?.lines?.first())
     }
 
     ParagraphElement getCurrentElement() {

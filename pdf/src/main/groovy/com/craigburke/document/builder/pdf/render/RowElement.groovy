@@ -5,6 +5,8 @@ import com.craigburke.document.core.Row
 class RowElement {
 
     int startY
+    boolean spansMultiplePages = false
+
     Row node
     List<CellElement> cellElements = []
 
