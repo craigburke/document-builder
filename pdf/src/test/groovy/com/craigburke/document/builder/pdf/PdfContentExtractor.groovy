@@ -39,7 +39,7 @@ class PdfContentExtractor extends PDFTextStripper {
             
             updateChildNumber(text)
 
-            def currentFont = new Font(family: text.font.baseFont, size: text.fontSizeInPt)
+            Font currentFont = new Font(family: text.font.baseFont, size: text.fontSizeInPt)
             def textNode
 
             if (currentChild instanceof Paragraph) {
@@ -55,12 +55,13 @@ class PdfContentExtractor extends PDFTextStripper {
 
         private processTable(TextPosition text, Font font ) {
             def textNode
+
             Cell cell = currentChild.rows[tablePosition.row].cells[tablePosition.cell]
             Paragraph paragraph = cell.children[0]
-            paragraph.font = paragraph.font ?: font
-            
+            paragraph.font = paragraph.font ?: font.clone()
+
             if (!paragraph.children || isNewSection(text)) {
-                textNode = new Text(value: '', font: font)
+                textNode = createText(paragraph, font)
                 paragraph.children << textNode
             }
             else {
@@ -90,7 +91,7 @@ class PdfContentExtractor extends PDFTextStripper {
         }
 
         private void setParagraphProperties(paragraph, TextPosition text, Font font) {
-            paragraph.font = font
+            paragraph.font = font.clone()
             paragraph.margin.left = text.x - document.margin.left
             paragraph.margin.right = text.pageWidth - text.width - paragraph.margin.left - document.margin.right - document.margin.left
 
@@ -98,7 +99,7 @@ class PdfContentExtractor extends PDFTextStripper {
         }
 
         private Text createText(paragraph, Font font) {
-            new Text(parent: paragraph, value: '', font: font)
+            new Text(parent: paragraph, value: '', font: font.clone())
         }
 
         private void updateChildNumber(TextPosition current) {

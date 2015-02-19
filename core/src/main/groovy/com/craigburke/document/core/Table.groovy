@@ -4,6 +4,7 @@ class Table extends BaseNode {
 	List<Row> rows = []
 
 	Border border = new Border()
+    Margin margin = new Margin()
     Integer padding = 10
 	Integer columns
 	Integer width

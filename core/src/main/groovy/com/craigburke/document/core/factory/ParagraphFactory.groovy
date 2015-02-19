@@ -13,7 +13,7 @@ class ParagraphFactory extends AbstractFactory {
 	
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Paragraph paragraph = new Paragraph(attributes)
-        paragraph.margin.setDefaults(12, 0)
+        paragraph.margin.setDefaults(0, 12)
         paragraph.font = paragraph.font ?: builder.current.font.clone()
 
         switch (builder.parentName) {

@@ -1,5 +1,6 @@
 package com.craigburke.document.builder.pdf.render
 
+import com.craigburke.document.builder.pdf.PdfFont
 import com.craigburke.document.core.Font
 import com.craigburke.document.core.LineBreak
 import com.craigburke.document.core.Paragraph
@@ -41,7 +42,7 @@ class ParagraphParser {
         chunk.each { node ->
             if (node instanceof Text) {
                 Font font = node.font
-                pdfFont = PDType1Font.HELVETICA
+                pdfFont = PdfFont.getFont(font)
                 String remainingText = node.value
 
                 while (remainingText) {

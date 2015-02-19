@@ -4,6 +4,7 @@ import com.craigburke.document.core.Row
 
 class RowElement {
 
+    int rowStartY
     Row node
     List<CellElement> cellElements = []
 

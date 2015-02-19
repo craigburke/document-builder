@@ -34,7 +34,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	
 	void addParagraphToDocument(Paragraph paragraph, Document document) {
 		document.item.x = paragraph.margin.left + document.margin.left
-		document.item.y += paragraph.margin.top
+        document.item.moveDownPage(paragraph.margin.top)
 	}
 
 	void addImageToParagraph(Image image, Paragraph paragraph) {
@@ -56,18 +56,12 @@ class PdfDocumentBuilder extends DocumentBuilder {
         ParagraphRenderer paragraphRenderer = new ParagraphRenderer(paragraph, document, renderStartX, maxLineWidth)
         paragraphRenderer.render()
 
-        if (document.item.remainingPageHeight < paragraph.margin.bottom) {
-            int marginDiff = paragraph.margin.bottom - document.item.remainingPageHeight
-            document.item.addPage()
-            document.item.y += marginDiff
-        }
-        else {
-            document.item.y += paragraph.margin.bottom
-        }
-
+        document.item.moveDownPage(paragraph.margin.bottom)
     }
 
 	void addTableToDocument(Table table, Document document) {
+        document.item.x = table.margin.left + document.margin.left
+        document.item.moveDownPage(table.margin.top)
 	}
 
 	void addRowToTable(Row row, Table table) {
@@ -84,6 +78,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
     def onTableComplete = { Table table ->
         TableRenderer tableRenderer = new TableRenderer(table, document)
         tableRenderer.render()
+        document.item.moveDownPage(table.margin.bottom)
     }
 	
 

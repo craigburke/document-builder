@@ -35,6 +35,19 @@ class PdfDocument {
         currentPage.mediaBox.height - y
     }
 
+    void moveDownPage(int amount) {
+
+        if (remainingPageHeight < amount) {
+            int amountDiff = amount - remainingPageHeight
+            addPage()
+            y += amountDiff
+        }
+        else {
+            y += amount
+        }
+
+    }
+
     int translateY(int value) {
         currentPage.mediaBox.height - value
     }

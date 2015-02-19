@@ -2,6 +2,7 @@ package com.craigburke.document.core.test
 
 import com.craigburke.document.core.builder.DocumentBuilder
 import com.craigburke.document.core.Document
+import spock.lang.IgnoreRest
 import spock.lang.Specification
 import spock.lang.Shared
 import spock.lang.Unroll
@@ -112,6 +113,7 @@ abstract class DocumentBuilderSpec extends Specification {
 		currentMargin << MARGINS
 	}
 
+
 	def "override or inherit font settings"() {
 		when:
 		builder.create { document(font: [family: 'Helvetica', color: '#121212']) {
@@ -130,6 +132,7 @@ abstract class DocumentBuilderSpec extends Specification {
 					cell("Override")
 				}
 			}
+
 			table {
 				row {
 					cell("Default font")
