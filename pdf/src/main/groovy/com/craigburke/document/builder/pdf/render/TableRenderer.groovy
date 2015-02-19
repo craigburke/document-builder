@@ -22,7 +22,7 @@ class TableRenderer {
     private void renderBorders(RowElement rowElement) {
         document.item.y = rowElement.startY
 
-        int borderOffset = Math.ceil(table.border.size.doubleValue() / 2)
+        int borderOffset = Math.floor(table.border.size.doubleValue() / 2)
 
         PDPageContentStream contentStream = document.item.contentStream
         setBorderOptions(contentStream)
