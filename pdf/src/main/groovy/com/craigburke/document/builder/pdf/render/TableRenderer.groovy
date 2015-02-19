@@ -8,7 +8,6 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
 
 class TableRenderer {
 
-    int rowStartY
 
     Document document
     Table table
@@ -19,33 +18,40 @@ class TableRenderer {
     }
 
     void render() {
-        rowStartY = document.item.y
-        renderTopBorder()
         table.rows.each { renderRow(it) }
     }
 
-    private void renderTopBorder() {
+    private void renderBorders(RowElement rowElement) {
         PDPageContentStream contentStream = document.item.contentStream
-        int xStart = document.margin.left
-        int xEnd = table.width + xStart
-        int translatedY = document.item.translateY(rowStartY)
-
         setBorderOptions(contentStream)
-        contentStream.drawLine(xStart, translatedY, xEnd, translatedY)
-    }
 
-    private void renderBottomBorder() {
-        PDPageContentStream contentStream = document.item.contentStream
-
-        int xStart = document.margin.left
+        int xStart = document.margin.left + table.margin.left
         int xEnd = xStart + table.width
+
+        int yTop = document.item.translateY(rowElement.startY)
+        if (rowElement.node == table.rows.first() || rowElement.startY == document.margin.top) {
+            contentStream.drawLine(xStart, yTop, xEnd, yTop)
+        }
+
         int yBottom = document.item.translateY(document.item.y + table.padding)
-
-        setBorderOptions(contentStream)
         contentStream.drawLine(xStart, yBottom, xEnd, yBottom)
-        document.item.y += table.padding + table.border.size
-    }
 
+        int borderOffset = Math.floor(table.border.size.doubleValue() / 2)
+        int offsetYTop = document.item.translateY(rowElement.startY - borderOffset)
+        int offsetYBottom = document.item.translateY(document.item.y + table.padding + borderOffset)
+
+        int currentX = xStart
+        rowElement.cellElements.eachWithIndex { cellElement, i ->
+
+            if (i == 0) {
+                contentStream.drawLine(xStart, offsetYTop, xStart, offsetYBottom)
+            }
+
+            currentX += cellElement.node.width
+            contentStream.drawLine(currentX, offsetYTop, currentX, offsetYBottom)
+        }
+
+    }
 
     private setBorderOptions(PDPageContentStream contentStream) {
         def borderColor = table.border.color.RGB
@@ -59,34 +65,31 @@ class TableRenderer {
        document.item.x = rowStartX
 
        RowElement rowElement = new RowElement(row)
+       rowElement.startY = document.item.y
 
         while (!rowElement.fullyRendered) {
             document.item.x = rowStartX
 
             rowElement.cellElements.each { cellElement ->
                 document.item.x += table.padding
-                document.item.y = rowStartY + table.padding + table.border.size
+                document.item.y = rowElement.startY + table.padding + table.border.size
                 renderContentUntilEndPoint(cellElement)
-                document.item.y += table.padding
+                document.item.y += rowElement.renderedHeight
                 document.item.x += cellElement.node.width + table.padding
             }
 
             if (rowElement.renderedHeight) {
-                renderSideBorders(rowElement)
+                renderBorders(rowElement)
             }
 
             if (rowElement.fullyRendered) {
-                renderBottomBorder()
-                rowStartY = document.item.y
+                document.item.y += table.padding
             }
             else {
-                rowStartY = document.margin.top
+                rowElement.startY = document.margin.top
                 document.item.addPage()
-                renderTopBorder()
                 rowElement.renderedHeight = 0
             }
-
-
         }
    }
 
