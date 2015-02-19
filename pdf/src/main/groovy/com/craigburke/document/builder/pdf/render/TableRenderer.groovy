@@ -22,21 +22,23 @@ class TableRenderer {
     private void renderBorders(RowElement rowElement) {
         document.item.y = rowElement.startY
 
+        int borderOffset = Math.ceil(table.border.size.doubleValue() / 2)
+
         PDPageContentStream contentStream = document.item.contentStream
         setBorderOptions(contentStream)
 
         int xStart = document.margin.left + table.margin.left
         int xEnd = xStart + table.width
 
-        int yTop = document.item.translateY(rowElement.startY)
+        int yTop = document.item.translateY(rowElement.startY + borderOffset)
 
-        if (shouldDrawTopBorder(rowElement)) {
+        if (!rowElement.spansMultiplePages) {
             contentStream.drawLine(xStart, yTop, xEnd, yTop)
         }
 
-        int yBottom = document.item.translateY(document.item.y + rowElement.renderedHeight + borderOffset)
+        int yBottom = document.item.translateY(document.item.y + rowElement.renderedHeight)
 
-        if (rowElement.fullyRendered) {
+        if (rowElement.node == table.rows.last() && rowElement.fullyRendered) {
             contentStream.drawLine(xStart, yBottom, xEnd, yBottom)
         }
 
@@ -59,10 +61,6 @@ class TableRenderer {
             contentStream.drawLine(currentX, yTop, currentX, offsetYBottom)
         }
 
-    }
-
-    private int getBorderOffset() {
-        Math.ceil(table.border.size.doubleValue() / 2)
     }
 
     private boolean shouldDrawTopBorder(RowElement rowElement) {
@@ -114,37 +112,33 @@ class TableRenderer {
    }
 
     private void renderContentUntilEndPoint(CellElement cellElement) {
-        boolean finished = false
+        boolean reachedBottomOfPage = false
         int cellStartX = document.item.x
 
-        while (!finished && !cellElement.fullyRendered) {
+        while (!reachedBottomOfPage && !cellElement.fullyRendered) {
             ParagraphLine line = cellElement.currentLine
 
             if (canRenderCurrentLineOnPage(cellElement)) {
-
                 if (cellElement.onFirstLine) {
-                    document.item.y += table.padding
+                    document.item.y += table.padding + table.border.size
                     cellElement.renderedHeight += table.padding + table.border.size
-                }
-                if (cellElement.onLastLine) {
-                    cellElement.renderedHeight += table.border.size
                 }
 
                 int renderStartX = cellStartX + table.padding
                 ParagraphRenderer.renderLine(document, line, renderStartX)
                 cellElement.renderedHeight += line.height
+
+                if (cellElement.onLastLine) {
+                    cellElement.renderedHeight += table.padding + table.border.size
+                    cellElement.fullyRendered = true
+                }
             }
             else {
                 cellElement.moveToPreviousLine()
-                finished = true
+                reachedBottomOfPage = true
             }
 
-            if (!finished && cellElement.onLastLine) {
-                cellElement.fullyRendered = true
-                finished = true
-                cellElement.renderedHeight += table.padding
-            }
-            else {
+            if (!reachedBottomOfPage && !cellElement.fullyRendered) {
                 cellElement.moveToNextLine()
             }
 
