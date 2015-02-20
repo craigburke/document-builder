@@ -188,10 +188,10 @@ abstract class DocumentBuilderSpec extends Specification {
 	def "set table options"() {
 		when:
 		builder.create { document {
-			table(width: 4.inches, border: [size: 4.px]) {
+			table(width: 403.px, border: [size: 1.px]) {
 				row {
-					cell("Cell 1", width: 1.inch)
-					cell("Cell 2", width: 3.inches)
+					cell("Cell 1", width: 200.px)
+					cell("Cell 2", width: 200.px)
 				}
 			}			
 		}}
@@ -199,13 +199,13 @@ abstract class DocumentBuilderSpec extends Specification {
 		def table = getDocument(data).children[0]
 	
 		then:
-		table.width == 288
+		table.width == 403
 		
 		and:
-		table.rows[0].cells[0].width == 72
+		table.rows[0].cells[0].width == 200
 		
 		and:
-		table.rows[0].cells[1].width == 216
+		table.rows[0].cells[1].width == 200
 	}
 
 	def "set paragraph text"() {

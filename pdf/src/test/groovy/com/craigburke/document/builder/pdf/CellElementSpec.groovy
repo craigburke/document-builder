@@ -5,6 +5,8 @@ import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Font
 import com.craigburke.document.core.LineBreak
 import com.craigburke.document.core.Paragraph
+import com.craigburke.document.core.Row
+import com.craigburke.document.core.Table
 import com.craigburke.document.core.Text
 import spock.lang.Shared
 import spock.lang.Specification
@@ -16,7 +18,9 @@ class CellElementSpec extends Specification {
 
 
     def setup() {
-        def cell = new Cell(width: 72)
+        Table table = new Table()
+        Row row = new Row(parent: table)
+        def cell = new Cell(width: 72, parent: row)
         5.times { i ->
             def paragraph = new Paragraph()
             i.times {
