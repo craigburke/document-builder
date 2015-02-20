@@ -1,16 +1,17 @@
-package com.craigburke.document.builder.poi
+package com.craigburke.document.builder
 
 import com.craigburke.document.core.Document
+
 import com.craigburke.document.core.builder.DocumentBuilder
 import com.craigburke.document.core.test.DocumentBuilderSpec
 
-class WordDocumentBuilderSpec extends DocumentBuilderSpec  {
+class PdfDocumentBuilderSpec extends DocumentBuilderSpec {
 
 	DocumentBuilder createBuilderInstance(OutputStream out) {
-		new WordDocumentBuilder(out)
+		new PdfDocumentBuilder(out)
 	}
 
 	Document getDocument(byte[] data) {
-		WordDocumentLoader.load(data)
+		PdfDocumentLoader.load(data)
 	}
 }

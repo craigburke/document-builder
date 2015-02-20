@@ -1,12 +1,11 @@
-package com.craigburke.document.builder.pdf.render
+package com.craigburke.document.builder.render
 
-import com.craigburke.document.builder.pdf.PdfFont
+import com.craigburke.document.builder.PdfFont
 import com.craigburke.document.core.Font
 import com.craigburke.document.core.LineBreak
 import com.craigburke.document.core.Paragraph
 import com.craigburke.document.core.Text
 import org.apache.pdfbox.pdmodel.font.PDFont
-import org.apache.pdfbox.pdmodel.font.PDType1Font
 
 class ParagraphParser {
 

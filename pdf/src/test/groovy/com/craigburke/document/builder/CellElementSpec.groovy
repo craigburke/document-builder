@@ -1,6 +1,6 @@
-package com.craigburke.document.builder.pdf
+package com.craigburke.document.builder
 
-import com.craigburke.document.builder.pdf.render.CellElement
+import com.craigburke.document.builder.render.CellElement
 import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Font
 import com.craigburke.document.core.LineBreak

@@ -1,6 +1,6 @@
-package com.craigburke.document.builder.pdf.render
+package com.craigburke.document.builder.render
 
-import com.craigburke.document.builder.pdf.PdfDocument
+import com.craigburke.document.builder.PdfDocument
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Paragraph
 import com.craigburke.document.core.Text

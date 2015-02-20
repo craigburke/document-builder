@@ -1,4 +1,4 @@
-package com.craigburke.document.builder.pdf
+package com.craigburke.document.builder
 
 import com.craigburke.document.core.Font
 import org.apache.pdfbox.pdmodel.font.PDFont

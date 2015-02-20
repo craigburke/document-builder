@@ -1,4 +1,4 @@
-package com.craigburke.document.builder.pdf.render
+package com.craigburke.document.builder.render
 
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Row
@@ -63,19 +63,6 @@ class TableRenderer {
 
     }
 
-    private boolean shouldDrawTopBorder(RowElement rowElement) {
-        boolean result = false
-
-        if (rowElement.spansMultiplePages) {
-            result = false
-        }
-        else if (rowElement.node == table.rows.first() || rowElement.startY == document.margin.top) {
-            result = true
-        }
-
-        result
-    }
-
     private setBorderOptions(PDPageContentStream contentStream) {
         def borderColor = table.border.color.RGB
         contentStream.setStrokingColor(*borderColor)
@@ -120,11 +107,11 @@ class TableRenderer {
 
             if (canRenderCurrentLineOnPage(cellElement)) {
                 if (cellElement.onFirstLine) {
-                    document.item.y += table.padding + table.border.size
+                    document.item.y += table.border.size + table.padding
                     cellElement.renderedHeight += table.padding + table.border.size
                 }
 
-                int renderStartX = cellStartX + table.padding
+                int renderStartX = cellStartX + table.padding + table.border.size
                 ParagraphRenderer.renderLine(document, line, renderStartX)
                 cellElement.renderedHeight += line.height
 

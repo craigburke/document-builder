@@ -1,4 +1,4 @@
-package com.craigburke.document.builder.pdf.render
+package com.craigburke.document.builder.render
 
 import com.craigburke.document.core.Paragraph
 

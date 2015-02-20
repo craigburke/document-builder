@@ -1,4 +1,4 @@
-package com.craigburke.document.builder.poi
+package com.craigburke.document.builder
 
 import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Document

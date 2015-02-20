@@ -1,7 +1,7 @@
-package com.craigburke.document.builder.pdf
+package com.craigburke.document.builder
 
-import com.craigburke.document.builder.pdf.render.ParagraphRenderer
-import com.craigburke.document.builder.pdf.render.TableRenderer
+import com.craigburke.document.builder.render.ParagraphRenderer
+import com.craigburke.document.builder.render.TableRenderer
 import com.craigburke.document.core.LineBreak
 import groovy.transform.InheritConstructors
 import groovy.xml.MarkupBuilder
