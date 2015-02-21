@@ -8,10 +8,10 @@ class Margin {
     Integer right
 
     void setDefaults(int vertical, int horizontal) {
-        top = (top == null) ? horizontal : top
-        bottom = (bottom == null) ? horizontal : bottom
-        left = (left == null) ? vertical : left
-        right = (right == null) ? vertical : right
+        top = (top == null) ? vertical : top
+        bottom = (bottom == null) ? vertical : bottom
+        left = (left == null) ? horizontal : left
+        right = (right == null) ? horizontal : right
     }
 
 

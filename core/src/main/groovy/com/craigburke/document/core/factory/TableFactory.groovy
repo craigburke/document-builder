@@ -12,7 +12,7 @@ class TableFactory extends AbstractFactory {
 		builder.tablePosition.row = 0
 		
 		Table table = new Table(attributes)
-        table.margin.setDefaults(0, 12)
+        table.margin.setDefaults(8, 0)
 
         table.font = table.font ?: builder.current.font.clone()
 		

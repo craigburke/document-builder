@@ -32,8 +32,6 @@ class ParagraphRenderer {
         paragraphElement.lines.each { ParagraphLine line ->
             ParagraphRenderer.renderLine(document, line, renderStartX)
         }
-
-        document.item.y += paragraph.margin.bottom
     }
 
     static void renderLine(Document document, ParagraphLine line, int renderStartX) {
