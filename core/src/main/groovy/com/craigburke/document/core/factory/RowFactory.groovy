@@ -13,8 +13,10 @@ class RowFactory extends AbstractFactory {
 		
 		row.position = builder.tablePosition.row
 		row.font = row.font ?: builder.current.font.clone()
-	 	builder.addRowToTable(row, builder.current)
-		
+        if (builder.addRowToTable) {
+            builder.addRowToTable(row, builder.current)
+        }
+
 		row
 	}
 
@@ -24,9 +26,9 @@ class RowFactory extends AbstractFactory {
 		builder.tablePosition.cell++
 	}
 	
-	void onNodeCompleted(FactoryBuilderSupport builder, table, row) {
-		if (builder.onRowComplete instanceof Closure) {
-			builder.onRowComplete(row, table)
+	void onNodeCompleted(FactoryBuilderSupport builder, parent, child) {
+		if (builder.onRowComplete) {
+			builder.onRowComplete(child, parent)
 		}
    	}
 	

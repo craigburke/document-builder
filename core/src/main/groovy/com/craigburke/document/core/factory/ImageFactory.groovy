@@ -9,16 +9,12 @@ class ImageFactory extends AbstractFactory {
     boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
 	
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
-		Image image = new Image(attributes)	
+		Image image = new Image(attributes)
 
-		switch (builder.parentName) {
-			case "cell":
-				builder.addImageToParagraph(image, builder.current.children[0])
-				break
-			case "paragraph":
-				builder.addImageToParagraph(image, builder.current)
-				break
-		}
+        if (builder.parentName in ["paragraph", "cell"] && builder.addImageToParagraph) {
+            Paragraph paragraph = builder.parentName == "paragraph" ? builder.current : builder.current.children[0]
+            builder.addImageToParagraph(image, paragraph)
+        }
 
 		image
 	} 

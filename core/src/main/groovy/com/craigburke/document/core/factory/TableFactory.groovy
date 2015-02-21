@@ -33,7 +33,9 @@ class TableFactory extends AbstractFactory {
 			table.columns = cellCounter.totalCount
 		}
 
-		builder.addTableToDocument(table, builder.current)
+        if (builder.addTableToDocument) {
+            builder.addTableToDocument(table, builder.current)
+        }
 
 		return true
 	}

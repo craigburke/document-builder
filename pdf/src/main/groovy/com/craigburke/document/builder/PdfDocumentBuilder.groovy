@@ -32,23 +32,11 @@ class PdfDocumentBuilder extends DocumentBuilder {
         document
     }
 	
-	void addParagraphToDocument(Paragraph paragraph, Document document) {
+	def addParagraphToDocument = {Paragraph paragraph, Document document ->
 		document.item.x = paragraph.margin.left + document.margin.left
         document.item.moveDownPage(paragraph.margin.top)
 	}
 
-	void addImageToParagraph(Image image, Paragraph paragraph) {
-        // Handled in onParagraphComplete
-	}
-	
-	void addLineBreakToParagraph(LineBreak lineBreak, Paragraph paragraph) {
-        // Handled in onParagraphComplete
-	}
-	
-	void addTextToParagraph(Text text, Paragraph paragraph) {
-        // Handled in onParagraphComplete
-	}
-	
 	def onParagraphComplete = { Paragraph paragraph ->
         int maxLineWidth = document.item.currentPage.mediaBox.width - document.margin.left - document.margin.right - paragraph.margin.left - paragraph.margin.right
         int renderStartX = document.margin.left + paragraph.margin.left
@@ -59,30 +47,18 @@ class PdfDocumentBuilder extends DocumentBuilder {
         document.item.moveDownPage(paragraph.margin.bottom)
     }
 
-	void addTableToDocument(Table table, Document document) {
+	def addTableToDocument = { Table table, Document document ->
         document.item.x = table.margin.left + document.margin.left
         document.item.moveDownPage(table.margin.top)
 	}
 
-	void addRowToTable(Row row, Table table) {
-
-    }
-	
-	void addCellToRow(Cell cell, Row row) {
-
-	}
-	
-	void addParagraphToCell(Paragraph paragraph, Cell cell) {
-	}
-
-    def onTableComplete = { Table table ->
+    def onTableComplete = {Table table ->
         TableRenderer tableRenderer = new TableRenderer(table, document)
         tableRenderer.render()
         document.item.moveDownPage(table.margin.bottom)
     }
-	
 
-	void write(Document document, OutputStream out) {
+	void writeDocument(Document document, OutputStream out) {
 		addMetadata()
 		document.item.contentStream?.close()
 		document.item.pdDocument.save(out)

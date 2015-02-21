@@ -11,13 +11,13 @@ import com.craigburke.document.core.Text
 trait TableBuilder {
 	def tablePosition = [cell: 0, row: 0]
 
-	abstract void addTableToDocument(Table table, Document document)
-	abstract void addRowToTable(Row row, Table table)
+	def addTableToDocument
+	def addRowToTable
 	
-	abstract void addCellToRow(Cell cell, Row row)
-	abstract void addParagraphToCell(Paragraph paragraph, Cell cell)
+	def addCellToRow
+	def addParagraphToCell
 	
 	def onTableComplete
 	def onRowComplete
-	def onCellComplete
+    def onCellComplete
 }

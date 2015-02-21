@@ -35,12 +35,12 @@ class WordDocumentBuilder extends DocumentBuilder {
 		documentMargin.setBottom(pointToTwip(document.margin.bottom).intValue())
     }
 
-	void addParagraphToDocument(Paragraph paragraph, Document document) {
+	def addParagraphToDocument = { Paragraph paragraph, Document document ->
         paragraph.item = document.item.createParagraph()
 		setParagraphProperties(paragraph)
 	}
 	
-	void addParagraphToCell(Paragraph paragraph, Cell cell) {
+	def addParagraphToCell = {Paragraph paragraph, Cell cell ->
 		def firstParagraph = cell.item.paragraphs[0]
 
 		paragraph.item = firstParagraph.isEmpty() ? firstParagraph : cell.item.addParagraph()
@@ -67,20 +67,20 @@ class WordDocumentBuilder extends DocumentBuilder {
 		indent.right = pointToTwip(paragraph.margin.right)
 	}
 	
-	void addTextToParagraph(Text text, Paragraph paragraph) {
+	def addTextToParagraph = { Text text, Paragraph paragraph ->
         createTextRun(paragraph.item, text)
 	}
 	
-	void addImageToParagraph(Image image, Paragraph paragraph) {
+	def addImageToParagraph = { Image image, Paragraph paragraph ->
 		createImageRun(paragraph.item, image)
 	}
 	
-	void addLineBreakToParagraph(LineBreak lineBreak, Paragraph paragraph) {
+	def addLineBreakToParagraph = { LineBreak lineBreak, Paragraph paragraph ->
 		def run = paragraph.item.createRun()
 		run.addBreak()
 	}
 
-	void addTableToDocument(Table table, Document document) {
+	def addTableToDocument = { Table table, Document document ->
 		table.item = document.item.createTable(1, table.columns)		
 		
 		def tableProperties = table.item.CTTbl.tblPr
@@ -102,11 +102,11 @@ class WordDocumentBuilder extends DocumentBuilder {
 
 	}
 	
-	void addRowToTable(Row row, Table table) {
+	def addRowToTable = { Row row, Table table ->
 		row.item = (row.position == 0) ? table.item.getRow(0) : table.item.createRow()
 	}
 	
-	void addCellToRow(Cell cell, Row row) {
+	def addCellToRow = { Cell cell, Row row ->
         Table table = row.parent
 		cell.item = row.item.getCell(cell.position)
 
@@ -134,7 +134,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 		}
 	}
 
-	void write(Document document, OutputStream out) {
+	void writeDocument(Document document, OutputStream out) {
 		fixParagraphMargins(document.children)
 		document.item.write(out)
 	}

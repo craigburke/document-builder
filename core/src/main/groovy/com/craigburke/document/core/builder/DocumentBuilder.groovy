@@ -32,8 +32,7 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements FontBuil
 	}
 	
 	abstract void createDocument(Document document, OutputStream out)
-	abstract void addParagraphToDocument(Paragraph paragraph, Document document)
-	abstract void write(Document document, OutputStream out)
+	abstract void writeDocument(Document document, OutputStream out)
 
 	def registerObjectFactories() {
 		registerFactory("create", new CreateFactory())

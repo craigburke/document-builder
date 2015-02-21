@@ -25,7 +25,7 @@ class DocumentFactory extends AbstractFactory {
 		parent.children << child
     }
     void onNodeCompleted(FactoryBuilderSupport builder, Object parent, Object node) {
-		builder.write(builder.document, builder.out)
+		builder.writeDocument(builder.document, builder.out)
    	}
 
 }

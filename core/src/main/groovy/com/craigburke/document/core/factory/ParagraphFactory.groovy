@@ -19,17 +19,23 @@ class ParagraphFactory extends AbstractFactory {
         switch (builder.parentName) {
 			case "document":
 				paragraph.align = paragraph.align ?: Align.LEFT
-				builder.addParagraphToDocument(paragraph, builder.current)
+                if (builder.addParagraphToDocument) {
+                    builder.addParagraphToDocument(paragraph, builder.current)
+                }
 				break
 			case "cell":
 				paragraph.align = paragraph.align ?: builder.current.align
-				builder.addParagraphToCell(paragraph, builder.current)
+                if (builder.addParagraphToCell) {
+                    builder.addParagraphToCell(paragraph, builder.current)
+                }
 				break
 		}
 		
 		if (value) {
 			Text text = new Text(value: value, font: paragraph.font.clone(), parent: paragraph)
-			builder.addTextToParagraph(text, paragraph)
+			if (builder.addTextToParagraph) {
+                builder.addTextToParagraph(text, paragraph)
+            }
 			paragraph.children << text
 		}
 		
@@ -43,9 +49,9 @@ class ParagraphFactory extends AbstractFactory {
         }
 	}
 
- 	void onNodeCompleted(FactoryBuilderSupport builder, parent, current) {
-		if (builder.onParagraphComplete instanceof Closure) {
-			builder.onParagraphComplete(current)
+ 	void onNodeCompleted(FactoryBuilderSupport builder, parent, child) {
+		if (builder.onParagraphComplete) {
+			builder.onParagraphComplete(child)
 		}
    	}
 	
