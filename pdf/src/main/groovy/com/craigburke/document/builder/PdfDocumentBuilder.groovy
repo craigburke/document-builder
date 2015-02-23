@@ -2,6 +2,7 @@ package com.craigburke.document.builder
 
 import com.craigburke.document.builder.render.ParagraphRenderer
 import com.craigburke.document.builder.render.TableRenderer
+import com.craigburke.document.core.EmbeddedFont
 import com.craigburke.document.core.LineBreak
 import groovy.transform.InheritConstructors
 import groovy.xml.MarkupBuilder
@@ -31,8 +32,12 @@ class PdfDocumentBuilder extends DocumentBuilder {
         document.item = pdfDocument
         document
     }
-	
-	def addParagraphToDocument = {Paragraph paragraph, Document document ->
+
+    void addFont(EmbeddedFont embeddedFont) {
+        PdfFont.addFont(document.item.pdDocument, embeddedFont)
+    }
+
+	def addParagraphToDocument = { Paragraph paragraph, Document document ->
 		document.item.x = paragraph.margin.left + document.margin.left
         document.item.moveDownPage(paragraph.margin.top)
 	}
@@ -52,7 +57,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
         document.item.moveDownPage(table.margin.top)
 	}
 
-    def onTableComplete = {Table table ->
+    def onTableComplete = { Table table ->
         TableRenderer tableRenderer = new TableRenderer(table, document)
         tableRenderer.render()
         document.item.moveDownPage(table.margin.bottom)

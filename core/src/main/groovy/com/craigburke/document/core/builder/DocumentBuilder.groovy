@@ -1,12 +1,12 @@
 package com.craigburke.document.core.builder
 
+import com.craigburke.document.core.EmbeddedFont
 import com.craigburke.document.core.UnitCategory
 import com.craigburke.document.core.factory.*
 import com.craigburke.document.core.Document
-import com.craigburke.document.core.Paragraph
 import com.craigburke.document.core.Font
 
-abstract class DocumentBuilder extends FactoryBuilderSupport implements FontBuilder, ParagraphBuilder, TableBuilder {
+abstract class DocumentBuilder extends FactoryBuilderSupport implements ParagraphBuilder, TableBuilder {
 	
 	Document document
 	OutputStream out
@@ -30,7 +30,14 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements FontBuil
 			return super.invokeMethod(name, args)
 		}
 	}
-	
+
+    void addFont(Map params, String location) {
+        EmbeddedFont embeddedFont = new EmbeddedFont(params)
+        embeddedFont.file = new File(location)
+        addFont(embeddedFont)
+    }
+
+    abstract void addFont(EmbeddedFont embeddedFont)
 	abstract void createDocument(Document document, OutputStream out)
 	abstract void writeDocument(Document document, OutputStream out)
 

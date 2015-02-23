@@ -1,6 +1,7 @@
 package com.craigburke.document.builder
 
 import com.craigburke.document.core.Align
+import com.craigburke.document.core.EmbeddedFont
 import com.craigburke.document.core.LineBreak
 import groovy.transform.InheritConstructors
 
@@ -33,6 +34,10 @@ class WordDocumentBuilder extends DocumentBuilder {
 		documentMargin.setTop(pointToTwip(document.margin.top).intValue())
 		documentMargin.setRight(pointToTwip(document.margin.right).intValue())
 		documentMargin.setBottom(pointToTwip(document.margin.bottom).intValue())
+    }
+
+    void addFont(EmbeddedFont embeddedFont) {
+
     }
 
 	def addParagraphToDocument = { Paragraph paragraph, Document document ->

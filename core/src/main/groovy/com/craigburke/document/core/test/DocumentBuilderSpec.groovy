@@ -45,15 +45,13 @@ abstract class DocumentBuilderSpec extends Specification {
 		String fontFileName = "OpenSans-Bold.ttf"
 
 		File fontFolder = new File("temp-fonts")
-		File fontFile = new File(fontFolder, fontFileName)
+		File fontFile = new File("temp-fonts/${fontFileName}")
 		fontFolder.mkdirs()
-
 		fontFile << DocumentBuilderSpec.classLoader.getResourceAsStream("test/fonts/${fontFileName}")
 				
 		when:
 		builder.create { document {
-			addFont fontFile
-			addFontFolder fontFolder
+			addFont(fontFile.path, name: 'Open Sans', bold: true)
 		}}
 		
 		then:

@@ -1,10 +1,15 @@
 package com.craigburke.document.builder
 
+import com.craigburke.document.core.EmbeddedFont
 import com.craigburke.document.core.Font
+import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.font.PDFont
+import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont
 import org.apache.pdfbox.pdmodel.font.PDType1Font
 
 class PdfFont {
+
+    private static final DEFAULT_FONT = PDType1Font.HELVETICA
 
     private static def fonts = [
         'Times-Roman':
@@ -20,15 +25,13 @@ class PdfFont {
     ]
 
     static PDFont getFont(Font font) {
-        PDFont pdfFont = PDType1Font.HELVETICA
-        if (!font?.family) {
-            return pdfFont
+        if (!font?.family || !fonts.containsKey(font.family)) {
+            return DEFAULT_FONT
         }
 
+        PDFont pdfFont
         def fontOptions = fonts[font.family]
         if (fontOptions) {
-            pdfFont = fontOptions.regular
-
             if (font.italic && font.bold) {
                 pdfFont = fontOptions.containsKey('boldItalic') ? fontOptions.boldItalic : pdfFont
             }
@@ -38,9 +41,36 @@ class PdfFont {
             else if (font.bold) {
                 pdfFont = fontOptions.containsKey('bold') ? fontOptions.bold : pdfFont
             }
+            else {
+                pdfFont = fontOptions.containsKey('regular') ? fontOptions.regular : DEFAULT_FONT
+            }
         }
 
         pdfFont
+    }
+
+    static void addFont(PDDocument document, EmbeddedFont embeddedFont) {
+        PDFont font = PDTrueTypeFont.loadTTF(document, embeddedFont.file)
+        String fontName = embeddedFont.name ?: font.baseFont
+
+        fonts[fontName] = fonts[fontName] ?: [:]
+        if (embeddedFont.bold && embeddedFont.italic) {
+            fonts[fontName].boldItalic = font
+        }
+        else if (embeddedFont.bold) {
+            fonts[fontName].bold = font
+        }
+        else if (embeddedFont.italic) {
+            fonts[fontName].italic = font
+        }
+        else {
+            fonts[fontName].regular = font
+        }
+
+        if (!fonts[fontName].regular) {
+            fonts[fontName].regular = font
+        }
+
     }
 
 
