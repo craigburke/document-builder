@@ -1,6 +1,7 @@
 package com.craigburke.document.builder.render
 
 import com.craigburke.document.builder.PdfDocument
+import com.craigburke.document.core.Align
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Paragraph
 import com.craigburke.document.core.Text
@@ -39,6 +40,14 @@ class ParagraphRenderer {
 
         if (pdfDocument.remainingPageHeight < line.height) {
             pdfDocument.addPage()
+        }
+
+        switch(line.paragraph.align) {
+            case Align.RIGHT:
+                renderStartX += line.maxWidth - line.contentWidth
+                break
+            case Align.CENTER:
+                renderStartX += Math.round((line.maxWidth - line.contentWidth) / 2)
         }
 
         pdfDocument.x = renderStartX
