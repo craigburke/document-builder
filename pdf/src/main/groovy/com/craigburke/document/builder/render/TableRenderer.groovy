@@ -64,7 +64,7 @@ class TableRenderer {
     }
 
     private setBorderOptions(PDPageContentStream contentStream) {
-        def borderColor = table.border.color.RGB
+        def borderColor = table.border.color.rgb
         contentStream.setStrokingColor(*borderColor)
         contentStream.setLineWidth(table.border.size)
     }

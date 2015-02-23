@@ -1,7 +1,11 @@
 package com.craigburke.document.core
 
+/**
+ * Font config object
+ * @author Craig Burke
+ */
 class Font implements AssignableColor, Cloneable {
-	String family = "Helvetica"
+	String family = 'Helvetica'
 	Integer size = 12
 	Boolean bold = false
 	Boolean italic = false
@@ -11,10 +15,8 @@ class Font implements AssignableColor, Cloneable {
 	}
 
 	Object clone() {
-		Font result = new Font(family: family, size: size, bold: bold, italic: italic)
+		Font result = new Font(family:family, size:size, bold:bold, italic:italic)
 		result.color = "#${color.hex}"
 		result
 	}
-	
-	
 }

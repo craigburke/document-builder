@@ -77,7 +77,7 @@ class ParagraphRenderer {
         contentStream.beginText()
         contentStream.moveTextPositionByAmount(pdfDocument.x, pdfDocument.translatedY)
 
-        def color = text.font.color.RGB
+        def color = text.font.color.rgb
         contentStream.setNonStrokingColor(color[0], color[1], color[2])
         contentStream.setFont(element.pdfFont, text.font.size)
         contentStream.drawString(element.text)

@@ -7,7 +7,7 @@ import com.craigburke.document.core.test.DocumentBuilderSpec
 
 class PdfDocumentBuilderSpec extends DocumentBuilderSpec {
 
-	DocumentBuilder createBuilderInstance(OutputStream out) {
+	DocumentBuilder getBuilderInstance(OutputStream out) {
 		new PdfDocumentBuilder(out)
 	}
 

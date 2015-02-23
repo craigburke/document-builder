@@ -2,20 +2,23 @@ package com.craigburke.document.core.factory
 
 import com.craigburke.document.core.Table
 
+/**
+ * Factory for table nodes
+ * @author Craig Burke
+ */
 class TableFactory extends AbstractFactory {
-	
+
 	boolean isLeaf() { false }
     boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
 	boolean isHandlesNodeChildren() { true }
-	
+
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		builder.tablePosition.row = 0
-		
+
 		Table table = new Table(attributes)
         table.margin.setDefaults(8, 0)
 
         table.font = table.font ?: builder.current.font.clone()
-		
 		table
 	}
 
@@ -37,7 +40,7 @@ class TableFactory extends AbstractFactory {
             builder.addTableToDocument(table, builder.current)
         }
 
-		return true
+		true
 	}
 
 	void setChild(FactoryBuilderSupport builder, table, row) {
@@ -54,6 +57,4 @@ class TableFactory extends AbstractFactory {
 		}
    	}
 
-	
 }
-

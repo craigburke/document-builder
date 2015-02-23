@@ -10,13 +10,34 @@ buildscript {
 allprojects {
     apply plugin: 'idea'
     apply plugin: 'groovy'
-    
+    apply plugin: 'codenarc'
+
+    configurations {
+        asciidoclet
+    }
+
+    repositories {
+        mavenLocal()
+        jcenter()
+        mavenCentral()
+    }
+
+    dependencies {
+        compile 'org.codehaus.groovy:groovy-all:2.3.9'
+        testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+        codenarc 'org.codenarc:CodeNarc:0.23'
+        asciidoclet 'org.asciidoctor:asciidoclet:1.5.2'
+    }
+
+    codenarc {
+        configFile = file("${rootProject.projectDir}/config/codenarc/rules.groovy")
+    }
+
     group = 'com.craigburke.document'
     version = '0.2.0-SNAPSHOT'
 }
 
 subprojects {
-    
     apply plugin: 'maven-publish'
     apply plugin: 'com.jfrog.bintray'
 
@@ -31,15 +52,8 @@ subprojects {
         }
     }
 
-    repositories {
-        mavenLocal()
-        jcenter()
-        mavenCentral()
-    }
-
-    dependencies {
-        compile 'org.codehaus.groovy:groovy-all:2.3.9'
-        testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+    javadoc {
+        source = sourceSets.main.allSource
     }
 
     task sourcesJar(type: Jar) {

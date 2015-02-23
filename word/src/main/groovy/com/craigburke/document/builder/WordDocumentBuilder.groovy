@@ -25,7 +25,7 @@ import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder
 @InheritConstructors
 class WordDocumentBuilder extends DocumentBuilder {
 
-	void createDocument(Document document, OutputStream out) {
+	void initializeDocument(Document document, OutputStream out) {
 		document.item = new XWPFDocument()
 
 		def documentMargin = document.item.document.body.addNewSectPr().addNewPgMar()

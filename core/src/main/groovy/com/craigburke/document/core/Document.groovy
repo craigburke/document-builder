@@ -1,8 +1,14 @@
 package com.craigburke.document.core
 
+import static com.craigburke.document.core.UnitUtil.inchToPoint
+
+/**
+ * Document node
+ * @author Craig Burke
+ */
 class Document extends BaseNode {
-    final int width = 8.5 * 72
-    final int height = 11 * 72
+    final int width = inchToPoint(8.5)
+    final int height = inchToPoint(11)
 
     List children = []
     Margin margin = new Margin()

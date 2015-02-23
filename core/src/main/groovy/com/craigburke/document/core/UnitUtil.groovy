@@ -1,37 +1,46 @@
 package com.craigburke.document.core
 
+/**
+ * Utility class for converting typographic units
+ * @author Craig Burke
+ */
 class UnitUtil {
-	
+
+    static final BigDecimal DPI = 72
+    static final BigDecimal PICA_POINTS = 6
+    static final BigDecimal TWIP_POINTS = 20
+    static final BigDecimal EIGTH_POINTS = 8
+
 	static BigDecimal inchToPoint(BigDecimal inch) {
-		inch * 72
-	}
-	
-	static BigDecimal pointToInch(BigDecimal point) {
-		point / 72
+		inch * DPI
 	}
 
-	static BigDecimal pointToEigthPoint(BigDecimal point) {
-		point * 8
+	static BigDecimal pointToInch(BigDecimal point) {
+		point / DPI
 	}
-	
+
 	static BigDecimal pointToPica(BigDecimal point) {
-		point * 6
+		point * PICA_POINTS
 	}
-	
+
 	static BigDecimal picaToPoint(BigDecimal pica) {
-		pica / 6
+		pica / PICA_POINTS
 	}
-	
+
+    static BigDecimal pointToEigthPoint(BigDecimal point) {
+        point * EIGTH_POINTS
+    }
+
 	static BigDecimal eightPointToPoint(BigDecimal eigthPoint) {
-		eigthPoint / 8
+		eigthPoint / EIGTH_POINTS
 	}
-	
-	static BigDecimal pointToTwip(BigDecimal point) {
-		point * 20
+
+    static BigDecimal pointToTwip(BigDecimal point) {
+		point * TWIP_POINTS
 	}
-	
-	static BigDecimal twipToPoint(BigDecimal twentiethPoint) {
-		twentiethPoint / 20
+
+	static BigDecimal twipToPoint(BigDecimal twip) {
+		twip / TWIP_POINTS
 	}
-	
+
 }

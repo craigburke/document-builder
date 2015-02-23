@@ -1,7 +1,11 @@
 package com.craigburke.document.core
 
+/**
+ * Margin settings used for block nodes
+ * @author Craig Burke
+ */
 class Margin {
-    
+
     Integer top
     Integer bottom
     Integer left
@@ -13,8 +17,4 @@ class Margin {
         left = (left == null) ? horizontal : left
         right = (right == null) ? horizontal : right
     }
-
-
-
-
 }

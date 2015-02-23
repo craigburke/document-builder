@@ -1,5 +1,9 @@
 package com.craigburke.document.core
 
+/**
+ * Table node which contains rows of cells
+ * @author Craig Burke
+ */
 class Table extends BaseNode {
 	List<Row> rows = []
 
@@ -12,7 +16,8 @@ class Table extends BaseNode {
     void updateColumnWidths() {
         Document document = parent
 
-        int defaultTableWidth = document.width - document.margin.left - document.margin.right - margin.right - margin.left
+        int defaultPageWidth = document.width - document.margin.left - document.margin.right
+        int defaultTableWidth = defaultPageWidth - margin.right - margin.left
         this.width = this.width ?: defaultTableWidth
         int totalBorderWidth = (columns + 1) * border.size
 
@@ -30,7 +35,7 @@ class Table extends BaseNode {
         if (unspecifiedColumnCount) {
             int remainingWidth = width - totalColumnWidth - totalBorderWidth
             int calculatedColumnWidth = Math.round(remainingWidth / unspecifiedColumnCount)
-            columnWidths = columnWidths.collect { it != null ? it : calculatedColumnWidth}
+            columnWidths = columnWidths.collect { it != null ? it : calculatedColumnWidth }
 
             rows.each { row ->
                 row.cells.eachWithIndex { cell, index ->

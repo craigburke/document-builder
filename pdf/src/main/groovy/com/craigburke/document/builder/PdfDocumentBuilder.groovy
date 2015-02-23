@@ -22,7 +22,7 @@ import org.apache.pdfbox.pdmodel.common.PDMetadata
 @InheritConstructors
 class PdfDocumentBuilder extends DocumentBuilder {
 
-	void createDocument(Document document, OutputStream out) {
+	void initializeDocument(Document document, OutputStream out) {
         PdfDocument pdfDocument = new PdfDocument(document)
         document.item = pdfDocument
 
