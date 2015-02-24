@@ -11,20 +11,22 @@ import com.craigburke.document.core.Text
 import spock.lang.Shared
 import spock.lang.Specification
 
+/**
+ * Tests for CellElement
+ * @author Craig Burke
+ */
 class CellElementSpec extends Specification {
 
     @Shared CellElement cellElement
-    @Shared int totalLineCount
-
 
     def setup() {
         Table table = new Table()
-        Row row = new Row(parent: table)
-        def cell = new Cell(width: 72, parent: row)
+        Row row = new Row(parent:table)
+        def cell = new Cell(width:72, parent:row)
         5.times { i ->
             def paragraph = new Paragraph()
             i.times {
-                paragraph.children << new Text(value: "FOO${i}", font: new Font(family: 'Helvetica', size: 12))
+                paragraph.children << new Text(value:"FOO${i}", font:new Font(family:'Helvetica', size:12))
                 paragraph.children << new LineBreak()
             }
             cell.children << paragraph
@@ -53,7 +55,6 @@ class CellElementSpec extends Specification {
         then:
         cellElement.onLastLine == true
     }
-
 
     def "moveToNextLine and moveToPrevious line allow you to change position"() {
         when:
@@ -116,5 +117,5 @@ class CellElementSpec extends Specification {
         cellElement.position.line == 0
     }
 
-
 }
+

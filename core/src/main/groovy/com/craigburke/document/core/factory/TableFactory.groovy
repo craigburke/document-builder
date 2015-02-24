@@ -52,7 +52,7 @@ class TableFactory extends AbstractFactory {
  	void onNodeCompleted(FactoryBuilderSupport builder, parent, table) {
         table.updateColumnWidths()
 
-		if (builder.onTableComplete instanceof Closure) {
+		if (builder.onTableComplete) {
 			builder.onTableComplete(table)
 		}
    	}

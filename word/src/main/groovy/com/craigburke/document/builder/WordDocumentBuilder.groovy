@@ -1,7 +1,9 @@
 package com.craigburke.document.builder
 
+import static com.craigburke.document.core.UnitUtil.pointToTwip
+import static com.craigburke.document.core.UnitUtil.pointToEigthPoint
+
 import com.craigburke.document.core.Align
-import com.craigburke.document.core.EmbeddedFont
 import com.craigburke.document.core.LineBreak
 import groovy.transform.InheritConstructors
 
@@ -16,12 +18,14 @@ import com.craigburke.document.core.Text
 import com.craigburke.document.core.Font
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment
 
-import static com.craigburke.document.core.UnitUtil.*
-
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import org.apache.poi.util.Units
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder
 
+/**
+ * Builder for Word documents
+ * @author Craig Burke
+ */
 @InheritConstructors
 class WordDocumentBuilder extends DocumentBuilder {
 
@@ -29,23 +33,19 @@ class WordDocumentBuilder extends DocumentBuilder {
 		document.item = new XWPFDocument()
 
 		def documentMargin = document.item.document.body.addNewSectPr().addNewPgMar()
-				
+
 		documentMargin.setLeft(pointToTwip(document.margin.left).intValue())
 		documentMargin.setTop(pointToTwip(document.margin.top).intValue())
 		documentMargin.setRight(pointToTwip(document.margin.right).intValue())
 		documentMargin.setBottom(pointToTwip(document.margin.bottom).intValue())
     }
 
-    void addFont(EmbeddedFont embeddedFont) {
-
-    }
-
 	def addParagraphToDocument = { Paragraph paragraph, Document document ->
         paragraph.item = document.item.createParagraph()
 		setParagraphProperties(paragraph)
 	}
-	
-	def addParagraphToCell = {Paragraph paragraph, Cell cell ->
+
+	def addParagraphToCell = { Paragraph paragraph, Cell cell ->
 		def firstParagraph = cell.item.paragraphs[0]
 
 		paragraph.item = firstParagraph.isEmpty() ? firstParagraph : cell.item.addParagraph()
@@ -53,7 +53,6 @@ class WordDocumentBuilder extends DocumentBuilder {
 	}
 
 	private void setParagraphProperties(Paragraph paragraph) {
-		
 		paragraph.item.with {
 			spacingAfter = pointToTwip(paragraph.margin.bottom)
 			spacingBefore = pointToTwip(paragraph.margin.top)
@@ -71,29 +70,29 @@ class WordDocumentBuilder extends DocumentBuilder {
 		indent.left = pointToTwip(paragraph.margin.left)
 		indent.right = pointToTwip(paragraph.margin.right)
 	}
-	
+
 	def addTextToParagraph = { Text text, Paragraph paragraph ->
-        createTextRun(paragraph.item, text)
+        addTextRun(paragraph.item, text)
 	}
-	
+
 	def addImageToParagraph = { Image image, Paragraph paragraph ->
-		createImageRun(paragraph.item, image)
+		addImageRun(paragraph.item, image)
 	}
-	
+
 	def addLineBreakToParagraph = { LineBreak lineBreak, Paragraph paragraph ->
 		def run = paragraph.item.createRun()
 		run.addBreak()
 	}
 
 	def addTableToDocument = { Table table, Document document ->
-		table.item = document.item.createTable(1, table.columns)		
-		
+		table.item = document.item.createTable(1, table.columns)
+
 		def tableProperties = table.item.CTTbl.tblPr
 
 		if (table.width) {
 			tableProperties.tblW.w = pointToTwip(table.width)
 		}
-		
+
 		def tableBorder = tableProperties.tblBorders
 		def properties = ['top', 'right', 'bottom', 'left', 'insideH', 'insideV']
 
@@ -106,18 +105,18 @@ class WordDocumentBuilder extends DocumentBuilder {
 		}
 
 	}
-	
+
 	def addRowToTable = { Row row, Table table ->
 		row.item = (row.position == 0) ? table.item.getRow(0) : table.item.createRow()
 	}
-	
+
 	def addCellToRow = { Cell cell, Row row ->
         Table table = row.parent
 		cell.item = row.item.getCell(cell.position)
 
 		def cellProperties = cell.item.CTTc.addNewTcPr()
 		def padding = cellProperties.addNewTcMar()
-		
+
 		padding.addNewTop().w = pointToTwip(table.padding)
 		padding.addNewBottom().w = pointToTwip(table.padding)
 		padding.addNewLeft().w = pointToTwip(table.padding)
@@ -132,7 +131,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 		items.eachWithIndex { child, index ->
 			if (index > 0) {
 				def previousChild = items[index - 1]
-				if (child instanceof Paragraph && previousChild instanceof Paragraph) {
+				if (child.getClass() == Paragraph && previousChild.getClass() == Paragraph) {
 					previousChild.item.spacingAfter += child.item.spacingBefore
 				}
 			}
@@ -143,13 +142,13 @@ class WordDocumentBuilder extends DocumentBuilder {
 		fixParagraphMargins(document.children)
 		document.item.write(out)
 	}
-	
-	private void createTextRun(paragraph, Text text) {
-		Font font = text.font
-		
-		def run 
+
+	private void addTextRun(paragraph, Text textNode) {
+		Font font = textNode.font
+
+		def run
 		def currentRuns = paragraph.runs
-		
+
 		if (currentRuns && !currentRuns.first().toString()) {
 			// Just grab the first run if it doesn't have any content
 			run = currentRuns.first()
@@ -157,19 +156,26 @@ class WordDocumentBuilder extends DocumentBuilder {
 		else {
 			run = paragraph.createRun()
 		}
-		
-		run.fontFamily = font.family
-		run.fontSize = font.size
-		run.color = font.color.hex
-		run.bold = font.bold
-		run.italic = font.italic
-		run.text = text.value
+
+        run.with {
+            fontFamily = font.family
+            fontSize = font.size
+            color = font.color.hex
+            bold = font.bold
+            italic = font.italic
+            text = textNode.value
+        }
 
 	}
-	
-	private static void createImageRun(paragraph, Image image) {
+
+	private static void addImageRun(paragraph, Image image) {
         def run = paragraph.createRun()
-	    run.addPicture(new ByteArrayInputStream(image.data), XWPFDocument.PICTURE_TYPE_PNG, image.name, Units.toEMU(image.width), Units.toEMU(image.height))
+
+        InputStream pictureData = new ByteArrayInputStream(image.data)
+        int width = Units.toEMU(image.width)
+        int height = Units.toEMU(image.height)
+
+	    run.addPicture(pictureData, XWPFDocument.PICTURE_TYPE_PNG, image.name, width, height)
 	}
-	
+
 }

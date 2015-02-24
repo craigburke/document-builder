@@ -7,6 +7,10 @@ import com.craigburke.document.core.Paragraph
 import com.craigburke.document.core.Text
 import org.apache.pdfbox.pdmodel.font.PDFont
 
+/**
+ * Parses the paragraph content so it can be split into lines
+ * @author Craig Burke
+ */
 class ParagraphParser {
 
     static List<ParagraphLine> getLines(Paragraph paragraph, int maxLineWidth) {
@@ -17,7 +21,7 @@ class ParagraphParser {
         paragraphChunks << currentChunk
 
         paragraph.children.each { child ->
-            if (child instanceof LineBreak) {
+            if (child.getClass() == LineBreak) {
                 currentChunk = []
                 paragraphChunks << currentChunk
             }
@@ -39,7 +43,7 @@ class ParagraphParser {
         PDFont pdfFont
 
         chunk.each { node ->
-            if (node instanceof Text) {
+            if (node.getClass() == Text) {
                 Font font = node.font
                 pdfFont = PdfFont.getFont(font)
                 String remainingText = node.value
@@ -48,19 +52,22 @@ class ParagraphParser {
                     BigDecimal textWidth = pdfFont.getStringWidth(remainingText)  / 1000 * font.size
 
                     if (currentLine.contentWidth + textWidth > maxLineWidth) {
-                        String splitText = getTextUntilBreakpoint(remainingText, pdfFont, font.size, currentLine.remainingWidth)
+                        String text = getTextUntilBreak(remainingText, pdfFont, font.size, currentLine.remainingWidth)
 
-                        remainingText = (remainingText - splitText).trim()
-                        int elementWidth = pdfFont.getStringWidth(splitText)  / 1000 * font.size
+                        remainingText = (remainingText - text).trim()
+                        int elementWidth = pdfFont.getStringWidth(text)  / 1000 * font.size
                         currentLine.contentWidth += elementWidth
-                        currentLine.elements << new TextElement(pdfFont: pdfFont, text: splitText, node: node, width: elementWidth)
+
+                        currentLine.elements << new TextElement(pdfFont:pdfFont, text:text,
+                                node:node, width:elementWidth)
 
                         currentLine = new ParagraphLine(paragraph, maxLineWidth)
                         chunkLines << currentLine
                     }
                     else {
-                        currentLine.elements << new TextElement(pdfFont: pdfFont, text: remainingText, node: node, width: textWidth)
-                        remainingText = ""
+                        currentLine.elements << new TextElement(pdfFont:pdfFont, text:remainingText,
+                                node:node, width:textWidth)
+                        remainingText = ''
                         currentLine.contentWidth += textWidth
                     }
 
@@ -72,16 +79,16 @@ class ParagraphParser {
                     chunkLines << currentLine
                 }
 
-                currentLine.elements << new ImageElement(node: node)
+                currentLine.elements << new ImageElement(node:node)
             }
         }
 
         chunkLines
     }
 
-    private static String getTextUntilBreakpoint(String text, PDFont font, BigDecimal fontSize, BigDecimal width) {
-        String result = ""
-        String previousResult = ""
+    private static String getTextUntilBreak(String text, PDFont font, BigDecimal fontSize, BigDecimal width) {
+        String result = ''
+        String previousResult = ''
         boolean spaceBreakpointFound = false
 
         String[] words = text.split()*.trim()

@@ -92,7 +92,7 @@ ruleset {
     VectorIsObsolete
 
     // rulesets/design.xml
-    AbstractClassWithPublicConstructor
+    'AbstractClassWithPublicConstructor' enabled: false
     AbstractClassWithoutAbstractMethod
     BooleanMethodReturnsNull
     BuilderMethodWithSideEffects
@@ -106,7 +106,7 @@ ruleset {
     Instanceof
     LocaleSetDefault
     NestedForLoop
-    PrivateFieldCouldBeFinal
+    'PrivateFieldCouldBeFinal' enabled: false // buggy
     PublicInstanceField
     ReturnsNullInsteadOfEmptyArray
     ReturnsNullInsteadOfEmptyCollection
@@ -307,7 +307,7 @@ ruleset {
     // rulesets/security.xml
     FileCreateTempFile
     InsecureRandom
-    JavaIoPackageAccess
+    'JavaIoPackageAccess' enabled: false
     NonFinalPublicField
     NonFinalSubclassOfSensitiveInterface
     ObjectFinalize
@@ -319,7 +319,7 @@ ruleset {
     EnumCustomSerializationIgnored
     SerialPersistentFields
     SerialVersionUID
-    SerializableClassMustDefineSerialVersionUID
+    'SerializableClassMustDefineSerialVersionUID' enabled: false
 
     // rulesets/size.xml
     AbcComplexity   // DEPRECATED: Use the AbcMetric rule instead. Requires the GMetrics jar

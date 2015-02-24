@@ -3,6 +3,10 @@ package com.craigburke.document.builder.render
 import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Table
 
+/**
+ * Rendering element for the Cell node
+ * @author Craig Burke
+ */
 class CellElement {
 
     Cell node
@@ -20,7 +24,7 @@ class CellElement {
             int renderWidth = cell.width - (table.padding * 2)
             paragraphElements << new ParagraphElement(paragraph, renderWidth)
         }
-        position = new LinePosition(element: 0, line: 0)
+        position = new LinePosition(element:0, line:0)
     }
 
     void moveToNextLine() {
@@ -64,6 +68,10 @@ class CellElement {
 
 }
 
+/**
+ * Paragraph line position
+ * @author Craig Burke
+ */
 class LinePosition {
     int line
     int element

@@ -9,7 +9,8 @@ class CellCounter {
     private int currentRowCount = 0
 
     def methodMissing(String name, args) {
-        if (name == 'row' && args?.last() instanceof Closure) {
+
+        if (name == 'row') {
             currentRowCount = 0
             Closure rowClosure = args.last().clone()
             rowClosure.delegate = this

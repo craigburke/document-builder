@@ -8,11 +8,14 @@ import com.craigburke.document.core.Text
 import org.apache.pdfbox.util.PDFTextStripper
 import org.apache.pdfbox.util.TextPosition
 
-// This extractor has serious limitations but works for simple tests
-// It can't split text reliably when a paragraph has no top/bottom margins
+/**
+ * Extract the content from a pdf file from paragraphs and tables. There are limitations but works for simple tests
+ * It can't split text reliably when a paragraph has no top/bottom margins
+ * @author Craig Burke
+ */
 class PdfContentExtractor extends PDFTextStripper {
 
-        private def tablePosition = [row: 0, cell: 0]
+        private tablePosition = [row:0, cell:0]
         private int currentChildNumber = 0
         private Document document
         private TextPosition lastPosition
@@ -22,7 +25,7 @@ class PdfContentExtractor extends PDFTextStripper {
             this.document = document
         }
 
-        private def getCurrentChild() {
+        private getCurrentChild() {
             if (!document.children || document.children.size() < currentChildNumber) {
                 null
             }
@@ -36,13 +39,13 @@ class PdfContentExtractor extends PDFTextStripper {
             if (text.character == ' ') {
                 return
             }
-            
+
             updateChildNumber(text)
 
-            Font currentFont = new Font(family: text.font.baseFont, size: text.fontSizeInPt)
+            Font currentFont = new Font(family:text.font.baseFont, size:text.fontSizeInPt)
             def textNode
 
-            if (currentChild instanceof Paragraph) {
+            if (currentChild.getClass() == Paragraph) {
                 textNode = processParagraph(text, currentFont)
             }
             else {
@@ -61,7 +64,7 @@ class PdfContentExtractor extends PDFTextStripper {
             paragraph.font = paragraph.font ?: font.clone()
 
             if (!paragraph.children || isNewSection(text)) {
-                textNode = createText(paragraph, font)
+                textNode = getText(paragraph, font)
                 paragraph.children << textNode
             }
             else {
@@ -75,12 +78,12 @@ class PdfContentExtractor extends PDFTextStripper {
             def textNode
 
             if (!currentChild.children) {
-                textNode = createText(currentChild, font)
+                textNode = getText(currentChild, font)
                 currentChild.children << textNode
                 setParagraphProperties(currentChild, text, font)
             }
             else if (isNewSection(text)) {
-                textNode = createText(currentChild, font)
+                textNode = getText(currentChild, font)
                 currentChild.children << textNode
             }
             else {
@@ -93,19 +96,21 @@ class PdfContentExtractor extends PDFTextStripper {
         private void setParagraphProperties(paragraph, TextPosition text, Font font) {
             paragraph.font = font.clone()
             paragraph.margin.left = text.x - document.margin.left
-            paragraph.margin.right = text.pageWidth - text.width - paragraph.margin.left - document.margin.right - document.margin.left
+            int totalPageWidth = text.pageWidth - document.margin.right - document.margin.left
+            paragraph.margin.right = totalPageWidth - text.width - paragraph.margin.left
 
             paragraph.margin.top = Math.round(text.y - document.margin.top - paragraph.leading)
         }
 
-        private Text createText(paragraph, Font font) {
-            new Text(parent: paragraph, value: '', font: font.clone())
+        private Text getText(paragraph, Font font) {
+            new Text(parent:paragraph, value:'', font:font.clone())
         }
 
         private void updateChildNumber(TextPosition current) {
             if (!lastPosition || (lastPosition.y != current.y && current.character != ' ')) {
                 currentChildNumber++
-                tablePosition = [row: 0, cell: 0]
+                tablePosition.row = 0
+                tablePosition.cell = 0
             }
         }
 
@@ -124,6 +129,5 @@ class PdfContentExtractor extends PDFTextStripper {
 
             isNewSection
         }
-
 
 }

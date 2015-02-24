@@ -13,6 +13,10 @@ import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
 
+/**
+ * Renders a paragraph to the document
+ * @author Craig Burke
+ */
 class ParagraphRenderer {
 
     Document document
@@ -42,7 +46,7 @@ class ParagraphRenderer {
             pdfDocument.addPage()
         }
 
-        switch(line.paragraph.align) {
+        switch (line.paragraph.align) {
             case Align.RIGHT:
                 renderStartX += line.maxWidth - line.contentWidth
                 break
@@ -106,6 +110,3 @@ class ParagraphRenderer {
     }
 
 }
-
-
-

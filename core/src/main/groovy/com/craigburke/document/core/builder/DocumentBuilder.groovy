@@ -51,8 +51,11 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements Paragrap
         addFont(embeddedFont)
     }
 
-    abstract void addFont(EmbeddedFont embeddedFont)
-	abstract void initializeDocument(Document document, OutputStream out)
+    void addFont(EmbeddedFont embeddedFont) {
+        document.embeddedFonts << embeddedFont
+    }
+
+    abstract void initializeDocument(Document document, OutputStream out)
 	abstract void writeDocument(Document document, OutputStream out)
 
 	def registerObjectFactories() {

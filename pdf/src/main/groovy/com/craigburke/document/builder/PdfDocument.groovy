@@ -5,6 +5,10 @@ import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
 
+/**
+ * Document node item
+ * @author Craig Burke
+ */
 class PdfDocument {
     int x = 0
     int y = 0

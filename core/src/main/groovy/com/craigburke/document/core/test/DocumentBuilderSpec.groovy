@@ -16,7 +16,7 @@ abstract class DocumentBuilderSpec extends Specification {
 	@Shared DocumentBuilder builder
 	@Shared byte[] imageData = getClass().classLoader.getResource('test/images/cheeseburger.jpg')?.bytes
 
-	@Shared MARGINS = [
+	@Shared testMargins = [
 			[top:0, bottom:0, left:0, right:0],
 			[top:2 * 72, bottom:3 * 72, left:1.25 * 72, right:2.5 * 72],
 			[top:72 / 4, bottom:72 / 2, left:72 / 4, right:72 / 2]
@@ -91,17 +91,15 @@ abstract class DocumentBuilderSpec extends Specification {
 		document.margin.bottom == margin.bottom
 
 		where:
-		margin << MARGINS
+		margin << testMargins
 	}
 
 	@Unroll
 	def "set paragraph margins"() {
 		when:
-        def paragraphMargin = [top:currentMargin.top, bottom:currentMargin.bottom, left:currentMargin.left, right:currentMargin.right]
-
 		builder.create {
             document {
-                paragraph(margin:paragraphMargin) {
+                paragraph(margin:currentMargin) {
                     text 'Foo'
                 }
 		    }
@@ -119,7 +117,7 @@ abstract class DocumentBuilderSpec extends Specification {
 		paragraph.margin.top == currentMargin.top
 
 		where:
-		currentMargin << MARGINS
+		currentMargin << testMargins
 	}
 
 	def "override or inherit font settings"() {

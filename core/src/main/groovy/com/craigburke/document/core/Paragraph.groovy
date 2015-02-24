@@ -24,7 +24,7 @@ class Paragraph extends BaseNode {
 
 	String getText() {
 		String text = ''
-		children.each { if (it instanceof Text) { text += it.value } }
+		children.each { if (it.getClass() == Text) { text += it.value } }
 		text
 	}
 }

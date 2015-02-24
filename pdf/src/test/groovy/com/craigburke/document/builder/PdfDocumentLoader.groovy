@@ -9,11 +9,15 @@ import com.craigburke.document.core.Table
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
 
+/**
+ * Creates a Document object based on byte content of Pdf file
+ * @author Craig Burke
+ */
 class PdfDocumentLoader {
 
     static Document load(byte[] data) {
         PDDocument pdfDoc = PDDocument.load(new ByteArrayInputStream(data))
-        Document document = new Document(item: pdfDoc)
+        Document document = new Document(item:pdfDoc)
 
         def metaData = new XmlParser().parse(pdfDoc.documentCatalog.metadata.createInputStream())
 
@@ -24,37 +28,44 @@ class PdfDocumentLoader {
 
         metaData.each {
             if (it.name() == 'paragraph') {
-                def paragraph = new Paragraph(parent: document)
-                paragraph.margin.top = new BigDecimal(it.'@marginTop')
-                paragraph.margin.bottom = new BigDecimal(it.'@marginBottom')
-                paragraph.margin.left = new BigDecimal(it.'@marginLeft')
-                paragraph.margin.right = new BigDecimal(it.'@marginRight')
-
-                it.image.each {
-                    paragraph.children << new Image(parent: paragraph)
-                }
-
-                document.children << paragraph
-
+                this.loadParagraph(document, it)
             }
             else {
-                def table = new Table(parent: document, width: new BigDecimal(it.'@width'))
-                it.row.each { rowNode ->
-                    Row row = new Row()
-                    rowNode.cell.each { cellNode ->
-                        def cell = new Cell(width: new BigDecimal(cellNode.'@width'))
-                        cell.children << new Paragraph()
-                        row.cells << cell
-                    }
-                    table.rows << row
-                }
-                document.children << table
+                this.loadTable(document, it)
             }
         }
 
         loadChildren(document)
         pdfDoc.close()
         document
+    }
+
+    private static loadParagraph(Document document, paragraphNode) {
+        def paragraph = new Paragraph(parent:document)
+        paragraph.margin.top = new BigDecimal(paragraphNode.'@marginTop')
+        paragraph.margin.bottom = new BigDecimal(paragraphNode.'@marginBottom')
+        paragraph.margin.left = new BigDecimal(paragraphNode.'@marginLeft')
+        paragraph.margin.right = new BigDecimal(paragraphNode.'@marginRight')
+
+        paragraphNode.image.each {
+            paragraph.children << new Image(parent:paragraph)
+        }
+
+        document.children << paragraph
+    }
+
+    private static loadTable(Document document, tableNode) {
+        def table = new Table(parent:document, width:new BigDecimal(tableNode.'@width'))
+        tableNode.row.each { rowNode ->
+            Row row = new Row()
+            rowNode.cell.each { cellNode ->
+                def cell = new Cell(width:new BigDecimal(cellNode.'@width'))
+                cell.children << new Paragraph()
+                row.cells << cell
+            }
+            table.rows << row
+        }
+        document.children << table
     }
 
     private static void loadChildren(Document document) {

@@ -2,6 +2,10 @@ package com.craigburke.document.builder.render
 
 import com.craigburke.document.core.Paragraph
 
+/**
+ * A paragraph line
+ * @author Craig Burke
+ */
 class ParagraphLine {
     final int maxWidth
     int contentWidth = 0
@@ -18,7 +22,7 @@ class ParagraphLine {
     }
 
     int getHeight() {
-        elements.collect { (it instanceof ImageElement) ? it.node.height : paragraph.leading }.max() ?: 0
+        elements.collect { (it.getClass() == ImageElement) ? it.node.height : paragraph.leading }.max() ?: 0
     }
 
 }

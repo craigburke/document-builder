@@ -5,6 +5,10 @@ import com.craigburke.document.core.Row
 import com.craigburke.document.core.Table
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
 
+/**
+ * Renders a table to the document
+ * @author Craig Burke
+ */
 class TableRenderer {
 
     Document document

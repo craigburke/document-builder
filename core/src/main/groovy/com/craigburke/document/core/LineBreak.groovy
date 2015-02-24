@@ -5,4 +5,5 @@ package com.craigburke.document.core
  * @author Craig Burke
  */
 class LineBreak extends BaseNode {
+    final Integer height = 0
 }

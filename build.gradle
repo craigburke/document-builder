@@ -12,10 +12,6 @@ allprojects {
     apply plugin: 'groovy'
     apply plugin: 'codenarc'
 
-    configurations {
-        asciidoclet
-    }
-
     repositories {
         mavenLocal()
         jcenter()
@@ -26,7 +22,6 @@ allprojects {
         compile 'org.codehaus.groovy:groovy-all:2.3.9'
         testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
         codenarc 'org.codenarc:CodeNarc:0.23'
-        asciidoclet 'org.asciidoctor:asciidoclet:1.5.2'
     }
 
     codenarc {
@@ -50,10 +45,6 @@ subprojects {
         main {
             compileClasspath += configurations.provided
         }
-    }
-
-    javadoc {
-        source = sourceSets.main.allSource
     }
 
     task sourcesJar(type: Jar) {

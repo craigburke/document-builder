@@ -3,7 +3,6 @@ package com.craigburke.document.builder
 import com.craigburke.document.builder.render.ParagraphRenderer
 import com.craigburke.document.builder.render.TableRenderer
 import com.craigburke.document.core.EmbeddedFont
-import com.craigburke.document.core.LineBreak
 import groovy.transform.InheritConstructors
 import groovy.xml.MarkupBuilder
 
@@ -11,14 +10,15 @@ import com.craigburke.document.core.builder.DocumentBuilder
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Paragraph
 import com.craigburke.document.core.Table
-import com.craigburke.document.core.Row
-import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Image
-import com.craigburke.document.core.Text
 
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.common.PDMetadata
 
+/**
+ * Builder for PDF documents
+ * @author Craig Burke
+ */
 @InheritConstructors
 class PdfDocumentBuilder extends DocumentBuilder {
 
@@ -33,7 +33,9 @@ class PdfDocumentBuilder extends DocumentBuilder {
         document
     }
 
+    @Override
     void addFont(EmbeddedFont embeddedFont) {
+        super.addFont(embeddedFont)
         PdfFont.addFont(document.item.pdDocument, embeddedFont)
     }
 
@@ -43,7 +45,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 
 	def onParagraphComplete = { Paragraph paragraph ->
-        int maxLineWidth = document.item.currentPage.mediaBox.width - document.margin.left - document.margin.right - paragraph.margin.left - paragraph.margin.right
+        int pageWidth = document.item.currentPage.mediaBox.width - document.margin.left - document.margin.right
+        int maxLineWidth = pageWidth - paragraph.margin.left - paragraph.margin.right
         int renderStartX = document.margin.left + paragraph.margin.left
 
         ParagraphRenderer paragraphRenderer = new ParagraphRenderer(paragraph, document, renderStartX, maxLineWidth)
@@ -74,37 +77,56 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		ByteArrayOutputStream xmpOut = new ByteArrayOutputStream()
 		def xml = new MarkupBuilder(xmpOut.newWriter())
 
-		xml.document(marginTop: "${document.margin.top}", marginBottom: "${document.margin.bottom}", marginLeft: "${document.margin.left}", marginRight: "${document.margin.right}") {
+		xml.document(marginTop:"${document.margin.top}", marginBottom:"${document.margin.bottom}",
+                marginLeft:"${document.margin.left}", marginRight:"${document.margin.right}") {
 
 			delegate = xml
 			resolveStrategy = Closure.DELEGATE_FIRST
 
 			document.children.each { child ->
 				if (child.getClass() == Paragraph) {
-					paragraph(marginTop: "${child.margin.top}", marginBottom: "${child.margin.bottom}", marginLeft: "${child.margin.left}", marginRight: "${child.margin.right}") {
-						child.children.findAll { it.getClass() == Image }.each {
-							image()
-						}
-					}
+                    addParagraphToMetadata(delegate, child)
 				}
 				else {
-					table(columns: child.columns, width: child.width, borderSize: child.border.size) {
-						child.rows.each {
-							def cells = it.cells
-							row() {
-								cells.each {
-									cell(width: "${it.width ?: 0}")
-								}
-							}
-						}
-					}
-				}
+                    addTableToMetadata(delegate, child)
+                }
 			}
 		}
 
 		def catalog = document.item.pdDocument.documentCatalog
-		PDMetadata metadata = new PDMetadata(document.item.pdDocument as PDDocument, new ByteArrayInputStream(xmpOut.toByteArray()), false)
+        InputStream inputStream = new ByteArrayInputStream(xmpOut.toByteArray())
+
+		PDMetadata metadata = new PDMetadata(document.item.pdDocument as PDDocument, inputStream, false)
 		catalog.metadata = metadata
 	}
+
+    private void addParagraphToMetadata(builder, Paragraph paragraphNode) {
+        builder.paragraph(marginTop:"${paragraphNode.margin.top}",
+                marginBottom:"${paragraphNode.margin.bottom}",
+                marginLeft:"${paragraphNode.margin.left}",
+                marginRight:"${paragraphNode.margin.right}") {
+                    paragraphNode.children.findAll { it.getClass() == Image }.each {
+                        image()
+                    }
+                }
+    }
+
+    private void addTableToMetadata(builder, Table tableNode) {
+
+        builder.table(columns:tableNode.columns, width:tableNode.width, borderSize:tableNode.border.size) {
+
+            delegate = builder
+            resolveStrategy = Closure.DELEGATE_FIRST
+
+            tableNode.rows.each {
+                def cells = it.cells
+                row {
+                    cells.each {
+                        cell(width:"${it.width ?: 0}")
+                    }
+                }
+            }
+        }
+    }
 
 }
