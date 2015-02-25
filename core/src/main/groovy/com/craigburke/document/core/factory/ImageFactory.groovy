@@ -22,9 +22,4 @@ class ImageFactory extends AbstractFactory {
 
 		image
 	}
-
-	void setChild(FactoryBuilderSupport builder, parent, child) {
-		child.parent = parent
-	}
-
 }

@@ -30,6 +30,22 @@ class BuilderSpec extends Specification {
         result.document.getClass() == Document
     }
 
+    def "use file in builder constructor"() {
+        File testFile = new File('test')
+
+        when:
+        def fileBuilder = new TestBuilder(testFile)
+
+        then:
+        fileBuilder.out != null
+
+        and:
+        fileBuilder.out.getClass() == FileOutputStream
+
+        cleanup:
+        testFile?.delete()
+    }
+
     def "user typographic units"() {
         when:
         builder.create {
@@ -141,6 +157,111 @@ class BuilderSpec extends Specification {
         addedText == ['FOO', 'BLAH', 'CELL1', 'CELL2']
     }
 
+    def "Text element shouldn't have children"() {
+        when:
+        builder.create {
+            document {
+                paragraph {
+                    text {
+                        text 'FOOBAR!'
+                    }
+                }
+
+            }
+        }
+
+        then:
+        thrown(Exception)
+    }
+
+    def "LineBreak element shouldn't have children"() {
+        when:
+        builder.create {
+            document {
+                paragraph {
+                    lineBreak {
+                        lineBreak()
+                    }
+                }
+
+            }
+        }
+
+        then:
+        thrown(Exception)
+    }
+
+    def "Image element shouldn't have children"() {
+        when:
+        builder.create {
+            document {
+                paragraph {
+                    image {
+                        image()
+                    }
+                }
+
+            }
+        }
+
+        then:
+        thrown(Exception)
+    }
+
+    def 'addImageToParagraph is call after image element is finished'() {
+        def addImageToParagraph = Mock(Closure)
+        builder.addImageToParagraph = { Image image, Paragraph paragraph ->
+            addImageToParagraph(image, paragraph)
+        }
+
+        when:
+        builder.create {
+            document {
+                paragraph {
+                    image()
+                }
+                table {
+                    row {
+                        cell {
+                            image()
+                        }
+                    }
+                }
+            }
+        }
+
+        then:
+        2 * addImageToParagraph.call(_ as Image, _ as Paragraph)
+    }
+
+    def 'addLineBreakToParagraph is call after image element is finished'() {
+        def addLineBreakToParagraph = Mock(Closure)
+        builder.addLineBreakToParagraph = { LineBreak lineBreak, Paragraph paragraph ->
+            addLineBreakToParagraph(lineBreak, paragraph)
+        }
+
+        when:
+        builder.create {
+            document {
+                paragraph {
+                    text 'FOO'
+                    lineBreak()
+                }
+                table {
+                    row {
+                        cell {
+                            text 'BAR'
+                            lineBreak()
+                        }
+                    }
+                }
+            }
+        }
+
+        then:
+        2 * addLineBreakToParagraph.call(_ as LineBreak, _ as Paragraph)
+    }
+
     def "addTableToDocument is called when table is created"() {
         def addTableToDocument = Mock(Closure)
         builder.addTableToDocument = { Table table, Document document -> addTableToDocument(table, document) }
@@ -158,6 +279,96 @@ class BuilderSpec extends Specification {
 
         then:
         1 * addTableToDocument.call(_ as Table, _ as Document)
+    }
+
+    def "columns can be counted correctly"() {
+        def externalMethod = { }
+        String externalProperty
+
+        when:
+        def result = builder.create {
+            document {
+                table {
+                    externalMethod()
+                    externalProperty = 'TEST'
+
+                    row {
+                        cell 'CELL1-1'
+                        cell 'CELL1-2'
+                    }
+                    row {
+                        cell 'CELL2-1'
+                        cell 'CELL2-2'
+                        cell 'CELL2-3'
+                    }
+
+                }
+
+            }
+        }
+
+        Table table = result.document.children[0]
+
+        then:
+        table.columns == 3
+    }
+
+    def "number of columns can be set"() {
+        when:
+        def result = builder.create {
+            document {
+                table(columns:3) {
+                    row {
+                        cell 'CELL1'
+                    }
+                }
+            }
+        }
+
+        Table table = result.document.children[0]
+
+        then:
+        table.columns == 3
+    }
+
+    def "addRowToTable is called when row is created"() {
+        def addRowToTable = Mock(Closure)
+        builder.addRowToTable = { Row row, Table table -> addRowToTable(row, table) }
+
+        when:
+        builder.create {
+            document {
+                table {
+                    row {
+                        cell 'FOO'
+                    }
+                }
+            }
+        }
+
+        then:
+        1 * addRowToTable.call(_ as Row, _ as Table)
+    }
+
+    def "addCellToRow is called when cell is created"() {
+        def addCellToRow = Mock(Closure)
+        builder.addCellToRow = { Cell cell, Row row -> addCellToRow(cell, row) }
+
+        when:
+        builder.create {
+            document {
+                table {
+                    row {
+                        cell 'CELL2'
+                        cell 'CELL2'
+                        cell 'CELL3'
+                    }
+                }
+            }
+        }
+
+        then:
+        3 * addCellToRow.call(_ as Cell, _ as Row)
     }
 
     def "appropriate method is called when paragraph is added"() {
@@ -200,6 +411,35 @@ class BuilderSpec extends Specification {
 
         then:
         paragraph.text == 'FOO BAR!'
+    }
+
+    def "create paragraphs with aligned text"() {
+        when:
+        def result = builder.create {
+            document {
+                paragraph 'default'
+                paragraph 'left', align:Align.LEFT
+                paragraph 'center', align:Align.CENTER
+                paragraph 'right', align:Align.RIGHT
+            }
+        }
+
+        Paragraph paragraph1 = result.document.children[0]
+        Paragraph paragraph2 = result.document.children[1]
+        Paragraph paragraph3 = result.document.children[2]
+        Paragraph paragraph4 = result.document.children[3]
+
+        then:
+        paragraph1.align == Align.LEFT
+
+        and:
+        paragraph2.align == Align.LEFT
+
+        and:
+        paragraph3.align == Align.CENTER
+
+        and:
+        paragraph4.align == Align.RIGHT
     }
 
     def "create paragraph with correct hierarchy"() {

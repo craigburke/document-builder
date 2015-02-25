@@ -17,7 +17,7 @@ class CellCounter {
             rowClosure.resolveStrategy = Closure.DELEGATE_ONLY
             rowClosure()
         }
-        if (name == 'cell') {
+        else if (name == 'cell') {
             currentRowCount++
             totalCount = Math.max(totalCount, currentRowCount)
         }

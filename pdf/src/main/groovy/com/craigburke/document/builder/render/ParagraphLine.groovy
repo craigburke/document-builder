@@ -22,7 +22,7 @@ class ParagraphLine {
     }
 
     int getHeight() {
-        elements.collect { (it.getClass() == ImageElement) ? it.node.height : paragraph.leading }.max() ?: 0
+        elements.collect { (it.getClass() == ImageElement) ? it.node.height : paragraph.lineHeight }.max() ?: 0
     }
 
 }

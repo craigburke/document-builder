@@ -4,7 +4,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
-        classpath 'net.saliman:gradle-cobertura-plugin:2.2.5'
+        classpath 'net.saliman:gradle-cobertura-plugin:2.2.6'
     }
 }
 
@@ -35,7 +35,7 @@ allprojects {
 
     cobertura {
         coverageSourceDirs = [sourceSets.main.allSource.srcDirs]
-        coverageExcludes = [/.*com\.craigburke\.document\.core\.test.*/]
+        coverageExcludes = [/.*com\.craigburke\.document\.core\.test.*/, /.*com\.craigburke\.document\.core\.Align.*/]
     }
 
     group = 'com.craigburke.document'

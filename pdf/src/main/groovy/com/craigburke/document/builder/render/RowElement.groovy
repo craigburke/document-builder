@@ -21,10 +21,6 @@ class RowElement {
         }
     }
 
-    int getWidth() {
-        cellElements.add { it.node.with }
-    }
-
     int getRenderedHeight() {
         cellElements.max { it.renderedHeight }.renderedHeight
     }

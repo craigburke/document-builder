@@ -13,18 +13,11 @@ class Paragraph extends BaseNode {
 
 	List children = []
 
-	Integer getLeading() {
-		if (leading) {
-			leading
-		}
-		else {
-			leadingMultiplier * children.inject(0f) { max, child -> Math.max(max, child.font?.size ?: 0 as Float) }
-		}
+	Integer getLineHeight() {
+        leading ?: leadingMultiplier * children.inject(0f) { max, child -> Math.max(max, child.font.size as Float) }
 	}
 
 	String getText() {
-		String text = ''
-		children.each { if (it.getClass() == Text) { text += it.value } }
-		text
+		children.findAll { it.getClass() == Text }*.value.join('')
 	}
 }

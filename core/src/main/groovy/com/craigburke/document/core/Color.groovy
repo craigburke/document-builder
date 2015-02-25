@@ -14,19 +14,17 @@ class Color {
     void setColor(String value) {
         if (value.startsWith('#')) {
             String hexString = value[1..-1]
-
-            setHex(hexString)
+            this.hex = hexString
+            this.rgb = (hexString =~ /.{2}/).collect { Integer.parseInt(it, 16) }
         }
     }
 
-    void setHex(String value) {
-        this.hex = value
-        this.rgb = (value =~ /.{2}/).collect { Integer.parseInt(it, 16) }
+    private setHex(String value) {
+        throw new UnsupportedOperationException("Cannot directly set hex to ${value}, use the color property")
     }
 
-    void setRgb(value) {
-        this.rgb = value
-        this.hex = value.collect { Integer.toHexString(it) }.join('')
+    private setRgb(value) {
+        throw new UnsupportedOperationException("Cannot directly set rgb to ${value}, use the color property")
     }
 
 }
