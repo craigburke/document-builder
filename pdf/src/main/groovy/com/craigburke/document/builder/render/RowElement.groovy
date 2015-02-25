@@ -33,5 +33,4 @@ class RowElement {
         cellElements.every { it.fullyRendered }
     }
 
-
 }
