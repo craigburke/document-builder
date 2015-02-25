@@ -14,7 +14,7 @@ class Paragraph extends BaseNode {
 	List children = []
 
 	Integer getLineHeight() {
-        leading ?: leadingMultiplier * children.inject(0f) { max, child -> Math.max(max, child.font.size as Float) }
+        leading ?: leadingMultiplier * children.findAll { it.getClass() == Text }.inject(0f) { max, child -> Math.max(max, child.font.size as Float) }
 	}
 
 	String getText() {

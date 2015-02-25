@@ -36,13 +36,13 @@ class TableRenderer {
 
         int yTop = document.item.translateY(rowElement.startY + borderOffset)
 
-        if (!rowElement.spansMultiplePages) {
+        if (shouldRenderTopBorder(rowElement)) {
             contentStream.drawLine(xStart, yTop, xEnd, yTop)
         }
 
         int yBottom = document.item.translateY(document.item.y + rowElement.renderedHeight)
 
-        if (rowElement.node == table.rows.last() && rowElement.fullyRendered) {
+        if (rowElement.fullyRendered) {
             contentStream.drawLine(xStart, yBottom, xEnd, yBottom)
         }
 
@@ -63,6 +63,19 @@ class TableRenderer {
             }
 
             contentStream.drawLine(currentX, yTop, currentX, offsetYBottom)
+        }
+
+    }
+
+    private boolean shouldRenderTopBorder(RowElement rowElement) {
+        if (rowElement.node == table.rows.first()) {
+            true
+        }
+        else if (rowElement.startY == document.margin.top && !rowElement.spansMultiplePages) {
+            true
+        }
+        else {
+            false
         }
 
     }
@@ -93,7 +106,9 @@ class TableRenderer {
 
             if (!rowElement.fullyRendered) {
                 rowElement.startY = document.margin.top
-                rowElement.spansMultiplePages = true
+                if (rowElement.renderedHeight) {
+                    rowElement.spansMultiplePages = true
+                }
                 document.item.addPage()
                 rowElement.renderedHeight = 0
             }
