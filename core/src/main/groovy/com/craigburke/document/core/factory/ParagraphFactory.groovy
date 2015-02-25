@@ -19,19 +19,11 @@ class ParagraphFactory extends AbstractFactory {
         paragraph.margin.setDefaults(8, 0)
         paragraph.font = paragraph.font ?: builder.font.clone()
 
-        switch (builder.parentName) {
-			case 'document':
-				paragraph.align = paragraph.align ?: Align.LEFT
-                if (builder.addParagraphToDocument) {
-                    builder.addParagraphToDocument(paragraph, builder.current)
-                }
-				break
-			case 'cell':
-				paragraph.align = paragraph.align ?: builder.current.align
-                if (builder.addParagraphToCell) {
-                    builder.addParagraphToCell(paragraph, builder.current)
-                }
-				break
+        if (builder.parentName == 'document') {
+            paragraph.align = paragraph.align ?: Align.LEFT
+            if (builder.addParagraphToDocument) {
+                builder.addParagraphToDocument(paragraph, builder.current)
+            }
 		}
 
 		if (value) {

@@ -7,10 +7,10 @@ import spock.lang.Shared
 import spock.lang.Unroll
 
 /**
- * Base class for builder tests
+ * Base class for individual builder tests
  * @author Craig Burke
  */
-abstract class DocumentBuilderSpec extends Specification {
+abstract class BaseBuilderSpec extends Specification {
 
 	@Shared ByteArrayOutputStream out
 	@Shared DocumentBuilder builder
@@ -30,41 +30,6 @@ abstract class DocumentBuilderSpec extends Specification {
 	def setup() {
 		out = new ByteArrayOutputStream()
 		builder = getBuilderInstance(out)
-	}
-
-	def "create empty document"() {
-		when:
-		builder.create { document() }
-
-		then:
-		builder.document != null
-
-		and:
-		builder.document.item != null
-	}
-
-	def "load fonts"() {
-		setup:
-		String fontFileName = 'OpenSans-Bold.ttf'
-
-		File fontFolder = new File('temp-fonts')
-		File fontFile = new File("temp-fonts/${fontFileName}")
-		fontFolder.mkdirs()
-		fontFile << DocumentBuilderSpec.classLoader.getResourceAsStream("test/fonts/${fontFileName}")
-
-		when:
-		builder.create {
-            document {
-			    addFont(fontFile.path, name:'Open Sans', bold:true)
-		    }
-        }
-
-		then:
-		notThrown(Exception)
-
-		cleanup:
-		fontFile?.delete()
-		fontFolder?.deleteDir()
 	}
 
 	@Unroll
@@ -118,60 +83,6 @@ abstract class DocumentBuilderSpec extends Specification {
 
 		where:
 		currentMargin << testMargins
-	}
-
-	def "override or inherit font settings"() {
-		when:
-		builder.create {
-            document(font:[family:'Helvetica', color:'#121212']) {
-
-                paragraph(font:[family:'Courier', color:'#333333']) {
-                    text 'Paragraph override'
-                }
-                paragraph 'Inherit doc font'
-
-                paragraph {
-                    text 'Text override', font:[family:'Times-Roman', color:'#FFFFFF']
-                }
-
-                table(font:[family:'Courier', color:'#111111']) {
-                    row {
-                        cell('Override')
-                    }
-                }
-
-                table {
-                    row {
-                        cell('Default font')
-                    }
-                }
-
-		    }
-        }
-
-		def document = getDocument(data)
-
-		def paragraph1 = document.children[0].children[0]
-		def paragraph2 = document.children[1].children[0]
-		def paragraph3 = document.children[2].children[0]
-
-		def table1 = document.children[3].rows[0].cells[0].children[0]
-		def table2 = document.children[4].rows[0].cells[0].children[0]
-
-		then:
-		paragraph1.font.family == 'Courier'
-
-		and:
-		paragraph2.font.family == 'Helvetica'
-
-		and:
-		paragraph3.font.family == 'Times-Roman'
-
-		and:
-		table1.font.family == 'Courier'
-
-		and:
-		table2.font.family == 'Helvetica'
 	}
 
 	def "create a simple table"() {
@@ -263,27 +174,6 @@ abstract class DocumentBuilderSpec extends Specification {
 
                 }
             }
-        }
-
-		then:
-		notThrown(Exception)
-	}
-
-	def "create a table with that contains an image and text"() {
-		when:
-		builder.create {
-            document {
-                table {
-                    row {
-                        cell {
-                            image(data:imageData, width:500.px, height:431.px)
-                            lineBreak()
-                            text 'A cheeseburger'
-                        }
-                    }
-
-                }
-		    }
         }
 
 		then:

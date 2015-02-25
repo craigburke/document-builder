@@ -18,13 +18,13 @@ class CellFactory extends AbstractFactory {
 		Cell cell = new Cell(attributes)
 		Row row = builder.current
 
-		cell.font = cell.font ?: row.font.clone()
+		cell.font = cell.font ?: builder.font.clone()
 		cell.position = builder.tablePosition.cell
         if (builder.addCellToRow) {
             builder.addCellToRow(cell, row)
         }
 
-		Paragraph paragraph = new Paragraph()
+		Paragraph paragraph = new Paragraph(font:cell.font.clone(), parent:cell)
 		paragraph.margin.setDefaults(0, 0)
         if (builder.addParagraphToCell) {
             builder.addParagraphToCell(paragraph, cell)
@@ -32,7 +32,7 @@ class CellFactory extends AbstractFactory {
 		cell.children << paragraph
 
 		if (value) {
-			Text text = new Text(value:value, font:cell.font.clone(), parent:cell)
+			Text text = new Text(value:value, font:cell.font.clone(), parent:paragraph)
 		    paragraph.children << text
             if (builder.addTextToParagraph) {
                 builder.addTextToParagraph(text, paragraph)
