@@ -78,7 +78,7 @@ class ParagraphParser {
                     currentLine = new ParagraphLine(paragraph, maxLineWidth)
                     chunkLines << currentLine
                 }
-
+                currentLine.contentWidth += node.width
                 currentLine.elements << new ImageElement(node:node)
             }
         }
