@@ -23,6 +23,10 @@ class TableRenderer {
         table.rows.each { renderRow(it) }
     }
 
+    int translateY(int y) {
+        document.item.translateY(y)
+    }
+
     private void renderBorders(RowElement rowElement) {
         document.item.y = rowElement.startY
 
@@ -34,25 +38,29 @@ class TableRenderer {
         int xStart = document.margin.left + table.margin.left
         int xEnd = xStart + table.width
 
-        int yTop = document.item.translateY(rowElement.startY + borderOffset)
+        int yTop = rowElement.startY + borderOffset
 
         if (shouldRenderTopBorder(rowElement)) {
-            contentStream.drawLine(xStart, yTop, xEnd, yTop)
+            contentStream.drawLine(xStart, translateY(yTop), xEnd, translateY(yTop))
         }
 
         int totalRowHeight = rowElement.renderedHeight + (table.padding * 2)
-        int yBottom = document.item.translateY(document.item.y + totalRowHeight)
 
+        int yBottom
         if (rowElement.fullyRendered) {
-            contentStream.drawLine(xStart, yBottom, xEnd, yBottom)
+            yBottom = document.item.y + totalRowHeight
+            contentStream.drawLine(xStart, translateY(yBottom), xEnd, translateY(yBottom))
+        }
+        else {
+           yBottom = document.item.y + document.item.remainingPageHeight
         }
 
-        int offsetYBottom = document.item.translateY(document.item.y + totalRowHeight + borderOffset)
+        int offsetYBottom = yBottom + borderOffset
 
         int currentX = document.margin.left + table.margin.left + borderOffset
         rowElement.cellElements.eachWithIndex { cellElement, i ->
             if (i == 0) {
-                contentStream.drawLine(currentX, yTop, currentX, offsetYBottom)
+                contentStream.drawLine(currentX, translateY(yTop), currentX, translateY(offsetYBottom))
             }
             currentX += cellElement.node.width
 
@@ -63,7 +71,7 @@ class TableRenderer {
                 currentX += table.border.size
             }
 
-            contentStream.drawLine(currentX, yTop, currentX, offsetYBottom)
+            contentStream.drawLine(currentX, translateY(yTop), currentX, translateY(offsetYBottom))
         }
 
     }
