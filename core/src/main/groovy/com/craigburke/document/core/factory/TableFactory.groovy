@@ -18,8 +18,9 @@ class TableFactory extends AbstractFactory {
 		Table table = new Table(attributes)
         table.margin.setDefaults(8, 0)
 
-        table.font = table.font ?: builder.font.clone()
-		table
+        table.font = builder.font.clone()
+        table.font << attributes.font
+        table
 	}
 
 	boolean onNodeChildren( FactoryBuilderSupport builder, table, Closure childContent) {

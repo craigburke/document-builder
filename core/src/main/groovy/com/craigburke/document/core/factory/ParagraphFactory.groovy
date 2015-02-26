@@ -17,7 +17,9 @@ class ParagraphFactory extends AbstractFactory {
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Paragraph paragraph = new Paragraph(attributes)
         paragraph.margin.setDefaults(8, 0)
-        paragraph.font = paragraph.font ?: builder.font.clone()
+
+        paragraph.font = builder.font.clone()
+        paragraph.font << attributes.font
 
         if (builder.parentName == 'document') {
             paragraph.align = paragraph.align ?: Align.LEFT

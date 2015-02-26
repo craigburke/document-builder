@@ -31,8 +31,9 @@ class PdfFont {
             return DEFAULT_FONT
         }
 
-        PDFont pdfFont
         def fontOptions = fonts[font.family]
+        PDFont pdfFont = fontOptions.containsKey('regular') ? fontOptions.regular : DEFAULT_FONT
+
         if (fontOptions) {
             if (font.italic && font.bold) {
                 pdfFont = fontOptions.containsKey('boldItalic') ? fontOptions.boldItalic : pdfFont
@@ -42,9 +43,6 @@ class PdfFont {
             }
             else if (font.bold) {
                 pdfFont = fontOptions.containsKey('bold') ? fontOptions.bold : pdfFont
-            }
-            else {
-                pdfFont = fontOptions.containsKey('regular') ? fontOptions.regular : DEFAULT_FONT
             }
         }
 

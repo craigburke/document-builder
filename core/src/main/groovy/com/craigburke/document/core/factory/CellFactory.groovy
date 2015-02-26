@@ -18,7 +18,9 @@ class CellFactory extends AbstractFactory {
 		Cell cell = new Cell(attributes)
 		Row row = builder.current
 
-		cell.font = cell.font ?: builder.font.clone()
+        cell.font = builder.font.clone()
+        cell.font << attributes.font
+
 		cell.position = builder.tablePosition.cell
         if (builder.addCellToRow) {
             builder.addCellToRow(cell, row)

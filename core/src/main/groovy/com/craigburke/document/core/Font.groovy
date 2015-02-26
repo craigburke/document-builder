@@ -11,7 +11,7 @@ class Font implements AssignableColor, Cloneable {
 	Boolean italic = false
 
 	def leftShift(Map properties) {
-		properties.each { key, value -> this[key] = value }
+		properties?.each { key, value -> this[key] = value }
 	}
 
 	Object clone() {

@@ -1,6 +1,5 @@
 package com.craigburke.document.core.factory
 
-import com.craigburke.document.core.Font
 import com.craigburke.document.core.Paragraph
 import com.craigburke.document.core.Text
 
@@ -17,7 +16,8 @@ class TextFactory extends AbstractFactory {
         Paragraph paragraph = (builder.parentName == 'paragraph') ? builder.current : builder.current.children[0]
 
         Text text = new Text(value:value, parent:paragraph)
-		text.font = attributes.font ? new Font(attributes.font) : builder.font.clone()
+        text.font = builder.font.clone()
+        text.font << attributes.font
 
         if (builder.addTextToParagraph) {
             builder.addTextToParagraph(text, paragraph)
