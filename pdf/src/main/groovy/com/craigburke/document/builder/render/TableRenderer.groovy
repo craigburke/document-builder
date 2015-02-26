@@ -40,13 +40,14 @@ class TableRenderer {
             contentStream.drawLine(xStart, yTop, xEnd, yTop)
         }
 
-        int yBottom = document.item.translateY(document.item.y + rowElement.renderedHeight)
+        int totalRowHeight = rowElement.renderedHeight + (table.padding * 2)
+        int yBottom = document.item.translateY(document.item.y + totalRowHeight)
 
         if (rowElement.fullyRendered) {
             contentStream.drawLine(xStart, yBottom, xEnd, yBottom)
         }
 
-        int offsetYBottom = document.item.translateY(document.item.y + rowElement.renderedHeight + borderOffset)
+        int offsetYBottom = document.item.translateY(document.item.y + totalRowHeight + borderOffset)
 
         int currentX = document.margin.left + table.margin.left + borderOffset
         rowElement.cellElements.eachWithIndex { cellElement, i ->
@@ -96,7 +97,7 @@ class TableRenderer {
             document.item.x = rowStartX + table.border.size
 
             rowElement.cellElements.each {
-                document.item.y = rowElement.startY
+                document.item.y = rowElement.startY + table.padding
                 renderContentUntilEndPoint(it)
             }
 
@@ -114,7 +115,7 @@ class TableRenderer {
             }
         }
 
-        document.item.y = rowElement.startY + rowElement.renderedHeight
+        document.item.y = rowElement.startY + rowElement.renderedHeight + table.padding * 2
    }
 
     private void renderContentUntilEndPoint(CellElement cellElement) {
