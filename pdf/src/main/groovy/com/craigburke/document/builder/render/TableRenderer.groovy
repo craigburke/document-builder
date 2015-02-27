@@ -20,7 +20,7 @@ class TableRenderer {
     }
 
     void render() {
-        table.rows.each { renderRow(it) }
+        table.children.each { renderRow(it) }
     }
 
     int translateY(int y) {
@@ -38,17 +38,15 @@ class TableRenderer {
         int xStart = document.margin.left + table.margin.left
         int xEnd = xStart + table.width
 
-        int yTop = rowElement.startY + borderOffset
+        int yTop = rowElement.startY
 
         if (shouldRenderTopBorder(rowElement)) {
             contentStream.drawLine(xStart, translateY(yTop), xEnd, translateY(yTop))
         }
 
-        int totalRowHeight = rowElement.renderedHeight + (table.padding * 2)
-
         int yBottom
         if (rowElement.fullyRendered) {
-            yBottom = document.item.y + totalRowHeight
+            yBottom = document.item.y + rowElement.renderedHeight + table.border.size
             contentStream.drawLine(xStart, translateY(yBottom), xEnd, translateY(yBottom))
         }
         else {
@@ -77,7 +75,7 @@ class TableRenderer {
     }
 
     private boolean shouldRenderTopBorder(RowElement rowElement) {
-        if (rowElement.node == table.rows.first()) {
+        if (rowElement.node == table.children.first()) {
             true
         }
         else if (rowElement.startY == document.margin.top && !rowElement.spansMultiplePages) {
@@ -96,16 +94,20 @@ class TableRenderer {
     }
 
    private void renderRow(Row row) {
-       int rowStartX = document.margin.left
+       int rowStartX = document.margin.left + table.margin.left
 
        RowElement rowElement = new RowElement(row)
+
        rowElement.startY = document.item.y
+       if (rowElement.firstRow) {
+           rowElement.startY += table.border.size
+       }
 
         while (!rowElement.fullyRendered) {
             document.item.x = rowStartX + table.border.size
 
             rowElement.cellElements.each {
-                document.item.y = rowElement.startY + table.padding
+                document.item.y = rowElement.startY
                 renderContentUntilEndPoint(it)
             }
 
@@ -123,7 +125,7 @@ class TableRenderer {
             }
         }
 
-        document.item.y = rowElement.startY + rowElement.renderedHeight + table.padding * 2
+        document.item.y = rowElement.startY + rowElement.renderedHeight + table.border.size
    }
 
     private void renderContentUntilEndPoint(CellElement cellElement) {
@@ -135,16 +137,16 @@ class TableRenderer {
 
             if (canRenderCurrentLineOnPage(cellElement)) {
                 if (cellElement.onFirstLine) {
-                    document.item.y += table.border.size + table.padding
-                    cellElement.renderedHeight += table.padding + table.border.size
+                    document.item.y += table.padding
+                    cellElement.renderedHeight += table.padding
                 }
 
-                int renderStartX = cellStartX + table.padding + table.border.size
+                int renderStartX = cellStartX + table.padding
                 ParagraphRenderer.renderLine(document, line, renderStartX)
                 cellElement.renderedHeight += line.height
 
                 if (cellElement.onLastLine) {
-                    cellElement.renderedHeight += table.padding + table.border.size
+                    cellElement.renderedHeight += table.padding
                     cellElement.fullyRendered = true
                 }
             }

@@ -44,7 +44,7 @@ class WordDocumentLoader {
 
             tableItem.rows.each { rowItem ->
                 Row row = new Row(item:rowItem, parent:table)
-                table.rows << row
+                table.children << row
                 rowItem.tableCells.each { cellItem ->
                     Cell cell = new Cell(item:cellItem, parent:row)
 
@@ -55,7 +55,7 @@ class WordDocumentLoader {
 
                     cell.children = getParagraphs(cellItem.paragraphs)
 
-                    row.cells << cell
+                    row.children << cell
                 }
             }
 

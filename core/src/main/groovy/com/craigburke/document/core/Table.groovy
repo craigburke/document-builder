@@ -1,11 +1,11 @@
 package com.craigburke.document.core
 
 /**
- * Table node which contains rows of cells
+ * Table node which contains children of children
  * @author Craig Burke
  */
 class Table extends BaseNode {
-	List<Row> rows = []
+	List<Row> children = []
 
 	Border border = new Border()
     Margin margin = new Margin()
@@ -23,7 +23,7 @@ class Table extends BaseNode {
 
         def columnWidths = []
         int totalColumnWidth = 0
-        def cells = this.rows.first()?.cells
+        def cells = this.children.first()?.children
 
         cells?.each {
             columnWidths << it.width
@@ -37,8 +37,8 @@ class Table extends BaseNode {
             int calculatedColumnWidth = Math.round(remainingWidth / unspecifiedColumnCount)
             columnWidths = columnWidths.collect { it != null ? it : calculatedColumnWidth }
 
-            rows.each { row ->
-                row.cells.eachWithIndex { cell, index ->
+            children.each { row ->
+                row.children.eachWithIndex { cell, index ->
                     cell.width = columnWidths[index]
                 }
             }

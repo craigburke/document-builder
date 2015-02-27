@@ -59,7 +59,7 @@ class PdfContentExtractor extends PDFTextStripper {
         private processTable(TextPosition text, Font font ) {
             def textNode
 
-            Cell cell = currentChild.rows[tablePosition.row].cells[tablePosition.cell]
+            Cell cell = currentChild.children[tablePosition.row].children[tablePosition.cell]
             Paragraph paragraph = cell.children[0]
             paragraph.font = paragraph.font ?: font.clone()
 

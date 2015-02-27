@@ -102,7 +102,7 @@ abstract class BaseBuilderSpec extends Specification {
 		def table = getDocument(data).children[0]
 
 		then:
-		table.rows[0].cells[0].children[0].text == 'FOOBAR'
+		table.children[0].children[0].children[0].text == 'FOOBAR'
 	}
 
 	def "set table options"() {
@@ -124,10 +124,10 @@ abstract class BaseBuilderSpec extends Specification {
 		table.width == 403
 
 		and:
-		table.rows[0].cells[0].width == 200
+		table.children[0].children[0].width == 200
 
 		and:
-		table.rows[0].cells[1].width == 200
+		table.children[0].children[1].width == 200
 	}
 
 	def "set paragraph text"() {

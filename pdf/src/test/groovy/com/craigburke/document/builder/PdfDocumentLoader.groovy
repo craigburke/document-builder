@@ -61,9 +61,9 @@ class PdfDocumentLoader {
             rowNode.cell.each { cellNode ->
                 def cell = new Cell(width:new BigDecimal(cellNode.'@width'))
                 cell.children << new Paragraph()
-                row.cells << cell
+                row.children << cell
             }
-            table.rows << row
+            table.children << row
         }
         document.children << table
     }

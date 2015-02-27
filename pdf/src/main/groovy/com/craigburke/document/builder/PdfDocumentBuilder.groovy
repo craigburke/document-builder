@@ -118,8 +118,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
             delegate = builder
             resolveStrategy = Closure.DELEGATE_FIRST
 
-            tableNode.rows.each {
-                def cells = it.cells
+            tableNode.children.each {
+                def cells = it.children
                 row {
                     cells.each {
                         cell(width:"${it.width ?: 0}")

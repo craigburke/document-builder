@@ -5,7 +5,7 @@ package com.craigburke.document.core
  * @author Craig Burke
  */
 class Row extends BaseNode {
-	List<Cell> cells = []
+	List<Cell> children = []
 	Integer position = 0
     Integer width
 }

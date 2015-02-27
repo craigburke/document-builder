@@ -493,10 +493,10 @@ class BuilderSpec extends Specification {
         Document document = result.document
         Table table = document.children[0]
 
-        Row row = table.rows[0]
+        Row row = table.children[0]
 
-        Cell cell1 = row.cells[0]
-        Cell cell2 = row.cells[1]
+        Cell cell1 = row.children[0]
+        Cell cell2 = row.children[1]
 
         Paragraph paragraph1 = cell1.children[0]
         Paragraph paragraph2 = cell2.children[0]
@@ -508,9 +508,9 @@ class BuilderSpec extends Specification {
         table.parent == document
 
         and:
-        table.rows == [row]
+        table.children == [row]
         row.parent == table
-        row.cells == [cell1, cell2]
+        row.children == [cell1, cell2]
 
         and:
         cell1.parent == row
@@ -547,8 +547,8 @@ class BuilderSpec extends Specification {
         }
 
         Table table = result.document.children[0]
-        Cell cell1 = table.rows[0].cells[0]
-        Cell cell2 = table.rows[0].cells[1]
+        Cell cell1 = table.children[0].children[0]
+        Cell cell2 = table.children[0].children[1]
 
         then:
         table.width == 250
@@ -595,8 +595,8 @@ class BuilderSpec extends Specification {
         def paragraph2 = document.children[1].children[0]
         def paragraph3 = document.children[2].children[0]
 
-        def table1 = document.children[3].rows[0].cells[0].children[0]
-        def table2 = document.children[4].rows[0].cells[0].children[0]
+        def table1 = document.children[3].children[0].children[0].children[0]
+        def table2 = document.children[4].children[0].children[0].children[0]
 
         then:
         paragraph1.font.family == 'Courier'

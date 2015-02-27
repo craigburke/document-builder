@@ -1,7 +1,7 @@
 package com.craigburke.document.core.factory
 
 /**
- * Determines the number of cells within a table
+ * Determines the number of children within a table
  * @author Craig Burke
  */
 class CellCounter {

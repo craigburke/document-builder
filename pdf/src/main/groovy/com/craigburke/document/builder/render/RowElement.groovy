@@ -16,7 +16,7 @@ class RowElement {
 
     RowElement(Row row) {
         this.node = row
-        row.cells.each { cell ->
+        row.children.each { cell ->
             cellElements << new CellElement(cell)
         }
     }
@@ -31,6 +31,10 @@ class RowElement {
 
     boolean isFullyRendered() {
         cellElements.every { it.fullyRendered }
+    }
+
+    boolean isFirstRow() {
+        (node == node.parent.children.first())
     }
 
 }
