@@ -1,4 +1,4 @@
-:version: 0.2.0
+:version: 0.2.1
 
 = Groovy Document Builder
 
@@ -30,7 +30,7 @@ builders.each { builder ->
     builder.create { 
 	    document(font: [family: 'Helvetica', size: 14.pt], margin: [top: 0.75.inches]) {
 
-            paragraph "Groovy Document Builder", font: [size: 22.pt]
+            paragraph "Groovy Document Builder v{version}", font: [size: 22.pt]
 
             paragraph {
                 font.size = 42.pt
