@@ -26,7 +26,7 @@ class CellFactory extends AbstractFactory {
             builder.addCellToRow(cell, row)
         }
 
-		Paragraph paragraph = new Paragraph(font:cell.font.clone(), parent:cell)
+		Paragraph paragraph = new Paragraph(font:cell.font.clone(), parent:cell, align: cell.align)
 		paragraph.margin.setDefaults(0, 0)
         if (builder.addParagraphToCell) {
             builder.addParagraphToCell(paragraph, cell)
