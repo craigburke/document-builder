@@ -56,7 +56,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 		paragraph.item.with {
 			spacingAfter = pointToTwip(paragraph.margin.bottom)
 			spacingBefore = pointToTwip(paragraph.margin.top)
-			spacingAfterLines = paragraph.lineHeight
+			spacingAfterLines = paragraph.textHeight
 		}
 
 		if (paragraph.align == Align.RIGHT) {

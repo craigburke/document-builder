@@ -21,21 +21,21 @@ class ParagraphSpec extends Specification {
         Paragraph emptyParagraph = new Paragraph(font:[size:10])
 
         expect:
-        emptyParagraph.lineHeight == 0
+        emptyParagraph.textHeight == 0
         emptyParagraph.text == ''
     }
 
     def "leading default"() {
         expect:
-        paragraph.lineHeight == DEFAULT_FONT_SIZE * paragraph.leadingMultiplier
+        paragraph.textHeight == Math.ceil(DEFAULT_FONT_SIZE * paragraph.lineHeightMultiplier)
     }
 
     def "leading override"() {
-        paragraph.leading = 20
+        paragraph.lineHeight = 20
 
         expect:
-        paragraph.leading == 20
         paragraph.lineHeight == 20
+        paragraph.textHeight == 20
     }
 
     def "text combines text values"() {

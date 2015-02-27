@@ -8,16 +8,21 @@ class Paragraph extends BaseNode {
 	Margin margin = new Margin()
 	Align align
 
-	Integer leading
-	Integer leadingMultiplier = 1.1
+	Integer lineHeight
+	BigDecimal lineHeightMultiplier = 1.1
 
 	List children = []
 
-	Integer getLineHeight() {
-        leading ?: leadingMultiplier * children.findAll {
+	Integer getTextHeight() {
+        BigDecimal result = lineHeight ?: lineHeightMultiplier * children.findAll {
             it.getClass() == Text }.inject(0f) { max, child -> Math.max(max, child.font.size as Float)
         }
+        Math.ceil(result)
 	}
+
+    Integer getTextHeightOffset() {
+        Math.ceil((textHeight - font.size) / 2)
+    }
 
 	String getText() {
 		children.findAll { it.getClass() == Text }*.value.join('')
