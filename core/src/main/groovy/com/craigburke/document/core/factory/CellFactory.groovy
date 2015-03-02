@@ -45,6 +45,9 @@ class CellFactory extends AbstractFactory {
 	}
 
 	void onNodeCompleted(FactoryBuilderSupport builder, row, cell) {
+		if (builder.onParagraphComplete && cell.children) {
+			builder.onParagraphComplete(cell.children[0])
+		}
 		if (builder.onCellComplete) {
 			builder.onCellComplete(cell, row)
 		}

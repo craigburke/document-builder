@@ -19,6 +19,7 @@ import com.craigburke.document.core.Font
 import org.apache.poi.xwpf.usermodel.ParagraphAlignment
 
 import org.apache.poi.xwpf.usermodel.XWPFDocument
+import org.apache.poi.xwpf.usermodel.XWPFRun
 import org.apache.poi.util.Units
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STBorder
 
@@ -71,27 +72,48 @@ class WordDocumentBuilder extends DocumentBuilder {
 		indent.right = pointToTwip(paragraph.margin.right)
 	}
 
-	def addTextToParagraph = { Text text, Paragraph paragraph ->
-        addTextRun(paragraph.item, text)
+	def onParagraphComplete = { Paragraph paragraph ->
+		paragraph.children.eachWithIndex { child, index ->
+			int previousLinebreaks = getPreviousLineBreakCount(paragraph.children, index)
+
+			switch (child.getClass()) {
+				case Text:
+					addTextRun(paragraph.item, child, previousLinebreaks)
+					break
+				case Image:
+					addImageRun(paragraph.item, child, previousLinebreaks)
+					break
+			}
+		}
 	}
 
-	def addImageToParagraph = { Image image, Paragraph paragraph ->
-		addImageRun(paragraph.item, image)
-	}
-
-	def addLineBreakToParagraph = { LineBreak lineBreak, Paragraph paragraph ->
-		def run = paragraph.item.createRun()
-		run.addBreak()
+	private int getPreviousLineBreakCount(List items, int currentIndex) {
+		int itemIndex = currentIndex - 1
+		def item = items[itemIndex]
+		int count = 0
+		while (itemIndex != 0 && item instanceof LineBreak) {
+			count++
+			itemIndex--
+			item = items[itemIndex]
+		}
+		count
 	}
 
 	def addTableToDocument = { Table table, Document document ->
 		table.item = document.item.createTable(1, table.columns)
+	}
 
+	def addRowToTable = { Row row, Table table ->
+		row.item = (row.position == 0) ? table.item.getRow(0) : table.item.createRow()
+	}
+
+	def addCellToRow = { Cell cell, Row row ->
+		cell.item = row.item.getCell(cell.position)
+	}
+
+	def onTableComplete = { Table table ->
 		def tableProperties = table.item.CTTbl.tblPr
-
-		if (table.width) {
-			tableProperties.tblW.w = pointToTwip(table.width)
-		}
+		tableProperties.tblW.w = pointToTwip(table.width)
 
 		def tableBorder = tableProperties.tblBorders
 		def properties = ['top', 'right', 'bottom', 'left', 'insideH', 'insideV']
@@ -104,26 +126,18 @@ class WordDocumentBuilder extends DocumentBuilder {
 			tableBorderSection.val = table.border.size == 0 ? STBorder.NONE : STBorder.SINGLE
 		}
 
-	}
+		table.children.each { Row row ->
+			row.children.each { Cell cell ->
+				def cellProperties = cell.item.CTTc.addNewTcPr()
+				cellProperties.addNewTcW().w = pointToTwip(cell.width - (table.padding * 2))
 
-	def addRowToTable = { Row row, Table table ->
-		row.item = (row.position == 0) ? table.item.getRow(0) : table.item.createRow()
-	}
+				def padding = cellProperties.addNewTcMar()
 
-	def addCellToRow = { Cell cell, Row row ->
-        Table table = row.parent
-		cell.item = row.item.getCell(cell.position)
-
-		def cellProperties = cell.item.CTTc.addNewTcPr()
-		def padding = cellProperties.addNewTcMar()
-
-		padding.addNewTop().w = pointToTwip(table.padding)
-		padding.addNewBottom().w = pointToTwip(table.padding)
-		padding.addNewLeft().w = pointToTwip(table.padding)
-		padding.addNewRight().w = pointToTwip(table.padding)
-
-		if (cell.width) {
-			cellProperties.addNewTcW().w = pointToTwip(cell.width)
+				padding.addNewTop().w = pointToTwip(table.padding)
+				padding.addNewBottom().w = pointToTwip(table.padding)
+				padding.addNewLeft().w = pointToTwip(table.padding)
+				padding.addNewRight().w = pointToTwip(table.padding)
+			}
 		}
 	}
 
@@ -143,10 +157,10 @@ class WordDocumentBuilder extends DocumentBuilder {
 		document.item.write(out)
 	}
 
-	private void addTextRun(paragraph, Text textNode) {
+	private void addTextRun(paragraph, Text textNode, int startingLineBreaks) {
 		Font font = textNode.font
 
-		def run
+		XWPFRun run
 		def currentRuns = paragraph.runs
 
 		if (currentRuns && !currentRuns.first().toString()) {
@@ -157,7 +171,11 @@ class WordDocumentBuilder extends DocumentBuilder {
 			run = paragraph.createRun()
 		}
 
-        run.with {
+		startingLineBreaks.times {
+			run.addBreak()
+		}
+
+		run.with {
             fontFamily = font.family
             fontSize = font.size
             color = font.color.hex
@@ -166,16 +184,22 @@ class WordDocumentBuilder extends DocumentBuilder {
             text = textNode.value
         }
 
+		run
 	}
 
-	private static void addImageRun(paragraph, Image image) {
-        def run = paragraph.createRun()
+	private static void addImageRun(paragraph, Image image, int startingLineBreaks) {
+		XWPFRun run = paragraph.createRun()
+
+		startingLineBreaks.times {
+			run.addBreak()
+		}
 
         InputStream pictureData = new ByteArrayInputStream(image.data)
         int width = Units.toEMU(image.width)
         int height = Units.toEMU(image.height)
 
 	    run.addPicture(pictureData, XWPFDocument.PICTURE_TYPE_PNG, image.name, width, height)
+		run
 	}
 
 }

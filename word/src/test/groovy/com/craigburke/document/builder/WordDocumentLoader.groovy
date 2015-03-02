@@ -47,11 +47,9 @@ class WordDocumentLoader {
                 table.children << row
                 rowItem.tableCells.each { cellItem ->
                     Cell cell = new Cell(item:cellItem, parent:row)
-
-                    def widthSettings = cellItem.CTTc.tcPr?.tcW
-                    if (widthSettings) {
-                        cell.width = twipToPoint(widthSettings.w)
-                    }
+                    int padding = cellItem.CTTc.tcPr.tcMar.left.w
+                    int width = cellItem.CTTc.tcPr.tcW.w
+                    cell.width = twipToPoint(width + (padding * 2))
 
                     cell.children = getParagraphs(cellItem.paragraphs)
 

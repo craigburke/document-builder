@@ -1,4 +1,4 @@
-:version: 0.2.1
+:version: 0.2.2
 
 = Groovy Document Builder
 
@@ -15,6 +15,7 @@ A document builder for Groovy for PDF or Word documents. This is still very much
 
 import com.craigburke.document.builder.PdfDocumentBuilder
 import com.craigburke.document.builder.WordDocumentBuilder
+import com.craigburke.document.core.Align
 
 def builders = [
         new PdfDocumentBuilder(new File('example.pdf')),
@@ -27,48 +28,47 @@ String GROOVY_IMAGE_URL = 'http://www.craigburke.com/images/posts/groovy-logo.pn
 byte[] groovyImageData = new URL(GROOVY_IMAGE_URL).bytes
 
 builders.each { builder ->
-    builder.create { 
-	    document(font: [family: 'Helvetica', size: 14.pt], margin: [top: 0.75.inches]) {
+    builder.create {
+		document(font: [family: 'Helvetica', size: 14.pt], margin: [top: 0.75.inches]) {
 
-            paragraph "Groovy Document Builder v{version}", font: [size: 22.pt]
+        paragraph "Groovy Document Builder v.{version}", font: [color: '#990000', size: 22.pt]
 
-            paragraph {
-                font.size = 42.pt
-                "Hello Woooorld!!!!!".toUpperCase().eachWithIndex { letter, index ->
-                    font.size--
-                    font.color = RAINBOW_COLORS[ index % RAINBOW_COLORS.size() ]
-                    text letter
-                }
-                lineBreak()
-                text "Current font size is ${font.size}pt"
+        paragraph {
+            font.size = 42.pt
+            "Hello Woooorld!!!!!".toUpperCase().eachWithIndex { letter, index ->
+                font.color = RAINBOW_COLORS[ index % RAINBOW_COLORS.size() ]
+                text letter
+                font.size--
             }
+            lineBreak()
+            text "Current font size is ${font.size}pt"
+        }
 
-            paragraph "Font size is back to 14pt now with the default black font"
+        paragraph "Back to default font and aligned to the right", align: Align.RIGHT
 
-            paragraph(margin: [left: 1.25.inches, right: 1.inch, top: 0.25.inches, bottom: 0.25.inches]) {
-                font &#060;&#060; [family: 'Times-Roman', bold: true, italic: true, color: '#333333']
-                text "A paragraph with a different font and margins"
-            }
+        paragraph(margin: [left: 1.25.inches, right: 1.inch, top: 0.25.inches, bottom: 0.25.inches]) {
+            font << [family: 'Times-Roman', bold: true, italic: true, color: '#333333']
+            text "A paragraph with a different font and margins"
+        }
 
-            paragraph(margin: [left: 1.inch]) {
-                image(data: groovyImageData, width: 250.px, height: 125.px)
-                lineBreak()
-                text "Figure 1: Groovy Logo", font: [italic: true, size: 9.pt]
-            }
+        paragraph(align: Align.CENTER) {
+            image(data: groovyImageData, width: 250.px, height: 125.px)
+            lineBreak()
+            text "Figure 1: Groovy Logo", font: [italic: true, size: 9.pt]
+        }
 
-            paragraph("Suddenly, a table...", font: [size: 22.pt], margin: [bottom: 0.25.inches])
+        paragraph("Suddenly, a table...", font: [size: 22.pt])
 
-            table(width: 5.inches, border: [size: 3.px]) {
-                row {
-                    cell("Cell 1", width: 3.inches)
-                    cell("Cell 2")
-                    cell {
-                        text "Cell 3"
-                    }
+        table(width: 6.inches, padding: 4.px, border: [size: 3.px, color: '#990000']) {
+            row {
+                cell("Left Aligned", width: 1.5.inches, align: Align.LEFT)
+                cell("Center Aligned", width: 2.inches, align: Align.CENTER)
+                cell(align: Align.RIGHT) {
+                    text "Right Aligned"
                 }
             }
         }
-    }
+    }}
 }
 ----
 
@@ -78,7 +78,7 @@ The core project as well as the Word document and Pdf builder are all available 
 
 == TODO
 
-   * Add sections/headers
-   * Add links
-   * Add lists
+   * Headers/Footers
+   * Links
+   * Lists
    * Proper Documentation
