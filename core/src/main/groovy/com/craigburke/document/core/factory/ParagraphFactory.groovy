@@ -16,6 +16,7 @@ class ParagraphFactory extends AbstractFactory {
 
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Paragraph paragraph = new Paragraph(attributes)
+		paragraph.parent = builder.current
         paragraph.margin.setDefaults(8, 0)
 
         paragraph.font = builder.font.clone()
@@ -37,13 +38,6 @@ class ParagraphFactory extends AbstractFactory {
 		}
 
 		paragraph
-	}
-
-	void setChild(FactoryBuilderSupport builder, parent, child) {
-        child.parent = parent
-        if (!parent.children.contains(child)) {
-            parent.children << child
-        }
 	}
 
  	void onNodeCompleted(FactoryBuilderSupport builder, parent, child) {

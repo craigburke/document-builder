@@ -107,8 +107,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
                 marginBottom:"${paragraphNode.margin.bottom}",
                 marginLeft:"${paragraphNode.margin.left}",
                 marginRight:"${paragraphNode.margin.right}") {
-                    paragraphNode.children.findAll { it.getClass() == Image }.each {
-                        image()
+                    paragraphNode.children?.findAll { it.getClass() == Image }.each {
+                        builder.image()
                     }
                 }
     }

@@ -91,7 +91,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 		int itemIndex = currentIndex - 1
 		def item = items[itemIndex]
 		int count = 0
-		while (itemIndex != 0 && item instanceof LineBreak) {
+		while (itemIndex >= 0 && item instanceof LineBreak) {
 			count++
 			itemIndex--
 			item = items[itemIndex]

@@ -25,11 +25,14 @@ class ImageFactory extends AbstractFactory {
             image.height = bufferedImage.height
         }
 
+        Paragraph paragraph = builder.parentName == 'paragraph' ? builder.current : builder.current.children[0]
+        image.parent = paragraph
+        paragraph.children << image
+
         if (builder.parentName in ['paragraph', 'cell'] && builder.addImageToParagraph) {
-            Paragraph paragraph = builder.parentName == 'paragraph' ? builder.current : builder.current.children[0]
             builder.addImageToParagraph(image, paragraph)
         }
 
-		image
+        image
 	}
 }
