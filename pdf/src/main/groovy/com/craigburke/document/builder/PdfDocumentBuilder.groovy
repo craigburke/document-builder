@@ -45,14 +45,16 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 
 	def onParagraphComplete = { Paragraph paragraph ->
-        int pageWidth = document.item.currentPage.mediaBox.width - document.margin.left - document.margin.right
-        int maxLineWidth = pageWidth - paragraph.margin.left - paragraph.margin.right
-        int renderStartX = document.margin.left + paragraph.margin.left
+        if (paragraph.parent instanceof Document) {
+            int pageWidth = document.item.currentPage.mediaBox.width - document.margin.left - document.margin.right
+            int maxLineWidth = pageWidth - paragraph.margin.left - paragraph.margin.right
+            int renderStartX = document.margin.left + paragraph.margin.left
 
-        ParagraphRenderer paragraphRenderer = new ParagraphRenderer(paragraph, document, renderStartX, maxLineWidth)
-        paragraphRenderer.render()
+            ParagraphRenderer paragraphRenderer = new ParagraphRenderer(paragraph, document, renderStartX, maxLineWidth)
+            paragraphRenderer.render()
 
-        document.item.moveDownPage(paragraph.margin.bottom)
+            document.item.moveDownPage(paragraph.margin.bottom)
+        }
     }
 
 	def addTableToDocument = { Table table, Document document ->
