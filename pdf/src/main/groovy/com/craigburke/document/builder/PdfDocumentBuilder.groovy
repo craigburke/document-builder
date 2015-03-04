@@ -69,6 +69,18 @@ class PdfDocumentBuilder extends DocumentBuilder {
     }
 
 	void writeDocument(Document document, OutputStream out) {
+        
+        int pageCount = document.item.pages.size()
+        
+        document.item.pages.eachWithIndex { page, index ->
+            int pageNumber = index + 1
+            document.item.pageNumber = pageNumber
+            def header = renderPageHeader(pageNumber, pageCount)
+            document.item.y = 0
+            ParagraphRenderer paragraphRenderer = new ParagraphRenderer(header, document, 0, document.width)
+            paragraphRenderer.render()
+        }
+        
 		addMetadata()
 		document.item.contentStream?.close()
 		document.item.pdDocument.save(out)

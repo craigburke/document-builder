@@ -19,7 +19,7 @@ class ParagraphFactory extends AbstractFactory {
 		paragraph.parent = builder.current
         paragraph.margin.setDefaults(8, 0)
 
-        paragraph.font = builder.font.clone()
+        paragraph.font = builder.createNewFont()
         paragraph.font << attributes.font
 
         if (builder.parentName == 'document') {

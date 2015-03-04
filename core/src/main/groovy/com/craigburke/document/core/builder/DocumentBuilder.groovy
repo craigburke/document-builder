@@ -38,6 +38,10 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements Paragrap
 	Font getFont() {
 		current.font
 	}
+	
+	Font createNewFont() {
+		font ? font.clone() : new Font()
+	}
 
 	def invokeMethod(String name, args) {
 		use(UnitCategory) {
@@ -54,6 +58,12 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements Paragrap
     void addFont(EmbeddedFont embeddedFont) {
         document.embeddedFonts << embeddedFont
     }
+
+	def renderPageHeader(int pageNumber, int pageCount) {
+		if (document.header) {
+			document.header(pageNumber, pageCount)
+		}
+	}
 
     abstract void initializeDocument(Document document, OutputStream out)
 	abstract void writeDocument(Document document, OutputStream out)
