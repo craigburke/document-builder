@@ -11,7 +11,7 @@ class Document extends BaseNode {
     final int height = inchToPoint(11)
 
     def header
-    
+
     List children = []
     List<EmbeddedFont> embeddedFonts = []
     Margin margin = new Margin()

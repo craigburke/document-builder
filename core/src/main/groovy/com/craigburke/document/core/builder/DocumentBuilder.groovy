@@ -38,10 +38,6 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements Paragrap
 	Font getFont() {
 		current.font
 	}
-	
-	Font createNewFont() {
-		font ? font.clone() : new Font()
-	}
 
 	def invokeMethod(String name, args) {
 		use(UnitCategory) {

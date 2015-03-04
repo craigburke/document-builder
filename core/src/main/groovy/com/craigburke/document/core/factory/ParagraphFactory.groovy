@@ -1,7 +1,7 @@
 package com.craigburke.document.core.factory
 
 import com.craigburke.document.core.Align
-
+import com.craigburke.document.core.Font
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.Paragraph
 
@@ -19,7 +19,7 @@ class ParagraphFactory extends AbstractFactory {
 		paragraph.parent = builder.current
         paragraph.margin.setDefaults(8, 0)
 
-        paragraph.font = builder.createNewFont()
+        paragraph.font = builder.font ? builder.font.clone() : new Font()
         paragraph.font << attributes.font
 
         if (builder.parentName == 'document') {

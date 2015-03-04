@@ -69,9 +69,19 @@ class PdfDocumentBuilder extends DocumentBuilder {
     }
 
 	void writeDocument(Document document, OutputStream out) {
-        
+        if (document.header) {
+            addPageHeader()
+        }
+
+		addMetadata()
+		document.item.contentStream?.close()
+		document.item.pdDocument.save(out)
+		document.item.pdDocument.close()
+	}
+
+    private void addPageHeader() {
         int pageCount = document.item.pages.size()
-        
+
         document.item.pages.eachWithIndex { page, index ->
             int pageNumber = index + 1
             document.item.pageNumber = pageNumber
@@ -80,12 +90,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
             ParagraphRenderer paragraphRenderer = new ParagraphRenderer(header, document, 0, document.width)
             paragraphRenderer.render()
         }
-        
-		addMetadata()
-		document.item.contentStream?.close()
-		document.item.pdDocument.save(out)
-		document.item.pdDocument.close()
-	}
+    }
 
 	private void addMetadata() {
 		ByteArrayOutputStream xmpOut = new ByteArrayOutputStream()
