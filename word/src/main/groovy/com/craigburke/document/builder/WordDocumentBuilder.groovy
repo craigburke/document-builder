@@ -1,12 +1,12 @@
 package com.craigburke.document.builder
 
+import static com.craigburke.document.core.UnitUtil.pointToTwip
+import static com.craigburke.document.core.UnitUtil.pointToEigthPoint
+
 import com.craigburke.document.core.builder.RenderState
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy
 import org.apache.poi.xwpf.usermodel.XWPFHeaderFooter
 import org.apache.poi.xwpf.usermodel.XWPFParagraph
-
-import static com.craigburke.document.core.UnitUtil.pointToTwip
-import static com.craigburke.document.core.UnitUtil.pointToEigthPoint
 
 import com.craigburke.document.core.Align
 import com.craigburke.document.core.LineBreak
@@ -73,7 +73,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 	}
 
 	def onParagraphComplete = { Paragraph paragraph ->
-		paragraph.item = document.item.createParagraph()
+		paragraph.item = paragraph.item ?: document.item.createParagraph()
 		setParagraphProperties(paragraph)
 		paragraph.children.eachWithIndex { child, index ->
 			int previousLinebreaks = getPreviousLineBreakCount(paragraph.children, index)

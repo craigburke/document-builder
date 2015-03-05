@@ -100,7 +100,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
                 renderHeaderFooter(footer, xStart)
             }
         }
-        
+
         renderState = RenderState.PAGE
     }
 
@@ -113,7 +113,6 @@ class PdfDocumentBuilder extends DocumentBuilder {
             TableRenderer renderer = new TableRenderer(headerFooter, document)
             renderer.render(renderState)
         }
-        
     }
 
 	private void addMetadata() {
