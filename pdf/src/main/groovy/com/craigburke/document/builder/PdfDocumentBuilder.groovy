@@ -3,6 +3,7 @@ package com.craigburke.document.builder
 import com.craigburke.document.builder.render.ParagraphRenderer
 import com.craigburke.document.builder.render.TableRenderer
 import com.craigburke.document.core.EmbeddedFont
+import com.craigburke.document.core.builder.RenderState
 import groovy.transform.InheritConstructors
 import groovy.xml.MarkupBuilder
 
@@ -30,7 +31,6 @@ class PdfDocumentBuilder extends DocumentBuilder {
         pdfDocument.y = document.margin.top
 
         document.item = pdfDocument
-        document
     }
 
     @Override
@@ -41,11 +41,11 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
 	def addParagraphToDocument = { Paragraph paragraph, Document document ->
 		document.item.x = paragraph.margin.left + document.margin.left
-        document.item.moveDownPage(paragraph.margin.top)
+        document.item.scrollDownPage(paragraph.margin.top)
 	}
 
 	def onParagraphComplete = { Paragraph paragraph ->
-        if (paragraph.parent instanceof Document) {
+        if (renderState == RenderState.PAGE) {
             int pageWidth = document.item.currentPage.mediaBox.width - document.margin.left - document.margin.right
             int maxLineWidth = pageWidth - paragraph.margin.left - paragraph.margin.right
             int renderStartX = document.margin.left + paragraph.margin.left
@@ -53,42 +53,83 @@ class PdfDocumentBuilder extends DocumentBuilder {
             ParagraphRenderer paragraphRenderer = new ParagraphRenderer(paragraph, document, renderStartX, maxLineWidth)
             paragraphRenderer.render()
 
-            document.item.moveDownPage(paragraph.margin.bottom)
+            document.item.scrollDownPage(paragraph.margin.bottom)
         }
     }
 
 	def addTableToDocument = { Table table, Document document ->
         document.item.x = table.margin.left + document.margin.left
-        document.item.moveDownPage(table.margin.top)
+        document.item.scrollDownPage(table.margin.top)
 	}
 
     def onTableComplete = { Table table ->
-        TableRenderer tableRenderer = new TableRenderer(table, document)
-        tableRenderer.render()
-        document.item.moveDownPage(table.margin.bottom)
+        if (renderState == RenderState.PAGE) {
+            TableRenderer tableRenderer = new TableRenderer(table, document)
+            tableRenderer.render()
+            document.item.scrollDownPage(table.margin.bottom)
+        }
     }
 
 	void writeDocument(Document document, OutputStream out) {
-        if (document.header) {
-            addPageHeader()
-        }
-
+        addPageHeader()
+        addPageFooter()
 		addMetadata()
+
 		document.item.contentStream?.close()
 		document.item.pdDocument.save(out)
 		document.item.pdDocument.close()
 	}
 
     private void addPageHeader() {
-        int pageCount = document.item.pages.size()
+        if (document.header) {
+            renderState = RenderState.HEADER
+            int pageCount = document.pageCount ?: document.item.pages.size()
 
-        document.item.pages.eachWithIndex { page, index ->
-            int pageNumber = index + 1
-            document.item.pageNumber = pageNumber
-            def header = renderPageHeader(pageNumber, pageCount)
-            document.item.y = 0
-            ParagraphRenderer paragraphRenderer = new ParagraphRenderer(header, document, 0, document.width)
-            paragraphRenderer.render()
+            (1..pageCount).each { int pageNumber ->
+                document.item.pageNumber = pageNumber
+                def header = renderPageHeader(pageNumber, pageCount)
+
+                document.item.y = header.margin.top
+                int xStart = header.margin.left
+
+                if (header instanceof Paragraph) {
+                    ParagraphRenderer renderer = new ParagraphRenderer(header, document, xStart, document.width)
+                    renderer.render(renderState)
+                }
+                else if (header instanceof Table) {
+                    TableRenderer renderer = new TableRenderer(header, document)
+                    renderer.render(renderState)
+                }
+
+            }
+            renderState = RenderState.PAGE
+        }
+    }
+
+    private void addPageFooter() {
+        if (document.footer) {
+            renderState = RenderState.FOOTER
+            int pageCount = document.pageCount ?: document.item.pages.size()
+
+            (1..pageCount).each { int pageNumber ->
+                document.item.pageNumber = pageNumber
+
+                def footer = renderPageFooter(pageNumber, pageCount)
+                document.item.y = document.item.pageBottomY + footer.margin.top
+
+                int xStart = footer.margin.left
+
+                if (footer instanceof Paragraph) {
+                    ParagraphRenderer renderer = new ParagraphRenderer(footer, document, xStart, document.width)
+                    renderer.render(renderState)
+                }
+                else if (footer instanceof Table) {
+                    TableRenderer renderer = new TableRenderer(footer, document)
+                    renderer.render(renderState)
+                }
+
+            }
+            renderState = RenderState.PAGE
         }
     }
 

@@ -5,6 +5,7 @@ import com.craigburke.document.core.Align
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Paragraph
 import com.craigburke.document.core.Text
+import com.craigburke.document.core.builder.RenderState
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMap
@@ -33,16 +34,16 @@ class ParagraphRenderer {
         paragraphElement = new ParagraphElement(paragraph, maxLineWidth)
     }
 
-    void render() {
+    void render(RenderState renderState = RenderState.PAGE) {
         paragraphElement.lines.each { ParagraphLine line ->
-            ParagraphRenderer.renderLine(document, line, renderStartX)
+            ParagraphRenderer.renderLine(document, line, renderStartX, renderState)
         }
     }
 
-    static void renderLine(Document document, ParagraphLine line, int renderStartX) {
+    static void renderLine(Document document, ParagraphLine line, int renderStartX, RenderState renderState) {
         PdfDocument pdfDocument = document.item
 
-        if (pdfDocument.remainingPageHeight < line.height) {
+        if (renderState == RenderState.PAGE && pdfDocument.remainingPageHeight < line.height) {
             pdfDocument.addPage()
         }
 

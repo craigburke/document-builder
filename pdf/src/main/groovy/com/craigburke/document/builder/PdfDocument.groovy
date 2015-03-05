@@ -27,6 +27,15 @@ class PdfDocument {
         addPage()
     }
 
+    void scrollToStartPosition() {
+        x = document.margin.left
+        y = document.margin.top
+    }
+
+    int getPageBottomY() {
+        currentPage.mediaBox.height - document.margin.bottom
+    }
+
     void addPage() {
         def newPage = new PDPage()
         pages << newPage
@@ -35,9 +44,7 @@ class PdfDocument {
         contentStream?.close()
         contentStream = new PDPageContentStream(pdDocument, currentPage)
 
-        x = document.margin.top
-        y = document.margin.left
-
+        scrollToStartPosition()
         pdDocument.addPage(newPage)
     }
 
@@ -49,13 +56,14 @@ class PdfDocument {
         this.pageNumber = value
         contentStream?.close()
         contentStream = new PDPageContentStream(pdDocument, currentPage, true, true)
+        scrollToStartPosition()
     }
 
     int getTranslatedY() {
         currentPage.mediaBox.height - y
     }
 
-    void moveDownPage(int amount) {
+    void scrollDownPage(int amount) {
         if (remainingPageHeight < amount) {
             int amountDiff = amount - remainingPageHeight
             addPage()

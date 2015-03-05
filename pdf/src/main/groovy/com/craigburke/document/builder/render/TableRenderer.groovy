@@ -3,6 +3,7 @@ package com.craigburke.document.builder.render
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Row
 import com.craigburke.document.core.Table
+import com.craigburke.document.core.builder.RenderState
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
 
 /**
@@ -19,8 +20,8 @@ class TableRenderer {
         this.table = table
     }
 
-    void render() {
-        table.children.each { renderRow(it) }
+    void render(RenderState renderState) {
+        table.children.each { renderRow(it, renderState) }
     }
 
     int translateY(int y) {
@@ -93,7 +94,7 @@ class TableRenderer {
         contentStream.setLineWidth(table.border.size)
     }
 
-   private void renderRow(Row row) {
+   private void renderRow(Row row, RenderState renderState) {
        int rowStartX = document.margin.left + table.margin.left
 
        RowElement rowElement = new RowElement(row)
@@ -108,7 +109,7 @@ class TableRenderer {
 
             rowElement.cellElements.each {
                 document.item.y = rowElement.startY
-                renderContentUntilEndPoint(it)
+                renderContentUntilEndPoint(it, renderState)
             }
 
             if (rowElement.renderedHeight) {
@@ -128,21 +129,21 @@ class TableRenderer {
         document.item.y = rowElement.startY + rowElement.renderedHeight + table.border.size
    }
 
-    private void renderContentUntilEndPoint(CellElement cellElement) {
+    private void renderContentUntilEndPoint(CellElement cellElement, RenderState renderState) {
         boolean reachedBottomOfPage = false
         int cellStartX = document.item.x
 
         while (!reachedBottomOfPage && !cellElement.fullyRendered) {
             ParagraphLine line = cellElement.currentLine
 
-            if (canRenderCurrentLineOnPage(cellElement)) {
+            if (canRenderCurrentLineOnPage(cellElement, renderState)) {
                 if (cellElement.onFirstLine) {
                     document.item.y += table.padding
                     cellElement.renderedHeight += table.padding
                 }
 
                 int renderStartX = cellStartX + table.padding
-                ParagraphRenderer.renderLine(document, line, renderStartX)
+                ParagraphRenderer.renderLine(document, line, renderStartX, renderState)
                 cellElement.renderedHeight += line.height
 
                 if (cellElement.onLastLine) {
@@ -164,7 +165,11 @@ class TableRenderer {
         document.item.x = cellStartX + cellElement.node.width + table.border.size
     }
 
-    boolean canRenderCurrentLineOnPage(CellElement cellElement) {
+    boolean canRenderCurrentLineOnPage(CellElement cellElement, RenderState renderState) {
+        if (renderState != RenderState.PAGE) {
+            return true
+        }
+
         ParagraphLine line = cellElement.currentLine
 
         int remainingHeight = document.item.remainingPageHeight

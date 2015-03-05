@@ -24,6 +24,7 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements Paragrap
 
 	Document document
 	OutputStream out
+	RenderState renderState = RenderState.PAGE
 
 	DocumentBuilder(OutputStream out) {
 		super(true)
@@ -57,7 +58,17 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements Paragrap
 
 	def renderPageHeader(int pageNumber, int pageCount) {
 		if (document.header) {
-			document.header(pageNumber, pageCount)
+			def node = document.header(pageNumber, pageCount)
+			node.margin.setDefaults(18, document.margin.left)
+			node
+		}
+	}
+
+	def renderPageFooter(int pageNumber, int pageCount) {
+		if (document.footer) {
+			def node = document.footer(pageNumber, pageCount)
+			node.margin.setDefaults(0, document.margin.left)
+			node
 		}
 	}
 
@@ -75,4 +86,8 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements Paragrap
 		registerFactory('row', new RowFactory())
 		registerFactory('cell', new CellFactory())
 	}
+}
+
+enum RenderState {
+	PAGE, HEADER, FOOTER
 }

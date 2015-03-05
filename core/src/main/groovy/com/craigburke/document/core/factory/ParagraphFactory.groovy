@@ -4,6 +4,7 @@ import com.craigburke.document.core.Align
 import com.craigburke.document.core.Font
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.Paragraph
+import com.craigburke.document.core.builder.RenderState
 
 /**
  * Factory for paragraph nodes
@@ -16,15 +17,15 @@ class ParagraphFactory extends AbstractFactory {
 
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Paragraph paragraph = new Paragraph(attributes)
-		paragraph.parent = builder.current
-        paragraph.margin.setDefaults(8, 0)
+		paragraph.parent = paragraph.parent ?: builder.document
 
         paragraph.font = builder.font ? builder.font.clone() : new Font()
         paragraph.font << attributes.font
 
         if (builder.parentName == 'document') {
-            paragraph.align = paragraph.align ?: Align.LEFT
-            if (builder.addParagraphToDocument) {
+			paragraph.margin.setDefaults(8, 0)
+			paragraph.align = paragraph.align ?: Align.LEFT
+            if (builder.renderState == RenderState.PAGE && builder.addParagraphToDocument) {
                 builder.addParagraphToDocument(paragraph, builder.current)
             }
 		}

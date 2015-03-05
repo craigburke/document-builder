@@ -1,6 +1,8 @@
 package com.craigburke.document.core.factory
 
+import com.craigburke.document.core.Font
 import com.craigburke.document.core.Table
+import com.craigburke.document.core.builder.RenderState
 
 /**
  * Factory for table nodes
@@ -17,8 +19,9 @@ class TableFactory extends AbstractFactory {
 
 		Table table = new Table(attributes)
         table.margin.setDefaults(8, 0)
+		table.parent = table.parent ?: builder.document
 
-        table.font = builder.font.clone()
+		table.font = builder.font ? builder.font.clone() : new Font()
         table.font << attributes.font
         table
 	}
@@ -37,7 +40,7 @@ class TableFactory extends AbstractFactory {
 			table.columns = cellCounter.totalCount
 		}
 
-        if (builder.addTableToDocument) {
+        if (builder.renderState == RenderState.PAGE && builder.addTableToDocument) {
             builder.addTableToDocument(table, builder.current)
         }
 
