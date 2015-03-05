@@ -1,5 +1,10 @@
 package com.craigburke.document.builder
 
+import com.craigburke.document.core.builder.RenderState
+import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy
+import org.apache.poi.xwpf.usermodel.XWPFHeaderFooter
+import org.apache.poi.xwpf.usermodel.XWPFParagraph
+
 import static com.craigburke.document.core.UnitUtil.pointToTwip
 import static com.craigburke.document.core.UnitUtil.pointToEigthPoint
 
@@ -41,11 +46,6 @@ class WordDocumentBuilder extends DocumentBuilder {
 		documentMargin.setBottom(pointToTwip(document.margin.bottom).intValue())
     }
 
-	def addParagraphToDocument = { Paragraph paragraph, Document document ->
-        paragraph.item = document.item.createParagraph()
-		setParagraphProperties(paragraph)
-	}
-
 	def addParagraphToCell = { Paragraph paragraph, Cell cell ->
 		def firstParagraph = cell.item.paragraphs[0]
 
@@ -73,6 +73,8 @@ class WordDocumentBuilder extends DocumentBuilder {
 	}
 
 	def onParagraphComplete = { Paragraph paragraph ->
+		paragraph.item = document.item.createParagraph()
+		setParagraphProperties(paragraph)
 		paragraph.children.eachWithIndex { child, index ->
 			int previousLinebreaks = getPreviousLineBreakCount(paragraph.children, index)
 
@@ -153,8 +155,40 @@ class WordDocumentBuilder extends DocumentBuilder {
 	}
 
 	void writeDocument(Document document, OutputStream out) {
+		addHeaderFooter()
 		fixParagraphMargins(document.children)
 		document.item.write(out)
+	}
+
+	private void addHeaderFooter() {
+		XWPFHeaderFooterPolicy policy = document.item.headerFooterPolicy ?: new XWPFHeaderFooterPolicy(document.item)
+
+		if (document.header) {
+			renderState = RenderState.HEADER
+			def header = document.header()
+			if (header instanceof Paragraph) {
+				policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, [header.item] as XWPFParagraph[])
+			}
+			else if (header instanceof Table) {
+				XWPFHeaderFooter wordHeader = policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT)
+				wordHeader.tables << header
+			}
+
+		}
+		if (document.footer) {
+			renderState = RenderState.FOOTER
+			def footer = document.footer()
+			if (footer instanceof Paragraph) {
+				policy.createFooter(XWPFHeaderFooterPolicy.DEFAULT, [footer.item] as XWPFParagraph[])
+			}
+			else if (footer instanceof Table) {
+				XWPFHeaderFooter wordHeader = policy.createFooter(XWPFHeaderFooterPolicy.DEFAULT)
+				wordHeader.tables << footer
+
+			}
+		}
+
+		renderState = RenderState.PAGE
 	}
 
 	private void addTextRun(paragraph, Text textNode, int startingLineBreaks) {

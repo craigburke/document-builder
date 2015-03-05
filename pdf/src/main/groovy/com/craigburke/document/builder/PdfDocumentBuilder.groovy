@@ -71,8 +71,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
     }
 
 	void writeDocument(Document document, OutputStream out) {
-        addPageHeader()
-        addPageFooter()
+        addHeaderFooter()
 		addMetadata()
 
 		document.item.contentStream?.close()
@@ -80,57 +79,41 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		document.item.pdDocument.close()
 	}
 
-    private void addPageHeader() {
-        if (document.header) {
-            renderState = RenderState.HEADER
-            int pageCount = document.pageCount ?: document.item.pages.size()
+    private void addHeaderFooter() {
+        int pageCount = document.pageCount ?: document.item.pages.size()
 
-            (1..pageCount).each { int pageNumber ->
-                document.item.pageNumber = pageNumber
-                def header = renderPageHeader(pageNumber, pageCount)
+        (1..pageCount).each { int pageNumber ->
+            document.item.pageNumber = pageNumber
 
+            if (document.header) {
+                renderState = RenderState.HEADER
+                def header = document.header()
                 document.item.y = header.margin.top
                 int xStart = header.margin.left
-
-                if (header instanceof Paragraph) {
-                    ParagraphRenderer renderer = new ParagraphRenderer(header, document, xStart, document.width)
-                    renderer.render(renderState)
-                }
-                else if (header instanceof Table) {
-                    TableRenderer renderer = new TableRenderer(header, document)
-                    renderer.render(renderState)
-                }
-
+                renderHeaderFooter(header, xStart)
             }
-            renderState = RenderState.PAGE
+            if (document.footer) {
+                renderState = RenderState.FOOTER
+                def footer = document.footer()
+                document.item.y = document.item.pageBottomY + footer.margin.top
+                int xStart = footer.margin.left
+                renderHeaderFooter(footer, xStart)
+            }
         }
+        
+        renderState = RenderState.PAGE
     }
 
-    private void addPageFooter() {
-        if (document.footer) {
-            renderState = RenderState.FOOTER
-            int pageCount = document.pageCount ?: document.item.pages.size()
-
-            (1..pageCount).each { int pageNumber ->
-                document.item.pageNumber = pageNumber
-
-                def footer = renderPageFooter(pageNumber, pageCount)
-                document.item.y = document.item.pageBottomY + footer.margin.top
-
-                int xStart = footer.margin.left
-
-                if (footer instanceof Paragraph) {
-                    ParagraphRenderer renderer = new ParagraphRenderer(footer, document, xStart, document.width)
-                    renderer.render(renderState)
-                }
-                else if (footer instanceof Table) {
-                    TableRenderer renderer = new TableRenderer(footer, document)
-                    renderer.render(renderState)
-                }
-
-            }
-            renderState = RenderState.PAGE
+    private void renderHeaderFooter(headerFooter, int xStart) {
+        if (headerFooter instanceof Paragraph) {
+            ParagraphRenderer renderer = new ParagraphRenderer(headerFooter, document, xStart, document.width)
+            renderer.render(renderState)
         }
+        else if (headerFooter instanceof Table) {
+            TableRenderer renderer = new TableRenderer(headerFooter, document)
+            renderer.render(renderState)
+        }
+        
     }
 
 	private void addMetadata() {

@@ -56,21 +56,6 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements Paragrap
         document.embeddedFonts << embeddedFont
     }
 
-	def renderPageHeader(int pageNumber, int pageCount) {
-		if (document.header) {
-			def node = document.header(pageNumber, pageCount)
-			node.margin.setDefaults(18, document.margin.left)
-			node
-		}
-	}
-
-	def renderPageFooter(int pageNumber, int pageCount) {
-		if (document.footer) {
-			def node = document.footer(pageNumber, pageCount)
-			node.margin.setDefaults(0, document.margin.left)
-			node
-		}
-	}
 
     abstract void initializeDocument(Document document, OutputStream out)
 	abstract void writeDocument(Document document, OutputStream out)
