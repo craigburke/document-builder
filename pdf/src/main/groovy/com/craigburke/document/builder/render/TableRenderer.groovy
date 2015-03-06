@@ -112,7 +112,7 @@ class TableRenderer {
                 renderContentUntilEndPoint(it, renderState)
             }
 
-            if (rowElement.renderedHeight) {
+            if (rowElement.renderedHeight && table.border.size) {
                 renderBorders(rowElement)
             }
 

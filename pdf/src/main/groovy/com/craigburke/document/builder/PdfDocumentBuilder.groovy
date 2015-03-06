@@ -45,7 +45,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 
 	def onParagraphComplete = { Paragraph paragraph ->
-        if (renderState == RenderState.PAGE) {
+        if (renderState == RenderState.PAGE && paragraph.parent instanceof Document) {
             int pageWidth = document.item.currentPage.mediaBox.width - document.margin.left - document.margin.right
             int maxLineWidth = pageWidth - paragraph.margin.left - paragraph.margin.right
             int renderStartX = document.margin.left + paragraph.margin.left
