@@ -3,6 +3,8 @@ package com.craigburke.document.builder
 import com.craigburke.document.builder.render.ParagraphRenderer
 import com.craigburke.document.builder.render.TableRenderer
 import com.craigburke.document.core.EmbeddedFont
+import com.craigburke.document.core.HeaderFooterOptions
+import com.craigburke.document.core.PageBreak
 import com.craigburke.document.core.builder.RenderState
 import groovy.transform.InheritConstructors
 import groovy.xml.MarkupBuilder
@@ -44,6 +46,10 @@ class PdfDocumentBuilder extends DocumentBuilder {
         document.item.scrollDownPage(paragraph.margin.top)
 	}
 
+    def addPageBreakToDocument = { PageBreak pageBreak, Document document ->
+        document.item.addPage()
+    }
+
 	def onParagraphComplete = { Paragraph paragraph ->
         if (renderState == RenderState.PAGE && paragraph.parent instanceof Document) {
             int pageWidth = document.item.currentPage.mediaBox.width - document.margin.left - document.margin.right
@@ -51,7 +57,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
             int renderStartX = document.margin.left + paragraph.margin.left
 
             ParagraphRenderer paragraphRenderer = new ParagraphRenderer(paragraph, document, renderStartX, maxLineWidth)
-            paragraphRenderer.render()
+            paragraphRenderer.render(renderState)
 
             document.item.scrollDownPage(paragraph.margin.bottom)
         }
@@ -65,7 +71,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
     def onTableComplete = { Table table ->
         if (renderState == RenderState.PAGE) {
             TableRenderer tableRenderer = new TableRenderer(table, document)
-            tableRenderer.render()
+            tableRenderer.render(renderState)
             document.item.scrollDownPage(table.margin.bottom)
         }
     }
@@ -81,20 +87,22 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
     private void addHeaderFooter() {
         int pageCount = document.pageCount ?: document.item.pages.size()
+        def options = new HeaderFooterOptions(pageCount:pageCount, dateGenerated:new Date())
 
         (1..pageCount).each { int pageNumber ->
             document.item.pageNumber = pageNumber
+            options.pageNumber = pageNumber
 
             if (document.header) {
                 renderState = RenderState.HEADER
-                def header = document.header()
+                def header = document.header(options)
                 document.item.y = header.margin.top
                 int xStart = header.margin.left
                 renderHeaderFooter(header, xStart)
             }
             if (document.footer) {
                 renderState = RenderState.FOOTER
-                def footer = document.footer()
+                def footer = document.footer(options)
                 document.item.y = document.item.pageBottomY + footer.margin.top
                 int xStart = footer.margin.left
                 renderHeaderFooter(footer, xStart)
@@ -126,11 +134,13 @@ class PdfDocumentBuilder extends DocumentBuilder {
 			resolveStrategy = Closure.DELEGATE_FIRST
 
 			document.children.each { child ->
-				if (child.getClass() == Paragraph) {
-                    addParagraphToMetadata(delegate, child)
-				}
-				else {
-                    addTableToMetadata(delegate, child)
+                switch (child.getClass()) {
+                    case Paragraph:
+                        addParagraphToMetadata(delegate, child)
+                        break
+                    case Table:
+                        addTableToMetadata(delegate, child)
+                        break
                 }
 			}
 		}

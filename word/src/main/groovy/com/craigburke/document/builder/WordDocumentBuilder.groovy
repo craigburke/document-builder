@@ -3,6 +3,10 @@ package com.craigburke.document.builder
 import static com.craigburke.document.core.UnitUtil.pointToTwip
 import static com.craigburke.document.core.UnitUtil.pointToEigthPoint
 
+import com.craigburke.document.core.HeaderFooterOptions
+import com.craigburke.document.core.PageBreak
+import org.apache.poi.xwpf.usermodel.BreakType
+
 import com.craigburke.document.core.builder.RenderState
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy
 import org.apache.poi.xwpf.usermodel.XWPFHeaderFooter
@@ -101,6 +105,12 @@ class WordDocumentBuilder extends DocumentBuilder {
 		count
 	}
 
+	def addPageBreakToDocument = { PageBreak pageBreak, Document document ->
+		XWPFParagraph paragraph = document.item.createParagraph()
+		XWPFRun run = paragraph.createRun()
+		run.addBreak(BreakType.PAGE)
+	}
+
 	def addTableToDocument = { Table table, Document document ->
 		table.item = document.item.createTable(1, table.columns)
 	}
@@ -162,10 +172,11 @@ class WordDocumentBuilder extends DocumentBuilder {
 
 	private void addHeaderFooter() {
 		XWPFHeaderFooterPolicy policy = document.item.headerFooterPolicy ?: new XWPFHeaderFooterPolicy(document.item)
+		def options = new HeaderFooterOptions(pageNumber:'#pageNumber#', pageCount:'#pageCount##', dateGenerated:new Date())
 
 		if (document.header) {
 			renderState = RenderState.HEADER
-			def header = document.header()
+			def header = document.header(options)
 			if (header instanceof Paragraph) {
 				policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, [header.item] as XWPFParagraph[])
 			}
@@ -177,7 +188,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 		}
 		if (document.footer) {
 			renderState = RenderState.FOOTER
-			def footer = document.footer()
+			def footer = document.footer(options)
 			if (footer instanceof Paragraph) {
 				policy.createFooter(XWPFHeaderFooterPolicy.DEFAULT, [footer.item] as XWPFParagraph[])
 			}

@@ -20,7 +20,7 @@ class TableRenderer {
         this.table = table
     }
 
-    void render(RenderState renderState) {
+    void render(RenderState renderState = RenderState.PAGE) {
         table.children.each { renderRow(it, renderState) }
     }
 

@@ -5,6 +5,7 @@ import com.craigburke.document.core.UnitCategory
 
 import com.craigburke.document.core.factory.CreateFactory
 import com.craigburke.document.core.factory.DocumentFactory
+import com.craigburke.document.core.factory.PageBreakFactory
 import com.craigburke.document.core.factory.ParagraphFactory
 import com.craigburke.document.core.factory.LineBreakFactory
 import com.craigburke.document.core.factory.ImageFactory
@@ -56,12 +57,14 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements Paragrap
         document.embeddedFonts << embeddedFont
     }
 
+	def addPageBreakToDocument
     abstract void initializeDocument(Document document, OutputStream out)
 	abstract void writeDocument(Document document, OutputStream out)
 
 	def registerObjectFactories() {
 		registerFactory('create', new CreateFactory())
 		registerFactory('document', new DocumentFactory())
+		registerFactory('pageBreak', new PageBreakFactory())
 		registerFactory('paragraph', new ParagraphFactory())
 		registerFactory('lineBreak', new LineBreakFactory())
 		registerFactory('image', new ImageFactory())
