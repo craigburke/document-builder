@@ -111,10 +111,10 @@ class ParagraphRenderer {
             img = new PDJpeg(pdfDocument.pdDocument, bufferedImage)
         }
 
-        img.width = element.node.width
-        img.height = element.node.height
+        int width = element.node.width
+        int height = element.node.height
 
-        pdfDocument.contentStream.drawImage(img, pdfDocument.x, pdfDocument.translatedY)
+        pdfDocument.contentStream.drawXObject(img, pdfDocument.x, pdfDocument.translatedY, width, height)
     }
 
 }

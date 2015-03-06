@@ -208,7 +208,7 @@ class BuilderSpec extends Specification {
         thrown(Exception)
     }
 
-    def 'addImageToParagraph is call after image element is finished'() {
+    def 'addImageToParagraph is called after image element is finished'() {
         def addImageToParagraph = Mock(Closure)
         builder.addImageToParagraph = { Image image, Paragraph paragraph ->
             addImageToParagraph(image, paragraph)
@@ -218,12 +218,12 @@ class BuilderSpec extends Specification {
         builder.create {
             document {
                 paragraph {
-                    image()
+                    image(data:imageData)
                 }
                 table {
                     row {
                         cell {
-                            image()
+                            image(data:imageData)
                         }
                     }
                 }
