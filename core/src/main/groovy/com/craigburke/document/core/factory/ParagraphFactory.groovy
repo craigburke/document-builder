@@ -2,7 +2,6 @@ package com.craigburke.document.core.factory
 
 import com.craigburke.document.core.Align
 import com.craigburke.document.core.Document
-import com.craigburke.document.core.Font
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.Paragraph
 import com.craigburke.document.core.builder.RenderState

@@ -1,6 +1,5 @@
 package com.craigburke.document.core.factory
 
-import com.craigburke.document.core.Font
 import com.craigburke.document.core.Table
 import com.craigburke.document.core.builder.RenderState
 
