@@ -20,7 +20,7 @@ class ParagraphFactory extends AbstractFactory {
 		Paragraph paragraph = new Paragraph(attributes)
 		paragraph.parent = paragraph.parent ?: builder.document
 
-        paragraph.font = builder.font ? builder.font.clone() : new Font()
+        paragraph.font = builder.font ? builder.font.clone() : builder.document.font.clone()
         paragraph.font << attributes.font
 
         if (paragraph.parent instanceof Document) {
