@@ -9,3 +9,9 @@ idea/
 *.iml
 *.ipr
 *.iws
+
+# ECLIPSE
+*.classpath
+*.project
+*.settings
+bin/

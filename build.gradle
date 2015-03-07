@@ -10,7 +10,11 @@ buildscript {
 
 allprojects {
     apply plugin: 'idea'
+	apply plugin: 'eclipse'
+	
     apply plugin: 'groovy'
+	targetCompatibility = 1.6
+	
     apply plugin: 'codenarc'
     apply plugin: 'cobertura'
 
@@ -29,7 +33,7 @@ allprojects {
     }
 
     codenarc {
-        toolVersion = '0.22'
+        toolVersion = '0.23'
         configFile = file("${rootProject.projectDir}/config/codenarc/rules.groovy")
     }
 
