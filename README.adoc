@@ -82,3 +82,4 @@ The core project as well as the Word document and Pdf builder are all available 
    * Links
    * Lists
    * Proper Documentation
+   * Themes
