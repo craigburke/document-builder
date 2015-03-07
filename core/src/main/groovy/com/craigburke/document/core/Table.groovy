@@ -4,11 +4,12 @@ package com.craigburke.document.core
  * Table node which contains children of children
  * @author Craig Burke
  */
-class Table extends BaseNode {
-	List<Row> children = []
+class Table extends BaseNode implements BlockNode {
+    final static int DEFAULT_HORIZONTAL_MARGIN = 0
+    final static int DEFAULT_VERTICAL_MARGIN = 12
 
-	Border border = new Border()
-    Margin margin = new Margin()
+    List<Row> children = []
+
     Integer padding = 10
 	Integer columns
 	Integer width

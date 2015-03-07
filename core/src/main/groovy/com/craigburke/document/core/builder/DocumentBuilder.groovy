@@ -1,5 +1,7 @@
 package com.craigburke.document.core.builder
 
+import com.craigburke.document.core.BaseNode
+import com.craigburke.document.core.BlockNode
 import com.craigburke.document.core.EmbeddedFont
 import com.craigburke.document.core.UnitCategory
 
@@ -45,6 +47,22 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements Paragrap
 		use(UnitCategory) {
 			super.invokeMethod(name, args)
 		}
+	}
+
+	void setDefaults(BaseNode node) {
+		if (node instanceof Document) {
+			node.font = node.font ?: new Font()
+		}
+		else {
+			node.font = font ? font.clone() : document.font.clone()
+		}
+
+		if (node instanceof BlockNode) {
+			int verticalDefault = node.getClass().DEFAULT_VERTICAL_MARGIN
+			int horizontalDefault = node.getClass().DEFAULT_HORIZONTAL_MARGIN
+			node.margin.setDefaults(verticalDefault, horizontalDefault)
+		}
+
 	}
 
     void addFont(Map params, String location) {

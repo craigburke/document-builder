@@ -16,7 +16,7 @@ class TextFactory extends AbstractFactory {
         Paragraph paragraph = (builder.parentName == 'paragraph') ? builder.current : builder.current.children[0]
 
         Text text = new Text(value:value, parent:paragraph)
-        text.font = builder.font.clone()
+        builder.setDefaults(text)
         text.font << attributes.font
 
         if (builder.addTextToParagraph) {

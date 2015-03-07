@@ -4,9 +4,9 @@ package com.craigburke.document.core
  * Block element that holds text and images
  * @author Craig Burke
  */
-class Paragraph extends BaseNode {
-	Margin margin = new Margin()
-	Align align
+class Paragraph extends BaseNode implements BlockNode {
+	final static int DEFAULT_HORIZONTAL_MARGIN = 0
+	final static int DEFAULT_VERTICAL_MARGIN = 12
 
 	Integer lineHeight
 	BigDecimal lineHeightMultiplier = 1.1

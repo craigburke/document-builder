@@ -18,8 +18,8 @@ class ParagraphFactory extends AbstractFactory {
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Paragraph paragraph = new Paragraph(attributes)
 		paragraph.parent = paragraph.parent ?: builder.document
+		builder.setDefaults(paragraph)
 
-        paragraph.font = builder.font ? builder.font.clone() : builder.document.font.clone()
         paragraph.font << attributes.font
 
         if (paragraph.parent instanceof Document) {

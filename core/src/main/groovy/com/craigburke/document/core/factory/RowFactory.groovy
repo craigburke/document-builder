@@ -15,12 +15,12 @@ class RowFactory extends AbstractFactory {
 		builder.tablePosition.cell = 0
 		Row row = new Row(attributes)
 
-        row.font = builder.font.clone()
+		builder.setDefaults(row)
         row.font << attributes.font
 
 		row.position = builder.tablePosition.row
-		row.font = row.font ?: builder.font.clone()
-        if (builder.addRowToTable) {
+
+		if (builder.addRowToTable) {
             builder.addRowToTable(row, builder.current)
         }
 

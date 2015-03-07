@@ -17,10 +17,8 @@ class TableFactory extends AbstractFactory {
 		builder.tablePosition.row = 0
 
 		Table table = new Table(attributes)
-        table.margin.setDefaults(8, 0)
+		builder.setDefaults(table)
 		table.parent = table.parent ?: builder.document
-
-		table.font = builder.font ? builder.font.clone() : builder.document.font.clone()
         table.font << attributes.font
         table
 	}

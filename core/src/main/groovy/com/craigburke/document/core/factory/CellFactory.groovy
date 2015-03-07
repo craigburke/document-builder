@@ -17,8 +17,8 @@ class CellFactory extends AbstractFactory {
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Cell cell = new Cell(attributes)
 		Row row = builder.current
+		builder.setDefaults(cell)
 
-        cell.font = builder.font.clone()
         cell.font << attributes.font
 
 		cell.position = builder.tablePosition.cell
