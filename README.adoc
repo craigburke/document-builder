@@ -78,8 +78,9 @@ The core project as well as the Word document and Pdf builder are all available 
 
 == TODO
 
-   * Headers/Footers
+   * Page Headers/Footers
+   * Headings
    * Links
    * Lists
    * Proper Documentation
-   * Themes
+   * Themes / Templates
