@@ -63,7 +63,6 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements Paragrap
 			node.margin.setDefaults(defaultMargin)
 		}
 
-		
 	}
 
     void addFont(Map params, String location) {
