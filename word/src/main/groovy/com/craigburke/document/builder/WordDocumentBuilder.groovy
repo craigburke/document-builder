@@ -9,7 +9,7 @@ import org.apache.poi.xwpf.usermodel.BreakType
 
 import com.craigburke.document.core.builder.RenderState
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy
-import org.apache.poi.xwpf.usermodel.XWPFHeaderFooter
+import org.apache.poi.xwpf.usermodel.XWPFHeader
 import org.apache.poi.xwpf.usermodel.XWPFParagraph
 
 import com.craigburke.document.core.Align
@@ -76,18 +76,38 @@ class WordDocumentBuilder extends DocumentBuilder {
 		indent.right = pointToTwip(paragraph.margin.right)
 	}
 
+	private XWPFHeaderFooterPolicy getHeaderFooterPolicy() {
+		document.item.headerFooterPolicy ?: new XWPFHeaderFooterPolicy(document.item)
+	}
+
 	def onParagraphComplete = { Paragraph paragraph ->
-		paragraph.item = paragraph.item ?: document.item.createParagraph()
+		switch (renderState) {
+			case RenderState.PAGE:
+				paragraph.item = paragraph.item ?: document.item.createParagraph()
+				break
+
+			case RenderState.HEADER:
+				XWPFHeader header = headerFooterPolicy.createHeader(XWPFHeaderFooterPolicy.DEFAULT)
+				paragraph.item = header.paragraphs[0]
+				break
+
+			case RenderState.FOOTER:
+				def footer = headerFooterPolicy.createFooter(XWPFHeaderFooterPolicy.DEFAULT)
+				paragraph.item = footer.paragraphs[0]
+				break
+		}
+
 		setParagraphProperties(paragraph)
+
 		paragraph.children.eachWithIndex { child, index ->
-			int previousLinebreaks = getPreviousLineBreakCount(paragraph.children, index)
+			int previousLineBreaks = getPreviousLineBreakCount(paragraph.children, index)
 
 			switch (child.getClass()) {
 				case Text:
-					addTextRun(paragraph.item, child, previousLinebreaks)
+					addTextRun(paragraph.item, child, previousLineBreaks)
 					break
 				case Image:
-					addImageRun(paragraph.item, child, previousLinebreaks)
+					addImageRun(paragraph.item, child, previousLineBreaks)
 					break
 			}
 		}
@@ -171,32 +191,15 @@ class WordDocumentBuilder extends DocumentBuilder {
 	}
 
 	private void addHeaderFooter() {
-		XWPFHeaderFooterPolicy policy = document.item.headerFooterPolicy ?: new XWPFHeaderFooterPolicy(document.item)
 		def options = new HeaderFooterOptions(pageNumber:'#pageNumber#', pageCount:'#pageCount##', dateGenerated:new Date())
 
 		if (document.header) {
 			renderState = RenderState.HEADER
-			def header = document.header(options)
-			if (header instanceof Paragraph) {
-				policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT, [header.item] as XWPFParagraph[])
-			}
-			else if (header instanceof Table) {
-				XWPFHeaderFooter wordHeader = policy.createHeader(XWPFHeaderFooterPolicy.DEFAULT)
-				wordHeader.tables << header
-			}
-
+			document.header(options)
 		}
 		if (document.footer) {
 			renderState = RenderState.FOOTER
-			def footer = document.footer(options)
-			if (footer instanceof Paragraph) {
-				policy.createFooter(XWPFHeaderFooterPolicy.DEFAULT, [footer.item] as XWPFParagraph[])
-			}
-			else if (footer instanceof Table) {
-				XWPFHeaderFooter wordHeader = policy.createFooter(XWPFHeaderFooterPolicy.DEFAULT)
-				wordHeader.tables << footer
-
-			}
+			document.footer(options)
 		}
 
 		renderState = RenderState.PAGE
