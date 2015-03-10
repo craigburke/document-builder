@@ -7,13 +7,13 @@ import static com.craigburke.document.core.UnitUtil.inchToPoint
  * @author Craig Burke
  */
 class Document extends BaseNode implements BlockNode {
-    final static int DEFAULT_HORIZONTAL_MARGIN = 72
-    final static int DEFAULT_VERTICAL_MARGIN = 72
+    final static DEFAULT_MARGIN = new Margin(top: 72, bottom: 72, left: 72, right: 72)
 
     int pageCount
     final int width = inchToPoint(8.5)
     final int height = inchToPoint(11)
 
+    def template
     def header
     def footer
 

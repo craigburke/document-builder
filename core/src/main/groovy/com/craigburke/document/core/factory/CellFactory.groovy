@@ -1,5 +1,6 @@
 package com.craigburke.document.core.factory
 
+import com.craigburke.document.core.Margin
 import com.craigburke.document.core.Paragraph
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.Row
@@ -27,7 +28,7 @@ class CellFactory extends AbstractFactory {
         }
 
 		Paragraph paragraph = new Paragraph(font:cell.font.clone(), parent:cell, align:cell.align)
-		paragraph.margin.setDefaults(0, 0)
+		paragraph.margin.setDefaults(new Margin(top: 0, bottom: 0, left: 0, right: 0))
         if (builder.addParagraphToCell) {
             builder.addParagraphToCell(paragraph, cell)
         }

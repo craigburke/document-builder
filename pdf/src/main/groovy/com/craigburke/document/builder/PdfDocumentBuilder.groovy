@@ -97,14 +97,14 @@ class PdfDocumentBuilder extends DocumentBuilder {
                 renderState = RenderState.HEADER
                 def header = document.header(options)
                 document.item.y = header.margin.top
-                int xStart = header.margin.left
+                int xStart = document.margin.left + header.margin.left 
                 renderHeaderFooter(header, xStart)
             }
             if (document.footer) {
                 renderState = RenderState.FOOTER
                 def footer = document.footer(options)
                 document.item.y = document.item.pageBottomY + footer.margin.top
-                int xStart = footer.margin.left
+                int xStart =  document.margin.left + footer.margin.left
                 renderHeaderFooter(footer, xStart)
             }
         }

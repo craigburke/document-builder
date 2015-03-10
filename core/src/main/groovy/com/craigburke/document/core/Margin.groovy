@@ -11,10 +11,10 @@ class Margin {
     Integer left
     Integer right
 
-    void setDefaults(int vertical, int horizontal) {
-        top = (top == null) ? vertical : top
-        bottom = (bottom == null) ? vertical : bottom
-        left = (left == null) ? horizontal : left
-        right = (right == null) ? horizontal : right
+    void setDefaults(Margin defaultMargin) {
+        top = (top == null) ? defaultMargin.top : top
+        bottom = (bottom == null) ? defaultMargin.bottom : bottom
+        left = (left == null) ? defaultMargin.left : left
+        right = (right == null) ? defaultMargin.right : right
     }
 }

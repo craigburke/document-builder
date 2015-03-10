@@ -5,9 +5,7 @@ package com.craigburke.document.core
  * @author Craig Burke
  */
 trait BlockNode {
-    abstract final static int DEFAULT_HORIZONTAL_MARGIN
-    abstract final static int DEFAULT_VERTICAL_MARGIN
-
+    abstract final static Margin DEFAULT_MARGIN
     Align align = Align.LEFT
     Margin margin = new Margin()
     Border border = new Border()

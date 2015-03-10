@@ -19,28 +19,15 @@ class ParagraphFactory extends AbstractFactory {
 		Paragraph paragraph = new Paragraph(attributes)
 		paragraph.parent = paragraph.parent ?: builder.document
 		builder.setDefaults(paragraph)
-
         paragraph.font << attributes.font
 
         if (paragraph.parent instanceof Document) {
 			paragraph.align = paragraph.align ?: Align.LEFT
 
-			switch (builder.renderState) {
-				case RenderState.PAGE:
-					paragraph.margin.setDefaults(8, 0)
-					if (builder.addParagraphToDocument) {
-						builder.addParagraphToDocument(paragraph, builder.current)
-					}
-					break
-
-				case RenderState.HEADER:
-					paragraph.margin.setDefaults(18, builder.document.margin.left)
-					break
-
-				case RenderState.FOOTER:
-					paragraph.margin.setDefaults(0, builder.document.margin.left)
-					break
-
+			if (builder.renderState == RenderState.PAGE) {
+				if (builder.addParagraphToDocument) {
+					builder.addParagraphToDocument(paragraph, builder.current)
+				}
 			}
 		}
 

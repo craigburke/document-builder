@@ -17,7 +17,7 @@ class LineBreakFactory extends AbstractFactory {
 		Paragraph paragraph = builder.parentName == 'paragraph' ? builder.current : builder.current.children[0]
 		lineBreak.parent = paragraph
 
-		if (builder.parentName in ['paragraph', 'cell'] && builder.addLineBreakToParagraph) {
+		if (builder.addLineBreakToParagraph) {
 		    builder.addLineBreakToParagraph(lineBreak, paragraph)
         }
 		paragraph.children << lineBreak

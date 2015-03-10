@@ -3,6 +3,7 @@ package com.craigburke.document.core.builder
 import com.craigburke.document.core.BaseNode
 import com.craigburke.document.core.BlockNode
 import com.craigburke.document.core.EmbeddedFont
+import com.craigburke.document.core.Margin
 import com.craigburke.document.core.UnitCategory
 
 import com.craigburke.document.core.factory.CreateFactory
@@ -58,11 +59,11 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements Paragrap
 		}
 
 		if (node instanceof BlockNode) {
-			int verticalDefault = node.getClass().DEFAULT_VERTICAL_MARGIN
-			int horizontalDefault = node.getClass().DEFAULT_HORIZONTAL_MARGIN
-			node.margin.setDefaults(verticalDefault, horizontalDefault)
+			Margin defaultMargin = node.getClass().DEFAULT_MARGIN
+			node.margin.setDefaults(defaultMargin)
 		}
 
+		
 	}
 
     void addFont(Map params, String location) {
