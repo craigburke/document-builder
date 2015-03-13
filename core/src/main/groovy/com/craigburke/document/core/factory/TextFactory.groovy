@@ -14,17 +14,18 @@ class TextFactory extends AbstractFactory {
 
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
         Paragraph paragraph = (builder.parentName == 'paragraph') ? builder.current : builder.current.children[0]
+        List elements = paragraph.addText(value)
+        List<Text> textElements = elements.findAll { it instanceof Text }
 
-        Text text = new Text(value:value, parent:paragraph)
-        builder.setDefaults(text)
-        text.font << attributes.font
-
-        if (builder.addTextToParagraph) {
-            builder.addTextToParagraph(text, paragraph)
+        textElements.each { Text text ->
+            builder.setDefaults(text)
+            text.font << attributes.font            
+            if (builder.addTextToParagraph) {
+                builder.addTextToParagraph(text, paragraph)
+            }
         }
-        paragraph.children << text
 
-		text
+		elements
 	}
 
 }

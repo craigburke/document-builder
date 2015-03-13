@@ -32,11 +32,13 @@ class ParagraphFactory extends AbstractFactory {
 		}
 
 		if (value) {
-			Text text = new Text(value:value, font:paragraph.font.clone(), parent:paragraph)
+			List elements = paragraph.addText(value)
+			
 			if (builder.addTextToParagraph) {
-                builder.addTextToParagraph(text, paragraph)
+				elements.findAll { it instanceof Text}.each { Text text ->
+					builder.addTextToParagraph(text, paragraph)
+				}
             }
-			paragraph.children << text
 		}
 
 		paragraph
