@@ -33,9 +33,9 @@ class ParagraphFactory extends AbstractFactory {
 
 		if (value) {
 			List elements = paragraph.addText(value)
-			
+
 			if (builder.addTextToParagraph) {
-				elements.findAll { it instanceof Text}.each { Text text ->
+				elements.findAll { it instanceof Text }.each { Text text ->
 					builder.addTextToParagraph(text, paragraph)
 				}
             }
