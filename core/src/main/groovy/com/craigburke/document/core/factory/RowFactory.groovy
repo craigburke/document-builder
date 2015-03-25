@@ -14,6 +14,7 @@ class RowFactory extends AbstractFactory {
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		builder.tablePosition.cell = 0
 		Row row = new Row(attributes)
+		row.parent = builder.current
 
 		builder.setDefaults(row)
         row.font << attributes.font

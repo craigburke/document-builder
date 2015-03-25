@@ -329,7 +329,7 @@ ruleset {
     CyclomaticComplexity   // Requires the GMetrics jar
     MethodCount
     MethodSize
-    NestedBlockDepth
+    'NestedBlockDepth' doNotApplyToFileNames: 'WordDocumentBuilder.groovy'
     ParameterCount
 
     // rulesets/unnecessary.xml

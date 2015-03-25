@@ -12,7 +12,6 @@ class PageBreakFactory extends AbstractFactory {
 
     def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
         PageBreak pageBreak = new PageBreak()
-
         pageBreak.parent = builder.document
 
         if (builder.addPageBreakToDocument) {

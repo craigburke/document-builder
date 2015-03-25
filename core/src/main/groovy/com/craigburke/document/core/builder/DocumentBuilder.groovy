@@ -55,7 +55,7 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements Paragrap
 			node.font = node.font ?: new Font()
 		}
 		else {
-			node.font = font ? font.clone() : document.font.clone()
+			node.font = node.font ? node.font : node.parent.font.clone()
 		}
 
 		if (node instanceof BlockNode) {

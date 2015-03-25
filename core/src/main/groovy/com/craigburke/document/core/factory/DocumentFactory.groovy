@@ -21,7 +21,6 @@ class DocumentFactory extends AbstractFactory {
 	}
 
 	void setChild(FactoryBuilderSupport builder, parent, child) {
-		child.parent = parent
 		parent.children << child
     }
 

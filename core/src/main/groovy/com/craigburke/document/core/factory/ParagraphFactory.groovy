@@ -17,8 +17,9 @@ class ParagraphFactory extends AbstractFactory {
 
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Paragraph paragraph = new Paragraph(attributes)
-		paragraph.parent = paragraph.parent ?: builder.document
+		paragraph.parent = builder.current
 		builder.setDefaults(paragraph)
+
         paragraph.font << attributes.font
 
         if (paragraph.parent instanceof Document) {
@@ -32,7 +33,7 @@ class ParagraphFactory extends AbstractFactory {
 		}
 
 		if (value) {
-			List elements = paragraph.addText(value)
+			List elements = paragraph.addText(value, paragraph.font)
 
 			if (builder.addTextToParagraph) {
 				elements.findAll { it instanceof Text }.each { Text text ->

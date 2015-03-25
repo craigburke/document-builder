@@ -3,10 +3,10 @@ dependencies {
 
 	String POI_VERSION = '3.10.1'
 	
-	compile 'xml-apis:xml-apis:1.4.01'
-	compile "org.apache.poi:poi:${POI_VERSION}"
-	compile "org.apache.poi:poi-ooxml:${POI_VERSION}"
-	compile 'org.apache.poi:ooxml-schemas:1.1'
+	testCompile 'xml-apis:xml-apis:1.4.01'
+	testCompile "org.apache.poi:poi:${POI_VERSION}"
+	testCompile "org.apache.poi:poi-ooxml:${POI_VERSION}"
+	testCompile 'org.apache.poi:ooxml-schemas:1.1'
 }
 
 project.ext {

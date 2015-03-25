@@ -27,12 +27,12 @@ class Paragraph extends BaseNode implements BlockNode {
 		children.findAll { it.getClass() == Text }*.value.join('')
 	}
 
-	List addText(String text) {
+	List addText(String text, Font font) {
 		List elements = []
 		String[] textSections = text.split('\n')
 
 		textSections.each { String section ->
-			elements << new Text(value:section, font:font.clone(), parent:this)
+			elements << new Text(value:section, font:font, parent:this)
 
 			if (section != textSections.last()) {
 				elements << new LineBreak(parent:this)

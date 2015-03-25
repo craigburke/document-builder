@@ -4,6 +4,6 @@ trait AssignableColor {
     Color color = new Color()
 
     void setColor(String value) {
-        color.color = new Color().color = value
+        color.color = value
     }
 }

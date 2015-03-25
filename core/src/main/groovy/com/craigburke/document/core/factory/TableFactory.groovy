@@ -17,8 +17,9 @@ class TableFactory extends AbstractFactory {
 		builder.tablePosition.row = 0
 
 		Table table = new Table(attributes)
-		builder.setDefaults(table)
 		table.parent = table.parent ?: builder.document
+
+		builder.setDefaults(table)
         table.font << attributes.font
         table
 	}
@@ -45,7 +46,6 @@ class TableFactory extends AbstractFactory {
 	}
 
 	void setChild(FactoryBuilderSupport builder, table, row) {
-		row.parent = table
 		table.children << row
 		builder.tablePosition.row++
 	}
