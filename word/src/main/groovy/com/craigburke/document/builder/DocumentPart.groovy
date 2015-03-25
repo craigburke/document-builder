@@ -1,7 +1,8 @@
 package com.craigburke.document.builder
 
 /**
- * Created by craig on 3/25/15.
+ * OOXML Document Part
+ * @author Craig Burke
  */
 class DocumentPart {
     DocumentPartType type

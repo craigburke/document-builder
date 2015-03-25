@@ -1,20 +1,25 @@
 package com.craigburke.document.builder
 
 /**
- * Enum for the various document parts a relationship can exit in
+ * Enum for the various types of document parts a relationship can exist in
  * @author Craig Burke
  */
 enum DocumentPartType {
-    ROOT('root', '_rels/.rels'),
-    DOCUMENT('document', 'word/_rels/document.xml.rels'),
-    HEADER('header', 'word/_rels/header.xml.rels'),
-    FOOTER('footer', 'word/_rels/footer.xml.rels')
-    
+    ROOT('root', null, null),
+    DOCUMENT('document',
+            'document.xml',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml'
+    ),
+    HEADER('header', 'header.xml', 'application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml'),
+    FOOTER('footer', 'footer.xml', 'application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml')
+
     final String value
-    final String relationshipFileLocation
-    
-    DocumentPartType(String value, String relationshipFileLocation) {
+    final String fileName
+    final String contentType
+
+    DocumentPartType(String value, String fileName, String contentType) {
         this.value = value
-        this.relationshipFileLocation = relationshipFileLocation
+        this.fileName = fileName
+        this.contentType = contentType
     }
 }

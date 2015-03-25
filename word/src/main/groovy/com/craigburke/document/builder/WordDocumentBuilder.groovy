@@ -5,6 +5,7 @@ import static com.craigburke.document.core.UnitUtil.pointToEmu
 import static com.craigburke.document.core.UnitUtil.pointToTwip
 import static com.craigburke.document.core.UnitUtil.pointToHalfPoint
 
+import com.craigburke.document.core.builder.RenderState
 import com.craigburke.document.core.BlockNode
 import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Row
@@ -27,17 +28,48 @@ import com.craigburke.document.core.Document
 @InheritConstructors
 class WordDocumentBuilder extends DocumentBuilder {
 
-	DocumentPartType currentDocumentPart
-	
 	void initializeDocument(Document document, OutputStream out) {
-		currentDocumentPart = DocumentPartType.DOCUMENT
 		document.item = new WordDocument(out)
 	}
 
 	void writeDocument(Document document, OutputStream out) {
 		WordDocument wordDocument = document.item
 
-		wordDocument.generate { builder ->
+		String headerId
+		if (document.header) {
+			renderState = RenderState.HEADER
+			def headerNode = document.header()
+			headerId = wordDocument.generateHeader { builder ->
+				w.hdr {
+					if (headerNode instanceof Paragraph) {
+						addParagraph(builder, headerNode)
+					}
+					else {
+						addTable(builder, headerNode)
+					}
+				}
+			}
+			renderState = RenderState.PAGE
+		}
+
+		String footerId
+		if (document.footer) {
+			renderState = RenderState.FOOTER
+			def footerNode = document.footer()
+			footerId = wordDocument.generateFooter { builder ->
+				w.hdr {
+					if (footerNode instanceof Paragraph) {
+						addParagraph(builder, footerNode)
+					}
+					else {
+						addTable(builder, footerNode)
+					}
+				}
+			}
+			renderState = RenderState.PAGE
+		}
+
+		wordDocument.generateDocument { builder ->
 			w.document {
 				w.body {
 					document.children.each { child ->
@@ -58,6 +90,12 @@ class WordDocumentBuilder extends DocumentBuilder {
 								'w:top':pointToTwip(document.margin.top),
 								'w:right':pointToTwip(document.margin.right),
 								'w:left':pointToTwip(document.margin.left))
+						if (headerId) {
+							w.headerReference('r:id':headerId, 'w:type':'default')
+						}
+						if (footerId) {
+							w.footerReference('r:id':footerId, 'w:type':'default')
+						}
 					}
 				}
 			}
@@ -116,6 +154,20 @@ class WordDocumentBuilder extends DocumentBuilder {
 	void addLineBreakRun(builder) {
 		builder.w.r {
 			w.cr()
+		}
+	}
+
+	DocumentPartType getCurrentDocumentPart() {
+		switch (renderState) {
+			case RenderState.PAGE:
+				DocumentPartType.DOCUMENT
+				break
+			case RenderState.HEADER:
+				DocumentPartType.HEADER
+				break
+			case RenderState.FOOTER:
+				DocumentPartType.FOOTER
+				break
 		}
 	}
 

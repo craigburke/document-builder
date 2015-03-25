@@ -11,21 +11,30 @@ import java.util.zip.ZipOutputStream
  */
 class WordDocument {
 
-    private static final String DOCUMENT_FILE = 'word/document.xml'
-    private static final String IMAGE_PATH = 'word/media'
-    private static final String RELATIVE_IMAGE_PATH = 'media'
+    private static final String ROOT_RELATIONSHIP_FILE = '_rels/.rels'
+    private static final String CONTENT_FOLDER = 'word'
+    private static final String IMAGE_FOLDER = 'media'
+
+    private static final String XML_HEADER = '<?xml version="1.0" encoding="UTF-16" standalone="yes"?>'
+    private static final DOCUMENT_NAMESPACES = [
+            w:'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
+            a:'http://schemas.openxmlformats.org/drawingml/2006/main',
+            pic:'http://schemas.openxmlformats.org/drawingml/2006/picture',
+            wp:'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
+            r:'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
+    ]
 
     Map<String, DocumentPart> documentParts = [:]
     List<ContentType> contentTypes = []
     ZipOutputStream zipStream
 
     WordDocument(OutputStream out) {
-        DocumentPartType.values().each { type ->
-            documentParts[type.value] = new DocumentPart(type: type)
-        }
+        documentParts[DocumentPartType.ROOT.value] = new DocumentPart(type:DocumentPartType.ROOT)
+        documentParts[DocumentPartType.DOCUMENT.value] = new DocumentPart(type:DocumentPartType.DOCUMENT)
+
         zipStream = new ZipOutputStream(out)
         addRelationship(
-            DOCUMENT_FILE,
+            "${CONTENT_FOLDER}/${DocumentPartType.DOCUMENT.fileName}",
             'http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument',
             DocumentPartType.ROOT
         )
@@ -50,17 +59,11 @@ class WordDocument {
         zipStream.close()
     }
 
-    def generate(Closure documentClosure) {
-        zipStream.putNextEntry(new ZipEntry(DOCUMENT_FILE))
+    def generateDocument(Closure documentClosure) {
+        zipStream.putNextEntry(new ZipEntry("${CONTENT_FOLDER}/${DocumentPartType.DOCUMENT.fileName}"))
         zipStream << new StreamingMarkupBuilder().bind { builder ->
-            mkp.yieldUnescaped('<?xml version="1.0" encoding="UTF-16" standalone="yes"?>')
-            namespaces << [
-                    w:'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
-                    a:'http://schemas.openxmlformats.org/drawingml/2006/main',
-                    pic:'http://schemas.openxmlformats.org/drawingml/2006/picture',
-                    wp:'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
-                    r:'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
-            ]
+            mkp.yieldUnescaped(XML_HEADER)
+            namespaces << DOCUMENT_NAMESPACES
             documentClosure.delegate = builder
             documentClosure(builder)
 
@@ -69,11 +72,48 @@ class WordDocument {
         addImageFiles()
     }
 
+    String generateHeader(Closure headerClosure) {
+        documentParts[DocumentPartType.HEADER.value] = new DocumentPart(type:DocumentPartType.HEADER)
+
+        zipStream.putNextEntry(new ZipEntry("${CONTENT_FOLDER}/${DocumentPartType.HEADER.fileName}"))
+        zipStream << new StreamingMarkupBuilder().bind { builder ->
+            mkp.yieldUnescaped(XML_HEADER)
+            namespaces << DOCUMENT_NAMESPACES
+            headerClosure.delegate = builder
+            headerClosure(builder)
+        }.toString().getBytes('UTF-16')
+        zipStream.closeEntry()
+
+        addRelationship(
+                DocumentPartType.HEADER.fileName,
+                'http://schemas.openxmlformats.org/officeDocument/2006/relationships/header',
+                DocumentPartType.DOCUMENT
+        )
+    }
+
+    String generateFooter(Closure footerClosure) {
+        documentParts[DocumentPartType.FOOTER.value] = new DocumentPart(type:DocumentPartType.FOOTER)
+
+        zipStream.putNextEntry(new ZipEntry("${CONTENT_FOLDER}/${DocumentPartType.FOOTER.fileName}"))
+        zipStream << new StreamingMarkupBuilder().bind { builder ->
+            mkp.yieldUnescaped(XML_HEADER)
+            namespaces << DOCUMENT_NAMESPACES
+            footerClosure.delegate = builder
+            footerClosure(builder)
+        }.toString().getBytes('UTF-16')
+        zipStream.closeEntry()
+
+        addRelationship(
+                DocumentPartType.FOOTER.fileName,
+                'http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer',
+                DocumentPartType.DOCUMENT
+        )
+    }
+
     private addImageFiles() {
-        
         documentParts.each { String name, DocumentPart part ->
             part.images.each { image ->
-                zipStream.putNextEntry(new ZipEntry("${IMAGE_PATH}/${image.name}"))
+                zipStream.putNextEntry(new ZipEntry("${CONTENT_FOLDER}/${IMAGE_FOLDER}/${image.name}"))
                 zipStream << image.data
                 zipStream.closeEntry()
             }
@@ -83,7 +123,7 @@ class WordDocument {
 
     String addImage(String name, byte[] imageData, DocumentPartType partType) {
         String id = addRelationship(
-                "${RELATIVE_IMAGE_PATH}/${name}",
+                "${IMAGE_FOLDER}/${name}",
                 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image',
                 partType
         )
@@ -92,14 +132,23 @@ class WordDocument {
     }
 
     private void writeRelationships() {
-        writeRelationshipsForPart(DocumentPartType.ROOT)
-        writeRelationshipsForPart(DocumentPartType.DOCUMENT)
+        documentParts.each { String name, DocumentPart documentPart ->
+            writeRelationshipsForPart(documentPart.type)
+        }
     }
 
     private void writeRelationshipsForPart(DocumentPartType documentPart) {
-        zipStream.putNextEntry(new ZipEntry(documentPart.relationshipFileLocation))
+        String fileLocation
+        if (documentPart == DocumentPartType.ROOT) {
+            fileLocation = ROOT_RELATIONSHIP_FILE
+        }
+        else {
+            fileLocation = "${CONTENT_FOLDER}/_rels/${documentPart.fileName}.rels"
+        }
+
+        zipStream.putNextEntry(new ZipEntry(fileLocation))
         zipStream << new StreamingMarkupBuilder().bind {
-            mkp.yieldUnescaped('<?xml version="1.0" encoding="UTF-16" standalone="yes"?>')
+            mkp.yieldUnescaped(XML_HEADER)
             namespaces << ['':'http://schemas.openxmlformats.org/package/2006/relationships']
             Relationships {
                 documentParts[documentPart.value].relationships.each { Relationship relationship ->
@@ -113,14 +162,17 @@ class WordDocument {
     private void writeContentTypes() {
         zipStream.putNextEntry(new ZipEntry('[Content_Types].xml'))
         zipStream << new StreamingMarkupBuilder().bind {
-            mkp.yieldUnescaped('<?xml version="1.0" encoding="UTF-16" standalone="yes"?>')
+            mkp.yieldUnescaped(XML_HEADER)
             namespaces << ['':'http://schemas.openxmlformats.org/package/2006/content-types']
             Types {
                 contentTypes.each { ContentType type ->
                     Default(Extension:type.extension, ContentType:type.type)
                 }
-                Override(PartName:"/${DOCUMENT_FILE}",
-                        ContentType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml')
+                def nonRootParts = documentParts.findAll { it.key != DocumentPartType.ROOT.value }
+                nonRootParts.each { String name, DocumentPart documentPart ->
+                    Override(PartName:"/${CONTENT_FOLDER}/${documentPart.type.fileName}",
+                            ContentType:documentPart.type.contentType)
+                }
             }
         }.toString().getBytes('UTF-16')
         zipStream.closeEntry()
