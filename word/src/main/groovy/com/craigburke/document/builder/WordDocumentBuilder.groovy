@@ -1,12 +1,11 @@
 package com.craigburke.document.builder
 
-import com.craigburke.document.core.HeaderFooterOptions
-
 import static com.craigburke.document.core.UnitUtil.pointToEigthPoint
 import static com.craigburke.document.core.UnitUtil.pointToEmu
 import static com.craigburke.document.core.UnitUtil.pointToTwip
 import static com.craigburke.document.core.UnitUtil.pointToHalfPoint
 
+import com.craigburke.document.core.HeaderFooterOptions
 import com.craigburke.document.core.builder.RenderState
 import com.craigburke.document.core.BlockNode
 import com.craigburke.document.core.Cell
@@ -29,7 +28,7 @@ import com.craigburke.document.core.Document
  */
 @InheritConstructors
 class WordDocumentBuilder extends DocumentBuilder {
-	
+
 	static final String PAGE_NUMBER_PLACEHOLDER = '##pageNumber##'
 
 	void initializeDocument(Document document, OutputStream out) {
@@ -38,7 +37,11 @@ class WordDocumentBuilder extends DocumentBuilder {
 
 	void writeDocument(Document document, OutputStream out) {
 		WordDocument wordDocument = document.item
-		def headerFooterOptions = new HeaderFooterOptions(pageNumber:PAGE_NUMBER_PLACEHOLDER, pageCount:document.pageCount, dateGenerated:new Date())
+		def headerFooterOptions = new HeaderFooterOptions(
+				pageNumber:PAGE_NUMBER_PLACEHOLDER,
+				pageCount:document.pageCount,
+				dateGenerated:new Date()
+		)
 
 		String headerId
 		if (document.header) {
@@ -277,9 +280,9 @@ class WordDocumentBuilder extends DocumentBuilder {
 			}
 		}
 	}
-	
+
 	void parseHeaderFooterText(builder, String text) {
-		def textParts = text.split(PAGE_NUMBER_PLACEHOLDER)	
+		def textParts = text.split(PAGE_NUMBER_PLACEHOLDER)
 		textParts.eachWithIndex { String part, int index ->
 			if (index != 0) {
 				builder.w.pgNum()
@@ -287,6 +290,5 @@ class WordDocumentBuilder extends DocumentBuilder {
 			builder.w.t(part)
 		}
 	}
-	
 
 }
