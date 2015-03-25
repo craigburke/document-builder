@@ -273,7 +273,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 				w.sz('w:val':pointToHalfPoint(text.font.size))
 			}
 			if (renderState == RenderState.PAGE) {
-				w.t(text.value)
+				w.t(text.value, 'xml:space': 'preserve')
 			}
 			else {
 				parseHeaderFooterText(builder, text.value)
@@ -287,7 +287,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 			if (index != 0) {
 				builder.w.pgNum()
 			}
-			builder.w.t(part)
+			builder.w.t(part, 'xml:space': 'preserve')
 		}
 	}
 
