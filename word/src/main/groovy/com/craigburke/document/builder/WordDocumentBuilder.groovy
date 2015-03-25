@@ -1,5 +1,7 @@
 package com.craigburke.document.builder
 
+import com.craigburke.document.core.HeaderFooterOptions
+
 import static com.craigburke.document.core.UnitUtil.pointToEigthPoint
 import static com.craigburke.document.core.UnitUtil.pointToEmu
 import static com.craigburke.document.core.UnitUtil.pointToTwip
@@ -27,6 +29,8 @@ import com.craigburke.document.core.Document
  */
 @InheritConstructors
 class WordDocumentBuilder extends DocumentBuilder {
+	
+	static final String PAGE_NUMBER_PLACEHOLDER = '##pageNumber##'
 
 	void initializeDocument(Document document, OutputStream out) {
 		document.item = new WordDocument(out)
@@ -34,11 +38,12 @@ class WordDocumentBuilder extends DocumentBuilder {
 
 	void writeDocument(Document document, OutputStream out) {
 		WordDocument wordDocument = document.item
+		def headerFooterOptions = new HeaderFooterOptions(pageNumber:PAGE_NUMBER_PLACEHOLDER, pageCount:document.pageCount, dateGenerated:new Date())
 
 		String headerId
 		if (document.header) {
 			renderState = RenderState.HEADER
-			BlockNode headerNode = document.header()
+			BlockNode headerNode = document.header(headerFooterOptions)
 			headerId = wordDocument.generateHeader { builder ->
 				w.hdr {
 					renderHeaderFooterNode(builder, headerNode)
@@ -49,7 +54,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 		String footerId
 		if (document.footer) {
 			renderState = RenderState.FOOTER
-			BlockNode footerNode = document.footer()
+			BlockNode footerNode = document.footer(headerFooterOptions)
 			footerId = wordDocument.generateFooter { builder ->
 				w.hdr {
 					renderHeaderFooterNode(builder, footerNode)
@@ -264,8 +269,24 @@ class WordDocumentBuilder extends DocumentBuilder {
 				w.color('w:val':text.font.color.hex)
 				w.sz('w:val':pointToHalfPoint(text.font.size))
 			}
-			w.t(text.value)
+			if (renderState == RenderState.PAGE) {
+				w.t(text.value)
+			}
+			else {
+				parseHeaderFooterText(builder, text.value)
+			}
 		}
 	}
+	
+	void parseHeaderFooterText(builder, String text) {
+		def textParts = text.split(PAGE_NUMBER_PLACEHOLDER)	
+		textParts.eachWithIndex { String part, int index ->
+			if (index != 0) {
+				builder.w.pgNum()
+			}
+			builder.w.t(part)
+		}
+	}
+	
 
 }
