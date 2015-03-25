@@ -29,7 +29,8 @@ import com.craigburke.document.core.Document
 @InheritConstructors
 class WordDocumentBuilder extends DocumentBuilder {
 
-	static final String PAGE_NUMBER_PLACEHOLDER = '##pageNumber##'
+	private static final String PAGE_NUMBER_PLACEHOLDER = '##pageNumber##'
+	private static final Map RUN_TEXT_OPTIONS = ['xml:space':'preserve']
 
 	void initializeDocument(Document document, OutputStream out) {
 		document.item = new WordDocument(out)
@@ -273,7 +274,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 				w.sz('w:val':pointToHalfPoint(text.font.size))
 			}
 			if (renderState == RenderState.PAGE) {
-				w.t(text.value, 'xml:space': 'preserve')
+				w.t(text.value, RUN_TEXT_OPTIONS)
 			}
 			else {
 				parseHeaderFooterText(builder, text.value)
@@ -287,7 +288,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 			if (index != 0) {
 				builder.w.pgNum()
 			}
-			builder.w.t(part, 'xml:space': 'preserve')
+			builder.w.t(part, RUN_TEXT_OPTIONS)
 		}
 	}
 
