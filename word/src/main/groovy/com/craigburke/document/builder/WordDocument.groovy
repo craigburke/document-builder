@@ -15,17 +15,19 @@ class WordDocument {
     private static final String IMAGE_PATH = 'word/media'
     private static final String RELATIVE_IMAGE_PATH = 'media'
 
-    List<Relationship> relationships = []
+    Map<String, DocumentPart> documentParts = [:]
     List<ContentType> contentTypes = []
-    List images = []
     ZipOutputStream zipStream
 
     WordDocument(OutputStream out) {
+        DocumentPartType.values().each { type ->
+            documentParts[type.value] = new DocumentPart(type: type)
+        }
         zipStream = new ZipOutputStream(out)
         addRelationship(
             DOCUMENT_FILE,
             'http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument',
-            DocumentPart.MAIN
+            DocumentPartType.ROOT
         )
 
         contentTypes << new ContentType(
@@ -35,9 +37,10 @@ class WordDocument {
         contentTypes << new ContentType(extension:'png', type:'image/png')
     }
 
-    String addRelationship(String target, String type, DocumentPart part) {
-        String id = "rId${relationships.size() + 1}"
-        relationships << new Relationship(id:id, target:target, type:type, part:part)
+    String addRelationship(String target, String type, DocumentPartType part) {
+        def currentRelationships = documentParts[part.value].relationships
+        String id = "rId${currentRelationships.size() + 1}"
+        currentRelationships << new Relationship(id:id, target:target, type:type)
         id
     }
 
@@ -67,35 +70,39 @@ class WordDocument {
     }
 
     private addImageFiles() {
-        images.each { image ->
-            zipStream.putNextEntry(new ZipEntry("${IMAGE_PATH}/${image.name}"))
-            zipStream << image.data
-            zipStream.closeEntry()
+        
+        documentParts.each { String name, DocumentPart part ->
+            part.images.each { image ->
+                zipStream.putNextEntry(new ZipEntry("${IMAGE_PATH}/${image.name}"))
+                zipStream << image.data
+                zipStream.closeEntry()
+            }
         }
+
     }
 
-    String addImage(String name, byte[] imageData) {
+    String addImage(String name, byte[] imageData, DocumentPartType partType) {
         String id = addRelationship(
                 "${RELATIVE_IMAGE_PATH}/${name}",
                 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/image',
-                DocumentPart.DOCUMENT
+                partType
         )
-        images << [id:id, name:name, data:imageData]
+        documentParts[partType.value].images << [id:id, name:name, data:imageData]
         id
     }
 
     private void writeRelationships() {
-        writeRelationshipsForPart(DocumentPart.MAIN, '_rels/.rels')
-        writeRelationshipsForPart(DocumentPart.DOCUMENT, 'word/_rels/document.xml.rels')
+        writeRelationshipsForPart(DocumentPartType.ROOT)
+        writeRelationshipsForPart(DocumentPartType.DOCUMENT)
     }
 
-    private void writeRelationshipsForPart(DocumentPart documentPart, String fileName) {
-        zipStream.putNextEntry(new ZipEntry(fileName))
+    private void writeRelationshipsForPart(DocumentPartType documentPart) {
+        zipStream.putNextEntry(new ZipEntry(documentPart.relationshipFileLocation))
         zipStream << new StreamingMarkupBuilder().bind {
             mkp.yieldUnescaped('<?xml version="1.0" encoding="UTF-16" standalone="yes"?>')
             namespaces << ['':'http://schemas.openxmlformats.org/package/2006/relationships']
             Relationships {
-                relationships.findAll { it.part == documentPart }.each { Relationship relationship ->
+                documentParts[documentPart.value].relationships.each { Relationship relationship ->
                     Relationship(Id:relationship.id, Target:relationship.target, Type:relationship.type)
                 }
             }

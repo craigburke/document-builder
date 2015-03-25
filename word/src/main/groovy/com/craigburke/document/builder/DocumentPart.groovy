@@ -1,9 +1,10 @@
 package com.craigburke.document.builder
 
 /**
- * Enum for the various document parts a relationship can exit in
- * @author Craig Burke
+ * Created by craig on 3/25/15.
  */
-enum DocumentPart {
-    MAIN, DOCUMENT
+class DocumentPart {
+    DocumentPartType type
+    List<Relationship> relationships = []
+    List images = []
 }

@@ -8,5 +8,4 @@ class Relationship {
     String id
     String type
     String target
-    DocumentPart part
 }

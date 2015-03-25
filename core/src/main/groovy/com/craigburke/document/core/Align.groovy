@@ -1,5 +1,13 @@
 package com.craigburke.document.core
 
 enum Align {
-    LEFT, RIGHT, CENTER
+    LEFT('left'), 
+    RIGHT('right'), 
+    CENTER('center')
+    
+    String value
+    
+    Align(String value) {
+        this.value = value
+    }
 }

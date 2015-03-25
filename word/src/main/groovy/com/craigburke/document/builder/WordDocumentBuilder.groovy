@@ -5,7 +5,6 @@ import static com.craigburke.document.core.UnitUtil.pointToEmu
 import static com.craigburke.document.core.UnitUtil.pointToTwip
 import static com.craigburke.document.core.UnitUtil.pointToHalfPoint
 
-import com.craigburke.document.core.Align
 import com.craigburke.document.core.BlockNode
 import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Row
@@ -28,7 +27,10 @@ import com.craigburke.document.core.Document
 @InheritConstructors
 class WordDocumentBuilder extends DocumentBuilder {
 
+	DocumentPartType currentDocumentPart
+	
 	void initializeDocument(Document document, OutputStream out) {
+		currentDocumentPart = DocumentPartType.DOCUMENT
 		document.item = new WordDocument(out)
 	}
 
@@ -87,24 +89,13 @@ class WordDocumentBuilder extends DocumentBuilder {
 		totalSpacing
 	}
 
-	String getAlignValue(Align align) {
-		switch (align) {
-			case Align.LEFT:
-				return 'left'
-			case Align.RIGHT:
-				return 'right'
-			case Align.CENTER:
-				return 'center'
-		}
-	}
-
 	void addParagraph(builder, Paragraph paragraph) {
 		builder.w.p {
 			w.pPr {
 				w.spacing('w:before':pointToTwip(paragraph.margin.top), 'w:after':calculateSpacingAfter(paragraph))
 				w.ind(	'w:left':pointToTwip(paragraph.margin.left),
 						'w:right':pointToTwip(paragraph.margin.right))
-				w.jc('w:val':getAlignValue(paragraph.align))
+				w.jc('w:val':paragraph.align.value)
 			}
 			paragraph.children.each { child ->
 				switch (child.getClass()) {
@@ -129,7 +120,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 	}
 
 	void addImageRun(builder, Image image) {
-		String blipId = document.item.addImage(image.name, image.data)
+		String blipId = document.item.addImage(image.name, image.data, currentDocumentPart)
 
 		int widthInEmu = pointToEmu(image.width)
 		int heightInEmu = pointToEmu(image.height)
