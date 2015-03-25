@@ -52,14 +52,13 @@ class UnitUtil {
 	static BigDecimal twipToPoint(BigDecimal twip) {
 		twip / TWIP_POINTS
 	}
-	
+
 	static BigDecimal pointToEmu(BigDecimal point) {
 		point * EMU_POINTS
 	}
-	
+
 	static BigDecimal emuToPoint(BigDecimal emu) {
 		emu / EMU_POINTS
 	}
 
-	
 }

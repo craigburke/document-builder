@@ -1,11 +1,14 @@
 package com.craigburke.document.builder
 
-import com.craigburke.document.core.Cell
-import com.craigburke.document.core.Row
-
+import static com.craigburke.document.core.UnitUtil.pointToEigthPoint
 import static com.craigburke.document.core.UnitUtil.pointToEmu
 import static com.craigburke.document.core.UnitUtil.pointToTwip
 import static com.craigburke.document.core.UnitUtil.pointToHalfPoint
+
+import com.craigburke.document.core.Align
+import com.craigburke.document.core.BlockNode
+import com.craigburke.document.core.Cell
+import com.craigburke.document.core.Row
 
 import com.craigburke.document.core.Image
 import com.craigburke.document.core.LineBreak
@@ -69,8 +72,40 @@ class WordDocumentBuilder extends DocumentBuilder {
 		}
 	}
 
+	int calculateSpacingAfter(BlockNode node) {
+		int totalSpacing = node.margin.bottom
+
+		def items = node.parent.children
+		int index = items.findIndexOf { it == node }
+
+		if (index != items.size() - 1) {
+			def nextSibling = items[index + 1]
+			if (nextSibling instanceof BlockNode) {
+				totalSpacing += nextSibling.margin.top
+			}
+		}
+		totalSpacing
+	}
+
+	String getAlignValue(Align align) {
+		switch (align) {
+			case Align.LEFT:
+				return 'left'
+			case Align.RIGHT:
+				return 'right'
+			case Align.CENTER:
+				return 'center'
+		}
+	}
+
 	void addParagraph(builder, Paragraph paragraph) {
 		builder.w.p {
+			w.pPr {
+				w.spacing('w:before':pointToTwip(paragraph.margin.top), 'w:after':calculateSpacingAfter(paragraph))
+				w.ind(	'w:left':pointToTwip(paragraph.margin.left),
+						'w:right':pointToTwip(paragraph.margin.right))
+				w.jc('w:val':getAlignValue(paragraph.align))
+			}
 			paragraph.children.each { child ->
 				switch (child.getClass()) {
 					case Text:
@@ -106,12 +141,12 @@ class WordDocumentBuilder extends DocumentBuilder {
 					wp.extent(cx:widthInEmu, cy:heightInEmu)
 					wp.docPr(id:1, name:imageDescription, descr:image.name)
 					a.graphic {
-						a.graphicData(uri: "http://schemas.openxmlformats.org/drawingml/2006/picture") {
+						a.graphicData(uri:'http://schemas.openxmlformats.org/drawingml/2006/picture') {
 							pic.pic {
 								pic.nvPicPr {
 									pic.cNvPr(id:0, name:imageDescription, descr:image.name)
 									pic.cNvPicPr {
-										a.picLocks(noChangeAspect: 'true')
+										a.picLocks(noChangeAspect:'true')
 									}
 								}
 								pic.blipFill {
@@ -139,15 +174,38 @@ class WordDocumentBuilder extends DocumentBuilder {
 
 	void addTable(builder, Table table) {
 		builder.w.tbl {
+			w.tblPr {
+				w.tblW('w:w':pointToTwip(table.width))
+				w.tblBorders {
+					def properties = ['top', 'right', 'bottom', 'left', 'insideH', 'insideV']
+					properties.each { String property ->
+						w."${property}"(
+							'w:sz':pointToEigthPoint(table.border.size),
+							'w:color':table.border.color.hex,
+							'w:val':(table.border.size == 0 ? 'none' : 'single')
+						)
+					}
+				}
+			}
+
 			table.children.each { Row row ->
 				w.tr {
 					row.children.each { Cell cell ->
-						w.tc()
+						w.tc {
+							w.tcPr {
+								w.tcW('w:w':pointToTwip(cell.width - (table.padding * 2)))
+								w.tcMar {
+									w.top('w:w':pointToTwip(table.padding))
+									w.bottom('w:w':pointToTwip(table.padding))
+									w.left('w:w':pointToTwip(table.padding))
+									w.right('w:w':pointToTwip(table.padding))
+								}
+							}
+							cell.children.each { addParagraph(builder, it) }
+						}
 					}
-					
 				}
 			}
-			
 		}
 	}
 
