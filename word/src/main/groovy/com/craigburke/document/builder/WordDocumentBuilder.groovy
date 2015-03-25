@@ -38,37 +38,26 @@ class WordDocumentBuilder extends DocumentBuilder {
 		String headerId
 		if (document.header) {
 			renderState = RenderState.HEADER
-			def headerNode = document.header()
+			BlockNode headerNode = document.header()
 			headerId = wordDocument.generateHeader { builder ->
 				w.hdr {
-					if (headerNode instanceof Paragraph) {
-						addParagraph(builder, headerNode)
-					}
-					else {
-						addTable(builder, headerNode)
-					}
+					renderHeaderFooterNode(builder, headerNode)
 				}
 			}
-			renderState = RenderState.PAGE
 		}
 
 		String footerId
 		if (document.footer) {
 			renderState = RenderState.FOOTER
-			def footerNode = document.footer()
+			BlockNode footerNode = document.footer()
 			footerId = wordDocument.generateFooter { builder ->
 				w.hdr {
-					if (footerNode instanceof Paragraph) {
-						addParagraph(builder, footerNode)
-					}
-					else {
-						addTable(builder, footerNode)
-					}
+					renderHeaderFooterNode(builder, footerNode)
 				}
 			}
-			renderState = RenderState.PAGE
 		}
 
+		renderState = RenderState.PAGE
 		wordDocument.generateDocument { builder ->
 			w.document {
 				w.body {
@@ -102,6 +91,16 @@ class WordDocumentBuilder extends DocumentBuilder {
 		}
 
 		document.item.write()
+	}
+
+	void renderHeaderFooterNode(builder, BlockNode node) {
+		if (node instanceof Paragraph) {
+			addParagraph(builder, node)
+		}
+		else {
+			addTable(builder, node)
+		}
+
 	}
 
 	void addPageBreak(builder) {
