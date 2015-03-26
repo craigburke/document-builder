@@ -65,28 +65,31 @@ class WordDocumentLoader {
         def items = []
 
         paragraphs.each { paragraph ->
-            TextBlock p = new TextBlock()
-            p.margin.bottom = twipToPoint(paragraph.spacingAfter)
-            p.margin.top = twipToPoint(paragraph.spacingBefore)
-            def indent = paragraph.CTP.PPr.ind
-            p.margin.left = twipToPoint(indent?.left ?: 0)
-            p.margin.right = twipToPoint(indent?.right ?: 0)
+            if (paragraph.runs) {
+                TextBlock p = new TextBlock()
+                p.margin.bottom = twipToPoint(paragraph.spacingAfter)
+                p.margin.top = twipToPoint(paragraph.spacingBefore)
+                def indent = paragraph.CTP.PPr.ind
+                p.margin.left = twipToPoint(indent?.left ?: 0)
+                p.margin.right = twipToPoint(indent?.right ?: 0)
 
-            items << p
+                items << p
 
-            paragraph.runs.each { run ->
-                Font font =  new Font(family:run.fontFamily, size:run.fontSize)
-                p.font = p.font ?: font
+                paragraph.runs.each { run ->
+                    Font font =  new Font(family:run.fontFamily, size:run.fontSize)
+                    p.font = p.font ?: font
 
-                if (run.embeddedPictures) {
-                    p.children << new Image(data:run.embeddedPictures[0].pictureData.data, parent:p)
-                }
-                else {
-                    def text = new Text(value:run.toString(), parent:p)
-                    text.font = font
-                    p.children << text
+                    if (run.embeddedPictures) {
+                        p.children << new Image(data:run.embeddedPictures[0].pictureData.data, parent:p)
+                    }
+                    else {
+                        def text = new Text(value:run.toString(), parent:p)
+                        text.font = font
+                        p.children << text
+                    }
                 }
             }
+
         }
 
         items

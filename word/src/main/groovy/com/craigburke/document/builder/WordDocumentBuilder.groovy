@@ -50,10 +50,16 @@ class WordDocumentBuilder extends DocumentBuilder {
 		def header = renderHeader(headerFooterOptions)
 		def footer = renderFooter(headerFooterOptions)
 
+		BlockNode firstBlockNode = document.children.find { it instanceof BlockNode }
+
 		renderState = RenderState.PAGE
 		wordDocument.generateDocument { builder ->
 			w.document {
 				w.body {
+					if (firstBlockNode) {
+						addInitialDummyParagraph(builder, firstBlockNode)
+					}
+
 					document.children.each { child ->
 						if (child instanceof TextBlock) {
 							addParagraph(builder, child)
@@ -148,6 +154,14 @@ class WordDocumentBuilder extends DocumentBuilder {
 			}
 		}
 		totalSpacing
+	}
+
+	void addInitialDummyParagraph(builder, BlockNode firstBlockNode) {
+		builder.w.p {
+			w.pPr {
+				w.spacing('w:before':0, 'w:after':pointToTwip(firstBlockNode.margin.top))
+			}
+		}
 	}
 
 	void addParagraph(builder, TextBlock paragraph) {
