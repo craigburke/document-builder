@@ -44,6 +44,8 @@ class WordDocument {
                 type:'application/vnd.openxmlformats-package.relationships+xml')
         contentTypes << new ContentType(extension:'xml', type:'application/xml')
         contentTypes << new ContentType(extension:'png', type:'image/png')
+        contentTypes << new ContentType(extension:'jpg', type:'image/jpeg')
+        contentTypes << new ContentType(extension:'jpeg', type:'image/jpeg')
     }
 
     String addRelationship(String target, String type, DocumentPartType part) {
