@@ -68,7 +68,7 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements TextBloc
 			node.margin.setDefaults(defaultMargin)
 		}
 	}
-	
+
 	 String[] getStyleKeys(StyledNode node) {
 		String className = node.getClass().simpleName.toLowerCase()
 		def keys = [className]
