@@ -36,35 +36,19 @@ class WordDocumentBuilder extends DocumentBuilder {
 		document.item = new WordDocument(out)
 	}
 
+	WordDocument getWordDocument() {
+		document.item
+	}
+
 	void writeDocument(Document document, OutputStream out) {
-		WordDocument wordDocument = document.item
 		def headerFooterOptions = new HeaderFooterOptions(
 				pageNumber:PAGE_NUMBER_PLACEHOLDER,
 				pageCount:document.pageCount,
 				dateGenerated:new Date()
 		)
 
-		String headerId
-		if (document.header) {
-			renderState = RenderState.HEADER
-			BlockNode headerNode = document.header(headerFooterOptions)
-			headerId = wordDocument.generateHeader { builder ->
-				w.hdr {
-					renderHeaderFooterNode(builder, headerNode)
-				}
-			}
-		}
-
-		String footerId
-		if (document.footer) {
-			renderState = RenderState.FOOTER
-			BlockNode footerNode = document.footer(headerFooterOptions)
-			footerId = wordDocument.generateFooter { builder ->
-				w.hdr {
-					renderHeaderFooterNode(builder, footerNode)
-				}
-			}
-		}
+		def header = renderHeader(headerFooterOptions)
+		def footer = renderFooter(headerFooterOptions)
 
 		renderState = RenderState.PAGE
 		wordDocument.generateDocument { builder ->
@@ -82,15 +66,20 @@ class WordDocumentBuilder extends DocumentBuilder {
 						}
 					}
 					w.sectPr {
+						int footerValue = pointToTwip(footer ? footer.node.margin.bottom : 0)
+						int headerValue = pointToTwip(header ? header.node.margin.top : 0)
+
 						w.pgMar('w:bottom':pointToTwip(document.margin.bottom),
 								'w:top':pointToTwip(document.margin.top),
 								'w:right':pointToTwip(document.margin.right),
-								'w:left':pointToTwip(document.margin.left))
-						if (headerId) {
-							w.headerReference('r:id':headerId, 'w:type':'default')
+								'w:left':pointToTwip(document.margin.left),
+								'w:footer':footerValue,
+								'w:header':headerValue)
+						if (header) {
+							w.headerReference('r:id':header.id, 'w:type':'default')
 						}
-						if (footerId) {
-							w.footerReference('r:id':footerId, 'w:type':'default')
+						if (footer) {
+							w.footerReference('r:id':footer.id, 'w:type':'default')
 						}
 					}
 				}
@@ -98,6 +87,34 @@ class WordDocumentBuilder extends DocumentBuilder {
 		}
 
 		document.item.write()
+	}
+
+	def renderHeader(HeaderFooterOptions options) {
+		def header = [:]
+		if (document.header) {
+			renderState = RenderState.HEADER
+			header.node = document.header(options)
+			header.id = wordDocument.generateHeader { builder ->
+				w.hdr {
+					renderHeaderFooterNode(builder, header.node as BlockNode)
+				}
+			}
+		}
+		header
+	}
+
+	def renderFooter(HeaderFooterOptions options) {
+		def footer = [:]
+		if (document.footer) {
+			renderState = RenderState.FOOTER
+			footer.node = document.footer(options)
+			footer.id = wordDocument.generateFooter { builder ->
+				w.hdr {
+					renderHeaderFooterNode(builder, footer.node as BlockNode)
+				}
+			}
+		}
+		footer
 	}
 
 	void renderHeaderFooterNode(builder, BlockNode node) {
