@@ -18,9 +18,7 @@ class TableFactory extends AbstractFactory {
 
 		Table table = new Table(attributes)
 		table.parent = builder.parentName == 'create' ? builder.document : builder.current
-
-		builder.setStyles(table)
-        table.font << attributes.font
+		builder.setStyles(table, attributes)
         table
 	}
 

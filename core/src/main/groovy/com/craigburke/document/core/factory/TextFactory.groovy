@@ -19,7 +19,7 @@ class TextFactory extends AbstractFactory {
 
         textElements.each { Text text ->
             text.parent = paragraph
-            builder.setStyles(text)
+            builder.setStyles(text, attributes)
             text.font << attributes.font
             if (builder.addTextToTextBlock) {
                 builder.addTextToTextBlock(text, paragraph)

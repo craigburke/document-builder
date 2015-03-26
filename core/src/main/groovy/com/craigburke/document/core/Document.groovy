@@ -20,29 +20,4 @@ class Document extends BaseNode implements BlockNode, StyledNode {
     List children = []
     List<EmbeddedFont> embeddedFonts = []
 
-    void applyStyles(StyledNode node) {
-        if (!template) {
-            return
-        }
-
-        String className = node.getClass().simpleName.toLowerCase()
-        def potentialKeys = [className]
-        if (node instanceof Heading) {
-            potentialKeys << "heading${node.level}"
-        }
-        if (node.style) {
-            potentialKeys << "${className}.${node.style}"
-            if (node instanceof Heading) {
-                potentialKeys << "heading${node.level}.${node.style}"
-            }
-        }
-
-        potentialKeys.each { String key ->
-            if (template.containsKey(key) && template[key].font) {
-                node.font << template[key].font
-            }
-        }
-
-    }
-
 }

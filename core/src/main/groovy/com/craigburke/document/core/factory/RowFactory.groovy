@@ -15,9 +15,7 @@ class RowFactory extends AbstractFactory {
 		builder.tablePosition.cell = 0
 		Row row = new Row(attributes)
 		row.parent = builder.current
-
-		builder.setStyles(row)
-        row.font << attributes.font
+		builder.setStyles(row, attributes)
 
 		row.position = builder.tablePosition.row
 

@@ -15,9 +15,9 @@ class HeadingFactory extends AbstractFactory {
         Heading heading = new Heading(attributes)
         heading.level = Integer.valueOf(builder.currentName - 'heading')
         heading.parent = builder.document
-        builder.setStyles(heading)
+        builder.setStyles(heading, attributes)
         Text text = new Text(value:value, parent:heading, font:heading.font.clone())
-        builder.setStyles(text)
+        builder.setStyles(text, attributes)
 
         heading.children << text
         heading.font << attributes.font

@@ -14,7 +14,7 @@ class DocumentFactory extends AbstractFactory {
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
         Document document = new Document(attributes)
         builder.document = document
-        builder.setStyles(document)
+        builder.setStyles(document, attributes)
         builder.initializeDocument(document, builder.out)
 
         document

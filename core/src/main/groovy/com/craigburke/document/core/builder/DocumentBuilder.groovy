@@ -2,6 +2,7 @@ package com.craigburke.document.core.builder
 
 import com.craigburke.document.core.BlockNode
 import com.craigburke.document.core.EmbeddedFont
+import com.craigburke.document.core.Heading
 import com.craigburke.document.core.Margin
 import com.craigburke.document.core.StyledNode
 import com.craigburke.document.core.UnitCategory
@@ -51,14 +52,36 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements TextBloc
 		}
 	}
 
-	void setStyles(StyledNode node) {
+	void setStyles(StyledNode node, Map attributes) {
 		node.font = (node instanceof Document) ? new Font() : node.parent.font.clone()
-		document.applyStyles(node)
-
+		node.font.size = (node instanceof Heading) ? null : node.font.size
+		getStyleKeys(node).each { String key ->
+			Map font = (document.template && document.template.containsKey(key)) ? document.template[key].font : [:]
+			node.font << font
+		}
+		node.font << attributes.font
+		if (node instanceof Heading && !node.font.size) {
+			node.font.size = document.font.size * Heading.FONT_SIZE_MULTIPLIERS[node.level - 1]
+		}
 		if (node instanceof BlockNode) {
 			Margin defaultMargin = node.getClass().DEFAULT_MARGIN
 			node.margin.setDefaults(defaultMargin)
 		}
+	}
+	
+	 String[] getStyleKeys(StyledNode node) {
+		String className = node.getClass().simpleName.toLowerCase()
+		def keys = [className]
+		if (node instanceof Heading) {
+			keys << "heading${node.level}"
+		}
+		if (node.style) {
+			keys << "${className}.${node.style}"
+			if (node instanceof Heading) {
+				keys << "heading${node.level}.${node.style}"
+			}
+		}
+		keys
 	}
 
     void addFont(Map params, String location) {
