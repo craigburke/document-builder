@@ -3,7 +3,7 @@ package com.craigburke.document.builder.render
 import com.craigburke.document.builder.PdfFont
 import com.craigburke.document.core.Font
 import com.craigburke.document.core.LineBreak
-import com.craigburke.document.core.Paragraph
+import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Text
 import org.apache.pdfbox.pdmodel.font.PDFont
 
@@ -13,7 +13,7 @@ import org.apache.pdfbox.pdmodel.font.PDFont
  */
 class ParagraphParser {
 
-    static List<ParagraphLine> getLines(Paragraph paragraph, int maxLineWidth) {
+    static List<ParagraphLine> getLines(TextBlock paragraph, int maxLineWidth) {
         def lines = []
 
         def currentChunk = []
@@ -34,7 +34,7 @@ class ParagraphParser {
         lines
     }
 
-    private static List<ParagraphLine> parseParagraphChunk(chunk, Paragraph paragraph, int maxLineWidth) {
+    private static List<ParagraphLine> parseParagraphChunk(chunk, TextBlock paragraph, int maxLineWidth) {
         def chunkLines = []
 
         ParagraphLine currentLine = new ParagraphLine(paragraph, maxLineWidth)

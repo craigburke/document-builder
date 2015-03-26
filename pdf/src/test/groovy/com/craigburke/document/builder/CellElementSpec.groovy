@@ -4,7 +4,7 @@ import com.craigburke.document.builder.render.CellElement
 import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Font
 import com.craigburke.document.core.LineBreak
-import com.craigburke.document.core.Paragraph
+import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Row
 import com.craigburke.document.core.Table
 import com.craigburke.document.core.Text
@@ -24,7 +24,7 @@ class CellElementSpec extends Specification {
         Row row = new Row(parent:table)
         def cell = new Cell(width:72, parent:row)
         5.times { i ->
-            def paragraph = new Paragraph()
+            def paragraph = new TextBlock()
             i.times {
                 paragraph.children << new Text(value:"FOO${i}", font:new Font(family:'Helvetica', size:12))
                 paragraph.children << new LineBreak()

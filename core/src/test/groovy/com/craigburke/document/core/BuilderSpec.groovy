@@ -79,9 +79,9 @@ class BuilderSpec extends Specification {
         embeddedFont.name == 'Open Sans'
     }
 
-    def 'onParagraphComplete is called after a paragraph finishes'() {
-        def onParagraphComplete = Mock(Closure)
-        builder.onParagraphComplete = { Paragraph paragraph -> onParagraphComplete(paragraph) }
+    def 'onTextBlockComplete is called after a paragraph finishes'() {
+        def onTextBlockComplete = Mock(Closure)
+        builder.onTextBlockComplete = { TextBlock paragraph -> onTextBlockComplete(paragraph) }
 
         when:
         builder.create {
@@ -91,7 +91,7 @@ class BuilderSpec extends Specification {
         }
 
         then:
-        1 * onParagraphComplete.call(_ as Paragraph)
+        1 * onTextBlockComplete.call(_ as TextBlock)
     }
 
     def 'Table events are all called after they finish'() {
@@ -124,17 +124,18 @@ class BuilderSpec extends Specification {
         3 * onCellComplete.call(_ as Cell, _ as Row)
     }
 
-    def 'addTextToParagraph is call after text element is finished'() {
-        def addTextToParagraph = Mock(Closure)
+    def 'addTextToTextBlock is call after text element is finished'() {
+        def addTextToTextBlock = Mock(Closure)
         def addedText = []
-        builder.addTextToParagraph = { Text text, Paragraph paragraph ->
-            addTextToParagraph(text, paragraph)
+        builder.addTextToTextBlock = { Text text, TextBlock textBlock ->
+            addTextToTextBlock(text, textBlock)
             addedText << text.value
         }
 
         when:
         builder.create {
             document {
+                heading1 'HEADING1'
                 paragraph 'FOO'
                 paragraph {
                     text 'BLAH'
@@ -151,10 +152,10 @@ class BuilderSpec extends Specification {
         }
 
         then:
-        4 * addTextToParagraph.call(_ as Text, _ as Paragraph)
+        5 * addTextToTextBlock.call(_ as Text, _ as TextBlock)
 
         and:
-        addedText == ['FOO', 'BLAH', 'CELL1', 'CELL2']
+        addedText == ['HEADING1', 'FOO', 'BLAH', 'CELL1', 'CELL2']
     }
 
     def "Text element shouldn't have children"() {
@@ -208,10 +209,10 @@ class BuilderSpec extends Specification {
         thrown(Exception)
     }
 
-    def 'addImageToParagraph is called after image element is finished'() {
-        def addImageToParagraph = Mock(Closure)
-        builder.addImageToParagraph = { Image image, Paragraph paragraph ->
-            addImageToParagraph(image, paragraph)
+    def 'addImageToTextBlock is called after image element is finished'() {
+        def addImageToTextBlock = Mock(Closure)
+        builder.addImageToTextBlock = { Image image, TextBlock paragraph ->
+            addImageToTextBlock(image, paragraph)
         }
 
         when:
@@ -231,13 +232,13 @@ class BuilderSpec extends Specification {
         }
 
         then:
-        2 * addImageToParagraph.call(_ as Image, _ as Paragraph)
+        2 * addImageToTextBlock.call(_ as Image, _ as TextBlock)
     }
 
-    def 'addLineBreakToParagraph is call after image element is finished'() {
-        def addLineBreakToParagraph = Mock(Closure)
-        builder.addLineBreakToParagraph = { LineBreak lineBreak, Paragraph paragraph ->
-            addLineBreakToParagraph(lineBreak, paragraph)
+    def 'addLineBreakToTextBlock is call after image element is finished'() {
+        def addLineBreakToTextBlock = Mock(Closure)
+        builder.addLineBreakToTextBlock = { LineBreak lineBreak, TextBlock paragraph ->
+            addLineBreakToTextBlock(lineBreak, paragraph)
         }
 
         when:
@@ -259,7 +260,7 @@ class BuilderSpec extends Specification {
         }
 
         then:
-        2 * addLineBreakToParagraph.call(_ as LineBreak, _ as Paragraph)
+        2 * addLineBreakToTextBlock.call(_ as LineBreak, _ as TextBlock)
     }
 
     def "addTableToDocument is called when table is created"() {
@@ -372,13 +373,13 @@ class BuilderSpec extends Specification {
     }
 
     def "appropriate method is called when paragraph is added"() {
-        def addParagraphToDocument = Mock(Closure)
-        builder.addParagraphToDocument = { Paragraph paragraph, Document document ->
-            addParagraphToDocument(paragraph, document)
+        def addTextBlockToDocument = Mock(Closure)
+        builder.addTextBlockToDocument = { TextBlock paragraph, Document document ->
+            addTextBlockToDocument(paragraph, document)
         }
 
-        def addParagraphToCell = Mock(Closure)
-        builder.addParagraphToCell = { Paragraph paragraph, Cell cell -> addParagraphToCell(paragraph, cell) }
+        def addTextBlockToCell = Mock(Closure)
+        builder.addTextBlockToCell = { TextBlock paragraph, Cell cell -> addTextBlockToCell(paragraph, cell) }
 
         when:
         builder.create {
@@ -393,10 +394,10 @@ class BuilderSpec extends Specification {
         }
 
         then:
-        1 * addParagraphToDocument.call(_ as Paragraph, _ as Document)
+        1 * addTextBlockToDocument.call(_ as TextBlock, _ as Document)
 
         and:
-        1 * addParagraphToCell.call(_ as Paragraph, _ as Cell)
+        1 * addTextBlockToCell.call(_ as TextBlock, _ as Cell)
     }
 
     def "create a simple paragraph"() {
@@ -407,7 +408,7 @@ class BuilderSpec extends Specification {
             }
         }
 
-        Paragraph paragraph = result.document.children[0]
+        TextBlock paragraph = result.document.children[0]
 
         then:
         paragraph.text == 'FOO BAR!'
@@ -424,10 +425,10 @@ class BuilderSpec extends Specification {
             }
         }
 
-        Paragraph paragraph1 = result.document.children[0]
-        Paragraph paragraph2 = result.document.children[1]
-        Paragraph paragraph3 = result.document.children[2]
-        Paragraph paragraph4 = result.document.children[3]
+        TextBlock paragraph1 = result.document.children[0]
+        TextBlock paragraph2 = result.document.children[1]
+        TextBlock paragraph3 = result.document.children[2]
+        TextBlock paragraph4 = result.document.children[3]
 
         then:
         paragraph1.align == Align.LEFT
@@ -454,7 +455,7 @@ class BuilderSpec extends Specification {
         }
 
         Document document = result.document
-        Paragraph paragraph = document.children[0]
+        TextBlock paragraph = document.children[0]
         Text text1 = paragraph.children[0]
         Text text2 = paragraph.children[1]
 
@@ -498,8 +499,8 @@ class BuilderSpec extends Specification {
         Cell cell1 = row.children[0]
         Cell cell2 = row.children[1]
 
-        Paragraph paragraph1 = cell1.children[0]
-        Paragraph paragraph2 = cell2.children[0]
+        TextBlock paragraph1 = cell1.children[0]
+        TextBlock paragraph2 = cell2.children[0]
 
         Text text1 = paragraph1.children[0]
         Text text2 = paragraph2.children[0]

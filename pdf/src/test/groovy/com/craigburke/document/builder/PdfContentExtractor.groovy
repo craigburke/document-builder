@@ -3,7 +3,7 @@ package com.craigburke.document.builder
 import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Font
-import com.craigburke.document.core.Paragraph
+import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Text
 import org.apache.pdfbox.util.PDFTextStripper
 import org.apache.pdfbox.util.TextPosition
@@ -45,7 +45,7 @@ class PdfContentExtractor extends PDFTextStripper {
             Font currentFont = new Font(family:text.font.baseFont, size:text.fontSizeInPt)
             def textNode
 
-            if (currentChild.getClass() == Paragraph) {
+            if (currentChild.getClass() == TextBlock) {
                 textNode = processParagraph(text, currentFont)
             }
             else {
@@ -60,7 +60,7 @@ class PdfContentExtractor extends PDFTextStripper {
             def textNode
 
             Cell cell = currentChild.children[tablePosition.row].children[tablePosition.cell]
-            Paragraph paragraph = cell.children[0]
+            TextBlock paragraph = cell.children[0]
             paragraph.font = paragraph.font ?: font.clone()
 
             if (!paragraph.children || isNewSection(text)) {

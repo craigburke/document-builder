@@ -5,8 +5,6 @@ package com.craigburke.document.core
  * @author Craig Burke
  */
 class BaseNode {
-    Font font
-
     def item
     def parent
 }

@@ -6,7 +6,7 @@ import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Font
 import com.craigburke.document.core.Image
-import com.craigburke.document.core.Paragraph
+import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Row
 import com.craigburke.document.core.Table
 import com.craigburke.document.core.Text
@@ -65,7 +65,7 @@ class WordDocumentLoader {
         def items = []
 
         paragraphs.each { paragraph ->
-            Paragraph p = new Paragraph()
+            TextBlock p = new TextBlock()
             p.margin.bottom = twipToPoint(paragraph.spacingAfter)
             p.margin.top = twipToPoint(paragraph.spacingBefore)
             def indent = paragraph.CTP.PPr.ind

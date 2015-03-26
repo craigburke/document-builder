@@ -3,7 +3,7 @@ package com.craigburke.document.builder
 import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Image
-import com.craigburke.document.core.Paragraph
+import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Row
 import com.craigburke.document.core.Table
 import org.apache.pdfbox.pdmodel.PDDocument
@@ -41,7 +41,7 @@ class PdfDocumentLoader {
     }
 
     private static loadParagraph(Document document, paragraphNode) {
-        def paragraph = new Paragraph(parent:document)
+        def paragraph = new TextBlock(parent:document)
         paragraph.margin.top = new BigDecimal(paragraphNode.'@marginTop')
         paragraph.margin.bottom = new BigDecimal(paragraphNode.'@marginBottom')
         paragraph.margin.left = new BigDecimal(paragraphNode.'@marginLeft')
@@ -60,7 +60,7 @@ class PdfDocumentLoader {
             Row row = new Row()
             rowNode.cell.each { cellNode ->
                 def cell = new Cell(width:new BigDecimal(cellNode.'@width'))
-                cell.children << new Paragraph()
+                cell.children << new TextBlock()
                 row.children << cell
             }
             table.children << row

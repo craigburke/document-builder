@@ -1,13 +1,14 @@
 package com.craigburke.document.core.builder
 
-import com.craigburke.document.core.BaseNode
 import com.craigburke.document.core.BlockNode
 import com.craigburke.document.core.EmbeddedFont
 import com.craigburke.document.core.Margin
+import com.craigburke.document.core.StyledNode
 import com.craigburke.document.core.UnitCategory
 
 import com.craigburke.document.core.factory.CreateFactory
 import com.craigburke.document.core.factory.DocumentFactory
+import com.craigburke.document.core.factory.HeadingFactory
 import com.craigburke.document.core.factory.PageBreakFactory
 import com.craigburke.document.core.factory.ParagraphFactory
 import com.craigburke.document.core.factory.LineBreakFactory
@@ -24,7 +25,7 @@ import com.craigburke.document.core.Font
  * Document Builder base class
  * @author Craig Burke
  */
-abstract class DocumentBuilder extends FactoryBuilderSupport implements ParagraphBuilder, TableBuilder {
+abstract class DocumentBuilder extends FactoryBuilderSupport implements TextBlockBuilder, TableBuilder {
 
 	Document document
 	OutputStream out
@@ -50,19 +51,14 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements Paragrap
 		}
 	}
 
-	void setDefaults(BaseNode node) {
-		if (node instanceof Document) {
-			node.font = node.font ?: new Font()
-		}
-		else {
-			node.font = node.font ? node.font : node.parent.font.clone()
-		}
+	void setStyles(StyledNode node) {
+		node.font = (node instanceof Document) ? new Font() : node.parent.font.clone()
+		document.applyStyles(node)
 
 		if (node instanceof BlockNode) {
 			Margin defaultMargin = node.getClass().DEFAULT_MARGIN
 			node.margin.setDefaults(defaultMargin)
 		}
-
 	}
 
     void addFont(Map params, String location) {
@@ -90,6 +86,12 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements Paragrap
 		registerFactory('table', new TableFactory())
 		registerFactory('row', new RowFactory())
 		registerFactory('cell', new CellFactory())
+		registerFactory('heading1', new HeadingFactory())
+		registerFactory('heading2', new HeadingFactory())
+		registerFactory('heading3', new HeadingFactory())
+		registerFactory('heading4', new HeadingFactory())
+		registerFactory('heading5', new HeadingFactory())
+		registerFactory('heading6', new HeadingFactory())
 	}
 }
 

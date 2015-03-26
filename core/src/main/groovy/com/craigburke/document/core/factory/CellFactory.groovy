@@ -1,7 +1,7 @@
 package com.craigburke.document.core.factory
 
 import com.craigburke.document.core.Margin
-import com.craigburke.document.core.Paragraph
+import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.Row
 import com.craigburke.document.core.Cell
@@ -19,7 +19,7 @@ class CellFactory extends AbstractFactory {
 		Cell cell = new Cell(attributes)
 		Row row = builder.current
 		cell.parent = row
-		builder.setDefaults(cell)
+		builder.setStyles(cell)
 
         cell.font << attributes.font
 
@@ -28,18 +28,18 @@ class CellFactory extends AbstractFactory {
             builder.addCellToRow(cell, row)
         }
 
-		Paragraph paragraph = new Paragraph(font:cell.font.clone(), parent:cell, align:cell.align)
+		TextBlock paragraph = new TextBlock(font:cell.font.clone(), parent:cell, align:cell.align)
 		paragraph.margin.setDefaults(new Margin(top:0, bottom:0, left:0, right:0))
-        if (builder.addParagraphToCell) {
-            builder.addParagraphToCell(paragraph, cell)
+        if (builder.addTextBlockToCell) {
+            builder.addTextBlockToCell(paragraph, cell)
         }
 		cell.children << paragraph
 
 		if (value) {
 			Text text = new Text(value:value, font:cell.font.clone(), parent:paragraph)
 		    paragraph.children << text
-            if (builder.addTextToParagraph) {
-                builder.addTextToParagraph(text, paragraph)
+            if (builder.addTextToTextBlock) {
+                builder.addTextToTextBlock(text, paragraph)
             }
 		}
 
@@ -47,8 +47,8 @@ class CellFactory extends AbstractFactory {
 	}
 
 	void onNodeCompleted(FactoryBuilderSupport builder, row, cell) {
-		if (builder.onParagraphComplete && cell.children) {
-			builder.onParagraphComplete(cell.children[0])
+		if (builder.onTextBlockComplete && cell.children) {
+			builder.onTextBlockComplete(cell.children[0])
 		}
 		if (builder.onCellComplete) {
 			builder.onCellComplete(cell, row)

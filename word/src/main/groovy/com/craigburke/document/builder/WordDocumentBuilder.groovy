@@ -10,11 +10,11 @@ import com.craigburke.document.core.builder.RenderState
 import com.craigburke.document.core.BlockNode
 import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Row
-
+import com.craigburke.document.core.Font
 import com.craigburke.document.core.Image
 import com.craigburke.document.core.LineBreak
 import com.craigburke.document.core.PageBreak
-import com.craigburke.document.core.Paragraph
+import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Table
 import com.craigburke.document.core.Text
 import groovy.transform.InheritConstructors
@@ -71,16 +71,14 @@ class WordDocumentBuilder extends DocumentBuilder {
 			w.document {
 				w.body {
 					document.children.each { child ->
-						switch (child.getClass()) {
-							case Paragraph:
-								addParagraph(builder, child)
-								break
-							case Table:
-								addTable(builder, child)
-								break
-							case PageBreak:
-								addPageBreak(builder)
-								break
+						if (child instanceof TextBlock) {
+							addParagraph(builder, child)
+						}
+						else if (child instanceof PageBreak) {
+							addPageBreak(builder)
+						}
+						else if (child instanceof Table) {
+							addTable(builder, child)
 						}
 					}
 					w.sectPr {
@@ -103,7 +101,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 	}
 
 	void renderHeaderFooterNode(builder, BlockNode node) {
-		if (node instanceof Paragraph) {
+		if (node instanceof TextBlock) {
 			addParagraph(builder, node)
 		}
 		else {
@@ -135,7 +133,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 		totalSpacing
 	}
 
-	void addParagraph(builder, Paragraph paragraph) {
+	void addParagraph(builder, TextBlock paragraph) {
 		builder.w.p {
 			w.pPr {
 				w.spacing('w:before':pointToTwip(paragraph.margin.top), 'w:after':calculateSpacingAfter(paragraph))
@@ -146,7 +144,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 			paragraph.children.each { child ->
 				switch (child.getClass()) {
 					case Text:
-						addTextRun(builder, child)
+						addTextRun(builder, child.font as Font, child.value as String)
 						break
 					case Image:
 						addImageRun(builder, child)
@@ -260,24 +258,24 @@ class WordDocumentBuilder extends DocumentBuilder {
 		}
 	}
 
-	void addTextRun(builder, Text text) {
+	void addTextRun(builder, Font font, String text) {
 		builder.w.r {
 			w.rPr {
-				w.rFonts('w:ascii':text.font.family)
-				if (text.font.bold) {
+				w.rFonts('w:ascii':font.family)
+				if (font.bold) {
 					w.b()
 				}
-				if (text.font.italic) {
+				if (font.italic) {
 					w.i()
 				}
-				w.color('w:val':text.font.color.hex)
-				w.sz('w:val':pointToHalfPoint(text.font.size))
+				w.color('w:val':font.color.hex)
+				w.sz('w:val':pointToHalfPoint(font.size))
 			}
 			if (renderState == RenderState.PAGE) {
-				w.t(text.value, RUN_TEXT_OPTIONS)
+				w.t(text, RUN_TEXT_OPTIONS)
 			}
 			else {
-				parseHeaderFooterText(builder, text.value)
+				parseHeaderFooterText(builder, text)
 			}
 		}
 	}

@@ -3,7 +3,7 @@ package com.craigburke.document.core.factory
 import com.craigburke.document.core.Align
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Text
-import com.craigburke.document.core.Paragraph
+import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.builder.RenderState
 
 /**
@@ -16,9 +16,9 @@ class ParagraphFactory extends AbstractFactory {
     boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
 
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
-		Paragraph paragraph = new Paragraph(attributes)
+		TextBlock paragraph = new TextBlock(attributes)
 		paragraph.parent = builder.parentName == 'create' ? builder.document : builder.current
-		builder.setDefaults(paragraph)
+		builder.setStyles(paragraph)
 
         paragraph.font << attributes.font
 
@@ -26,18 +26,18 @@ class ParagraphFactory extends AbstractFactory {
 			paragraph.align = paragraph.align ?: Align.LEFT
 
 			if (builder.renderState == RenderState.PAGE) {
-				if (builder.addParagraphToDocument) {
-					builder.addParagraphToDocument(paragraph, builder.current)
+				if (builder.addTextBlockToDocument) {
+					builder.addTextBlockToDocument(paragraph, builder.current)
 				}
 			}
 		}
 
 		if (value) {
-			List elements = paragraph.addText(value, paragraph.font)
+			List elements = paragraph.addText(value.toString(), paragraph.font)
 
-			if (builder.addTextToParagraph) {
+			if (builder.addTextToTextBlock) {
 				elements.findAll { it instanceof Text }.each { Text text ->
-					builder.addTextToParagraph(text, paragraph)
+					builder.addTextToTextBlock(text, paragraph)
 				}
             }
 		}
@@ -46,8 +46,8 @@ class ParagraphFactory extends AbstractFactory {
 	}
 
  	void onNodeCompleted(FactoryBuilderSupport builder, parent, child) {
-		if (builder.onParagraphComplete) {
-			builder.onParagraphComplete(child)
+		if (builder.onTextBlockComplete) {
+			builder.onTextBlockComplete(child)
 		}
    	}
 

@@ -1,7 +1,7 @@
 package com.craigburke.document.core.factory
 
 import com.craigburke.document.core.LineBreak
-import com.craigburke.document.core.Paragraph
+import com.craigburke.document.core.TextBlock
 
 /**
  * Factory for line break nodes
@@ -14,11 +14,11 @@ class LineBreakFactory extends AbstractFactory {
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		LineBreak lineBreak = new LineBreak()
 
-		Paragraph paragraph = builder.parentName == 'paragraph' ? builder.current : builder.current.children[0]
+		TextBlock paragraph = builder.parentName == 'paragraph' ? builder.current : builder.current.children[0]
 		lineBreak.parent = paragraph
 
-		if (builder.addLineBreakToParagraph) {
-		    builder.addLineBreakToParagraph(lineBreak, paragraph)
+		if (builder.addLineBreakToTextBlock) {
+		    builder.addLineBreakToTextBlock(lineBreak, paragraph)
         }
 		paragraph.children << lineBreak
 

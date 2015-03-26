@@ -4,7 +4,7 @@ package com.craigburke.document.core
  * Table node which contains children of children
  * @author Craig Burke
  */
-class Table extends BaseNode implements BlockNode {
+class Table extends BaseNode implements BlockNode, StyledNode {
     final static Margin DEFAULT_MARGIN = new Margin(top:12, bottom:12, left:0, right:0)
     List<Row> children = []
 

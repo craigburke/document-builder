@@ -1,6 +1,6 @@
 package com.craigburke.document.core.factory
 
-import com.craigburke.document.core.Paragraph
+import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Text
 
 /**
@@ -13,16 +13,16 @@ class TextFactory extends AbstractFactory {
     boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
 
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
-        Paragraph paragraph = (builder.parentName == 'paragraph') ? builder.current : builder.current.children[0]
+        TextBlock paragraph = (builder.parentName == 'paragraph') ? builder.current : builder.current.children[0]
         List elements = paragraph.addText(value, builder.font.clone())
         List<Text> textElements = elements.findAll { it instanceof Text }
 
         textElements.each { Text text ->
             text.parent = paragraph
-            builder.setDefaults(text)
+            builder.setStyles(text)
             text.font << attributes.font
-            if (builder.addTextToParagraph) {
-                builder.addTextToParagraph(text, paragraph)
+            if (builder.addTextToTextBlock) {
+                builder.addTextToTextBlock(text, paragraph)
             }
         }
 

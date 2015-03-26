@@ -7,7 +7,7 @@ trait TableBuilder {
 	def addRowToTable
 	
 	def addCellToRow
-	def addParagraphToCell
+	def addTextBlockToCell
 	
 	def onTableComplete
 	def onRowComplete

@@ -1,6 +1,6 @@
 package com.craigburke.document.builder.render
 
-import com.craigburke.document.core.Paragraph
+import com.craigburke.document.core.TextBlock
 
 /**
  * A paragraph line
@@ -10,9 +10,9 @@ class ParagraphLine {
     final int maxWidth
     int contentWidth = 0
     List elements = []
-    Paragraph paragraph
+    TextBlock paragraph
 
-    ParagraphLine(Paragraph paragraph, int maxWidth) {
+    ParagraphLine(TextBlock paragraph, int maxWidth) {
         this.paragraph = paragraph
         this.maxWidth = maxWidth
     }

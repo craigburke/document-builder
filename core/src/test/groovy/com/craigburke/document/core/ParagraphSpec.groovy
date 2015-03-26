@@ -9,16 +9,16 @@ import spock.lang.Specification
  */
 class ParagraphSpec extends Specification {
 
-    @Shared Paragraph paragraph
+    @Shared TextBlock paragraph
     static final int DEFAULT_FONT_SIZE = 12
 
     def setup() {
-        paragraph = new Paragraph()
+        paragraph = new TextBlock()
         paragraph.children << new Text(font:[size:DEFAULT_FONT_SIZE])
     }
 
     def "no leading or text for empty paragraph"() {
-        Paragraph emptyParagraph = new Paragraph(font:[size:10])
+        TextBlock emptyParagraph = new TextBlock(font:[size:10])
 
         expect:
         emptyParagraph.textHeight == 0

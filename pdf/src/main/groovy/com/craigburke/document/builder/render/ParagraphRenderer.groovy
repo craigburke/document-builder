@@ -3,7 +3,7 @@ package com.craigburke.document.builder.render
 import com.craigburke.document.builder.PdfDocument
 import com.craigburke.document.core.Align
 import com.craigburke.document.core.Document
-import com.craigburke.document.core.Paragraph
+import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.builder.RenderState
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
@@ -21,12 +21,12 @@ import java.awt.image.BufferedImage
 class ParagraphRenderer {
 
     Document document
-    Paragraph paragraph
+    TextBlock paragraph
     private final int maxLineWidth
     private final int renderStartX
     private ParagraphElement paragraphElement
 
-    ParagraphRenderer(Paragraph paragraph, Document document, int renderStartX, int maxLineWidth) {
+    ParagraphRenderer(TextBlock paragraph, Document document, int renderStartX, int maxLineWidth) {
         this.paragraph = paragraph
         this.document = document
         this.renderStartX = renderStartX

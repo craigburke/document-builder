@@ -11,7 +11,7 @@ import groovy.xml.MarkupBuilder
 
 import com.craigburke.document.core.builder.DocumentBuilder
 import com.craigburke.document.core.Document
-import com.craigburke.document.core.Paragraph
+import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Table
 import com.craigburke.document.core.Image
 
@@ -41,7 +41,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
         PdfFont.addFont(document.item.pdDocument, embeddedFont)
     }
 
-	def addParagraphToDocument = { Paragraph paragraph, Document document ->
+	def addTextBlockToDocument = { TextBlock paragraph, Document document ->
 		document.item.x = paragraph.margin.left + document.margin.left
         document.item.scrollDownPage(paragraph.margin.top)
 	}
@@ -50,7 +50,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
         document.item.addPage()
     }
 
-	def onParagraphComplete = { Paragraph paragraph ->
+	def onTextBlockComplete = { TextBlock paragraph ->
         if (renderState == RenderState.PAGE && paragraph.parent instanceof Document) {
             int pageWidth = document.item.currentPage.mediaBox.width - document.margin.left - document.margin.right
             int maxLineWidth = pageWidth - paragraph.margin.left - paragraph.margin.right
@@ -113,7 +113,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
     }
 
     private void renderHeaderFooter(headerFooter, int xStart) {
-        if (headerFooter instanceof Paragraph) {
+        if (headerFooter instanceof TextBlock) {
             ParagraphRenderer renderer = new ParagraphRenderer(headerFooter, document, xStart, document.width)
             renderer.render(renderState)
         }
@@ -135,7 +135,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
 			document.children.each { child ->
                 switch (child.getClass()) {
-                    case Paragraph:
+                    case TextBlock:
                         addParagraphToMetadata(delegate, child)
                         break
                     case Table:
@@ -152,7 +152,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 		catalog.metadata = metadata
 	}
 
-    private void addParagraphToMetadata(builder, Paragraph paragraphNode) {
+    private void addParagraphToMetadata(builder, TextBlock paragraphNode) {
         builder.paragraph(marginTop:"${paragraphNode.margin.top}",
                 marginBottom:"${paragraphNode.margin.bottom}",
                 marginLeft:"${paragraphNode.margin.left}",
