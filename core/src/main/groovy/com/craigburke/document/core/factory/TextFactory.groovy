@@ -1,5 +1,6 @@
 package com.craigburke.document.core.factory
 
+import com.craigburke.document.core.LineBreak
 import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Text
 
@@ -14,15 +15,19 @@ class TextFactory extends AbstractFactory {
 
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
         TextBlock paragraph = (builder.parentName == 'paragraph') ? builder.current : builder.current.children[0]
-        List elements = paragraph.addText(value, builder.font.clone())
-        List<Text> textElements = elements.findAll { it instanceof Text }
-
-        textElements.each { Text text ->
-            text.parent = paragraph
-            builder.setStyles(text, attributes)
-            text.font << attributes.font
-            if (builder.addTextToTextBlock) {
-                builder.addTextToTextBlock(text, paragraph)
+        List elements = paragraph.addText(value.toString())
+         elements.each { node ->
+            node.parent = paragraph
+            if (node instanceof Text) {
+                builder.setStyles(node, attributes)
+                if (builder.addTextToTextBlock) {
+                    builder.addTextToTextBlock(node, paragraph)
+                }
+            }
+            else if (node instanceof LineBreak) {
+                if (builder.addLineBreakToTextBlock) {
+                    builder.addLineBreakToTextBlock(node, paragraph)
+                }
             }
         }
 

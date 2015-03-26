@@ -27,12 +27,12 @@ class TextBlock extends BaseNode implements BlockNode, StyledNode {
 		children.findAll { it.getClass() == Text }*.value.join('')
 	}
 
-	List addText(String text, Font font) {
+	List addText(String text) {
 		List elements = []
-		String[] textSections = text.split('\n')
+		def textSections = text.split('\n')
 
 		textSections.each { String section ->
-			elements << new Text(value:section, font:font, parent:this)
+			elements << new Text(value:section, parent:this)
 
 			if (section != textSections.last()) {
 				elements << new LineBreak(parent:this)
@@ -44,5 +44,6 @@ class TextBlock extends BaseNode implements BlockNode, StyledNode {
 		}
 
 		children += elements
+		elements
 	}
 }
