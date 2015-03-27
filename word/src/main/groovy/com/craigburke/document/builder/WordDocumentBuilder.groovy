@@ -50,16 +50,10 @@ class WordDocumentBuilder extends DocumentBuilder {
 		def header = renderHeader(headerFooterOptions)
 		def footer = renderFooter(headerFooterOptions)
 
-		BlockNode firstBlockNode = document.children.find { it instanceof BlockNode }
-
 		renderState = RenderState.PAGE
 		wordDocument.generateDocument { builder ->
 			w.document {
 				w.body {
-					if (firstBlockNode) {
-						addInitialDummyParagraph(builder, firstBlockNode)
-					}
-
 					document.children.each { child ->
 						if (child instanceof TextBlock) {
 							addParagraph(builder, child)
@@ -72,15 +66,12 @@ class WordDocumentBuilder extends DocumentBuilder {
 						}
 					}
 					w.sectPr {
-						int footerValue = pointToTwip(footer ? footer.node.margin.bottom : 0)
-						int headerValue = pointToTwip(header ? header.node.margin.top : 0)
-
 						w.pgMar('w:bottom':pointToTwip(document.margin.bottom),
 								'w:top':pointToTwip(document.margin.top),
 								'w:right':pointToTwip(document.margin.right),
 								'w:left':pointToTwip(document.margin.left),
-								'w:footer':footerValue,
-								'w:header':headerValue)
+								'w:footer':0,
+								'w:header':0)
 						if (header) {
 							w.headerReference('r:id':header.id, 'w:type':'default')
 						}
@@ -156,13 +147,6 @@ class WordDocumentBuilder extends DocumentBuilder {
 		totalSpacing
 	}
 
-	void addInitialDummyParagraph(builder, BlockNode firstBlockNode) {
-		builder.w.p {
-			w.pPr {
-				w.spacing('w:before':0, 'w:after':pointToTwip(firstBlockNode.margin.top))
-			}
-		}
-	}
 
 	void addParagraph(builder, TextBlock paragraph) {
 		builder.w.p {
