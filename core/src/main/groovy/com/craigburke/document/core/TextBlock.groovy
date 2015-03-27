@@ -8,15 +8,16 @@ class TextBlock extends BaseNode implements BlockNode, StyledNode {
 	final static Margin DEFAULT_MARGIN = new Margin(top:12, bottom:12, left:0, right:0)
 
 	Integer lineHeight
-	BigDecimal lineHeightMultiplier = 1.1
+	BigDecimal textHeightMultiplier = 1.1
 
 	List children = []
 
 	Integer getTextHeight() {
-        BigDecimal result = lineHeight ?: lineHeightMultiplier * children.findAll {
-            it.getClass() == Text }.inject(0f) { max, child -> Math.max(max, child.font.size as Float)
-        }
-        Math.ceil(result)
+        BigDecimal result = lineHeight ?: textHeightMultiplier *
+				(children.findAll { it instanceof Text }
+						.collect { it.font.size }
+						.max() ?: 0 as Float)
+		Math.ceil(result)
 	}
 
     Integer getTextHeightOffset() {

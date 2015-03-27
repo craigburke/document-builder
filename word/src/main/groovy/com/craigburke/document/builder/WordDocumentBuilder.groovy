@@ -167,9 +167,20 @@ class WordDocumentBuilder extends DocumentBuilder {
 	void addParagraph(builder, TextBlock paragraph) {
 		builder.w.p {
 			w.pPr {
-				w.spacing('w:before':pointToTwip(paragraph.margin.top), 'w:after':calculateSpacingAfter(paragraph))
-				w.ind(	'w:left':pointToTwip(paragraph.margin.left),
-						'w:right':pointToTwip(paragraph.margin.right))
+				String lineRule = (paragraph.lineHeight) ? 'exact' : 'auto'
+				BigDecimal lineValue = (paragraph.lineHeight) ?
+						pointToTwip(paragraph.lineHeight) : (paragraph.textHeightMultiplier * 240)
+
+				w.spacing(
+						'w:before':pointToTwip(paragraph.margin.top),
+						'w:after':pointToTwip(calculateSpacingAfter(paragraph)),
+						'w:lineRule':lineRule,
+						'w:line':lineValue
+				)
+				w.ind(
+						'w:left':pointToTwip(paragraph.margin.left),
+						'w:right':pointToTwip(paragraph.margin.right)
+				)
 				w.jc('w:val':paragraph.align.value)
 			}
 			paragraph.children.each { child ->

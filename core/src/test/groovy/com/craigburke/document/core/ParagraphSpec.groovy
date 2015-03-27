@@ -27,7 +27,7 @@ class ParagraphSpec extends Specification {
 
     def "leading default"() {
         expect:
-        paragraph.textHeight == Math.ceil(DEFAULT_FONT_SIZE * paragraph.lineHeightMultiplier)
+        paragraph.textHeight == Math.ceil(DEFAULT_FONT_SIZE * paragraph.textHeightMultiplier)
     }
 
     def "leading override"() {

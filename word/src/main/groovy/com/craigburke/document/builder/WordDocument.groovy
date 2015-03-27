@@ -15,7 +15,7 @@ class WordDocument {
     private static final String CONTENT_FOLDER = 'word'
     private static final String IMAGE_FOLDER = 'media'
 
-    private static final String XML_HEADER = '<?xml version="1.0" encoding="UTF-16" standalone="yes"?>'
+    private static final String XML_HEADER = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
     private static final DOCUMENT_NAMESPACES = [
             w:'http://schemas.openxmlformats.org/wordprocessingml/2006/main',
             a:'http://schemas.openxmlformats.org/drawingml/2006/main',
@@ -69,7 +69,7 @@ class WordDocument {
             documentClosure.delegate = builder
             documentClosure(builder)
 
-        }.toString().getBytes('UTF-16')
+        }.toString()
         zipStream.closeEntry()
         addImageFiles()
     }
@@ -83,7 +83,7 @@ class WordDocument {
             namespaces << DOCUMENT_NAMESPACES
             headerClosure.delegate = builder
             headerClosure(builder)
-        }.toString().getBytes('UTF-16')
+        }.toString()
         zipStream.closeEntry()
 
         addRelationship(
@@ -102,7 +102,7 @@ class WordDocument {
             namespaces << DOCUMENT_NAMESPACES
             footerClosure.delegate = builder
             footerClosure(builder)
-        }.toString().getBytes('UTF-16')
+        }.toString()
         zipStream.closeEntry()
 
         addRelationship(
@@ -157,7 +157,7 @@ class WordDocument {
                     Relationship(Id:relationship.id, Target:relationship.target, Type:relationship.type)
                 }
             }
-        }.toString().getBytes('UTF-16')
+        }.toString()
         zipStream.closeEntry()
     }
 
@@ -176,7 +176,7 @@ class WordDocument {
                             ContentType:documentPart.type.contentType)
                 }
             }
-        }.toString().getBytes('UTF-16')
+        }.toString()
         zipStream.closeEntry()
     }
 
