@@ -147,7 +147,6 @@ class WordDocumentBuilder extends DocumentBuilder {
 		totalSpacing
 	}
 
-
 	void addParagraph(builder, TextBlock paragraph) {
 		builder.w.p {
 			w.pPr {
