@@ -144,7 +144,7 @@ githubPages {
 	}
 
 	pages {
-		from 'docs'
+		from 'build/asciidoc/html5'
 	}
 }
 
