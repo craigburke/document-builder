@@ -8,6 +8,11 @@ buildscript {
     }
 }
 
+plugins {
+	id 'org.ajoberstar.github-pages' version '1.1.0'
+	id 'org.asciidoctor.gradle.asciidoctor' version '1.5.1'
+}
+
 allprojects {
     apply plugin: 'idea'
     apply plugin: 'eclipse'
@@ -126,6 +131,24 @@ subprojects {
     bintrayUpload.dependsOn build, sourcesJar, javadoc
 }
 
+asciidoctor {
+	sourceDir = file('docs')
+}
+
+githubPages {
+	repoUri = 'https://github.com/craigburke/document-builder.git'
+	
+	credentials {
+		username = project.hasProperty('githubUsername') ? project.githubUsername : ''
+		password = project.hasProperty('githubPassword') ? project.githubPassword : ''
+	}
+
+	pages {
+		from 'docs'
+	}
+}
+
+publishGhPages.dependsOn asciidoctor
 
 task wrapper(type: Wrapper) {
     gradleVersion = '2.2'
