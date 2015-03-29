@@ -414,20 +414,34 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h1>Groovy Document Builder</h1>
 </div>
 <div id="content">
-<div class="sect1">
-<h2 id="_quick_start">Quick Start</h2>
-<div class="sectionbody">
 <div class="listingblock">
 <div class="content">
-<pre>def foo = new Foo()</pre>
-</div>
-</div>
+<pre>@Grab(group='com.craigburke.document', module='pdf', version='0.2.4')
+@Grab(group='com.craigburke.document', module='word', version='0.2.4')
+
+import com.craigburke.document.builder.PdfDocumentBuilder
+import com.craigburke.document.builder.WordDocumentBuilder
+
+def wordBuilder = new WordDocumentBuilder(new File('example.docx'))
+def pdfBuilder = new PdfDocumentBuilder(new File('example.pdf'))
+
+wordBuilder.create {
+    document {
+        paragraph "Hello World (Word)"
+    }
+}
+
+pdfBuilder.create {
+    document {
+        paragraph "Hello World (PDF)"
+    }
+}</pre>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-03-28 18:30:11 EDT
+Last updated 2015-03-28 19:58:59 EDT
 </div>
 </div>
 </body>
