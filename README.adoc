@@ -1,10 +1,12 @@
-:version: 0.2.4
+:version: 0.3.0
 
 = Groovy Document Builder
 
 image::https://codeship.com/projects/c4c04780-74d2-0132-8185-6662d475f668/status?branch=master[link="https://codeship.com/projects/55079"]
 
 A document builder for Groovy for PDF or Word documents. This is still very much a work in progress.
+
+http://www.craigburke.com/document-builder/[Full Documentation]
 
 == Example
 
@@ -15,14 +17,13 @@ A document builder for Groovy for PDF or Word documents. This is still very much
 
 import com.craigburke.document.builder.PdfDocumentBuilder
 import com.craigburke.document.builder.WordDocumentBuilder
-import com.craigburke.document.core.Align
 
 def builders = [
         new PdfDocumentBuilder(new File('example.pdf')),
         new WordDocumentBuilder(new File('example.docx'))
 ]
 
-def RAINBOW_COLORS = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8B00FF']
+String[] COLORS = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8B00FF']
 
 String GROOVY_IMAGE_URL = 'http://www.craigburke.com/images/posts/groovy-logo.png'
 byte[] groovyImageData = new URL(GROOVY_IMAGE_URL).bytes
@@ -35,8 +36,8 @@ builders.each { builder ->
 
         paragraph {
             font.size = 42.pt
-            "Hello Woooorld!!!!!".toUpperCase().eachWithIndex { letter, index ->
-                font.color = RAINBOW_COLORS[ index % RAINBOW_COLORS.size() ]
+            "Hello World".eachWithIndex { letter, index ->
+                font.color = COLORS[ index % COLORS.size() ]
                 text letter
                 font.size--
             }
@@ -44,27 +45,25 @@ builders.each { builder ->
             text "Current font size is ${font.size}pt"
         }
 
-        paragraph "Back to default font and aligned to the right", align: Align.RIGHT
+        paragraph "Back to default font and aligned to the right", align: 'right'
 
         paragraph(margin: [left: 1.25.inches, right: 1.inch, top: 0.25.inches, bottom: 0.25.inches]) {
             font &#060;&#060; [family: 'Times-Roman', bold: true, italic: true, color: '#333333']
             text "A paragraph with a different font and margins"
         }
 
-        paragraph(align: Align.CENTER) {
+        paragraph(align: 'center') {
             image(data: groovyImageData, width: 250.px, height: 125.px)
             lineBreak()
             text "Figure 1: Groovy Logo", font: [italic: true, size: 9.pt]
         }
 
-        paragraph("Suddenly, a table...", font: [size: 22.pt])
-
         table(width: 6.inches, padding: 4.px, border: [size: 3.px, color: '#990000']) {
             row {
-                cell("Left Aligned", width: 1.5.inches, align: Align.LEFT)
-                cell("Center Aligned", width: 2.inches, align: Align.CENTER)
-                cell(align: Align.RIGHT) {
-                    text "Right Aligned"
+                cell('Left Aligned', width:1.5.inches, align:'left')
+                cell('Center Aligned', width:2.inches, align:'center')
+                cell(align:'right') {
+                    text 'Right Aligned'
                 }
             }
         }
@@ -75,12 +74,3 @@ builders.each { builder ->
 == License
 
 The core project as well as the Word document and Pdf builder are all available under the MPL2 license.
-
-== TODO
-
-   * Page Headers/Footers
-   * Headings
-   * Links
-   * Lists
-   * Proper Documentation
-   * Themes / Templates
