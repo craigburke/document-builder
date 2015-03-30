@@ -270,7 +270,7 @@ builder.create {
         heading1 '1. Main Page Heading' // <1>
 
         heading2 '1.1 First Section', font: [color: '#333333'] // <2>
-        paragraph 'First section'
+        paragraph 'First section content'
 
         heading3 '1.1.1 Subsection' // <3>
         heading4 '1.1.1.1 Subsection'
@@ -285,6 +285,9 @@ builder.create {
 <2> The first main section of the document and also contains custom text styling
 <3> A subsection within the first section
 <4> The second main section of the document
+
+[.thumb]
+image::heading.png[]
 
 == Table
 
