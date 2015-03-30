@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="generator" content="Asciidoctor 1.5.0">
 <meta name="author" content="Craig Burke">
-<title>Groovy Document Builder v0.3.0</title>
+<title>Groovy Document Builder</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic|Noto+Serif:400,400italic,700,700italic|Droid+Sans+Mono:400">
 <style>
 /* Asciidoctor default stylesheet | MIT License | http://asciidoctor.org */
@@ -415,7 +415,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </head>
 <body class="article toc2 toc-right">
 <div id="header">
-<h1>Groovy Document Builder v0.3.0</h1>
+<h1>Groovy Document Builder</h1>
 <div class="details">
 <span id="author" class="author">Craig Burke</span><br>
 <span id="email" class="email"><a href="mailto:craig@craigburke.com">craig@craigburke.com</a></span><br>
@@ -560,11 +560,12 @@ text styling at any point allowing you to do some interesting things.</p>
 
 builder.create {
     document {
-        paragraph(font: [size: 42.pt]) { <b class="conum">(1)</b>
+        paragraph(font: [size: 20.pt]) { <b class="conum">(1)</b>
              "Hello World".eachWithIndex { letter, index -&gt;
                 font.color = COLORS[ index % COLORS.size() ] <b class="conum">(2)</b>
                 text letter
-                font.size-- <b class="conum">(3)</b>
+                font.size += 5 <b class="conum">(3)</b>
+            }
         }
         paragraph "Paragraph with default styles" <b class="conum">(4)</b>
     }
@@ -574,27 +575,119 @@ builder.create {
 <div class="colist arabic">
 <ol>
 <li>
-<p>Initial font size for the first paragraph is 42 points.</p>
+<p>Initial font size for the first paragraph is 20 points.</p>
 </li>
 <li>
 <p>Alternate through the different colors of the rainbow for each letter</p>
 </li>
 <li>
-<p>Decrement the font size by 1 point so that each letter gets gradually smaller</p>
+<p>Increase the font size by 5 point of each letter</p>
 </li>
 <li>
 <p>The styles in this paragraph are unaffected by the changes within the first paragraph</p>
 </li>
 </ol>
 </div>
+<div class="imageblock">
+<div class="content">
+<img src="images/rainbow.png" alt="rainbow">
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_templates_and_styles">Templates and Styles</h3>
+<div class="paragraph">
+<p>In addition to setting the font styles for each paragraph individually you can also set general defaults with
+the template setting.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">Map customTemplate = [
+    document: [font: [family: 'Helvetica'],
+    paragraph: [font: [color: '#333333'], <b class="conum">(1)</b>
+    'paragraph.myStyle': [font: [bold: true]] <b class="conum">(2)</b>
+]
 
+builder.create {
+    document(template: customTemplate) {
+        paragraph 'Hello'
+        paragraph 'Paragraph with style applied', style: 'important'
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>Defaults for all paragraphs</p>
+</li>
+<li>
+<p>Specific style that applied when a paragraph</p>
+</li>
+</ol>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_headers_and_footers">Headers and Footers</h3>
+<div class="paragraph">
+<p>You can specify both a header and footer as a closure. The closure should contain either a single table or
+a single paragraph that will be rendered on each page.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">String GROOVY_IMAGE_URL = 'http://www.craigburke.com/images/posts/groovy-logo.png'
+byte[] imageData = new URL(GROOVY_IMAGE_URL).bytes
 
+builder.create {
+    document(
+        margin: [top: 1.5.inches, bottom: 1.inch], <b class="conum">(1)</b>
+        pageCount: 5, <b class="conum">(2)</b>
+        header: { info -&gt;
+            paragraph { <b class="conum">(3)</b>
+                image(data: imageData, height: 106.px, width: 213.px, name: 'groovy.png') <b class="conum">(4)</b>
+            }
+        },
+        footer: { info -&gt;
+            table(border: [size: 0]) {
+                row {
+                    cell "Date Generated: ${info.dateGenerated.format('yyyy-MM-dd hh:mm a')}" <b class="conum">(5)</b>
+                    cell "Page ${info.pageNumber} of ${info.pageCount}", align: 'right' <b class="conum">(6)</b>
+                }
+            }
+        }
+    ){
+        paragraph "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<ol>
+<li>
+<p>The header and footers reside in the margins of the page so it&#8217;s important that the top and bottom are large enough.</p>
+</li>
+<li>
+<p>If you display the <strong>pageCount</strong> within the header or footer it must be set here for the Word Builder (this can be omitted for the Pdf Builder)</p>
+</li>
+<li>
+<p>Both the header and footer can either be a single paragraph or table.</p>
+</li>
+<li>
+<p>You can include images in addition to formatted text in your headers and footers.</p>
+</li>
+<li>
+<p>The <strong>dateGenerated</strong> property is a Date value that can be used in either the header or footer</p>
+</li>
+<li>
+<p>The <strong>pageNumber</strong> and <strong>pageCount</strong> are String values</p>
+</li>
+</ol>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="images/header-footer.png" alt="header footer">
+</div>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_page_breaks">Page Breaks</h3>
@@ -693,7 +786,7 @@ levels 1-6 can be used to delimit sections.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-03-29 13:39:26 EDT
+Last updated 2015-03-30 11:08:04 EDT
 </div>
 </div>
 </body>
