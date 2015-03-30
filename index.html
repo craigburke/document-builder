@@ -409,6 +409,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 .hide-for-print{display:none!important}
 .show-for-print{display:inherit!important}}
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded', prettyPrint)</script>
@@ -433,20 +434,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_page_breaks">Page Breaks</a></li>
 </ul>
 </li>
-<li><a href="#_paragraphs">Paragraphs</a></li>
-<li><a href="#_headings">Headings</a>
+<li><a href="#_paragraph">Paragraph</a>
 <ul class="sectlevel2">
 <li><a href="#_text">Text</a></li>
 <li><a href="#_images">Images</a></li>
 <li><a href="#_line_breaks">Line Breaks</a></li>
 </ul>
 </li>
-<li><a href="#_tables">Tables</a>
-<ul class="sectlevel2">
-<li><a href="#_rows">Rows</a></li>
-<li><a href="#_cells">Cells</a></li>
-</ul>
-</li>
+<li><a href="#_heading">Heading</a></li>
+<li><a href="#_table">Table</a></li>
 </ul>
 </div>
 </div>
@@ -493,26 +489,29 @@ and the coversion will be done for you</p>
 <div class="listingblock">
 <div class="content">
 <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
-    document(margin: [top: 2.inches, bottom: 1.inch) { <b class="conum">(1)</b>
-        paragraph 'Hello World', font: [size: 14.pt] { <b class="conum">(2)</b>
-            image(height: 120.px, width: 130.px, data: imageData, name: 'foo.png') <b class="conum">(3)</b>
+    document(margin: [top: 2.inches, bottom: 1.inch) { <i class="conum" data-value="1"></i><b>(1)</b>
+        paragraph 'Hello World', font: [size: 14.pt] { <i class="conum" data-value="2"></i><b>(2)</b>
+            image(height: 120.px, width: 130.px, data: imageData, name: 'foo.png') <i class="conum" data-value="3"></i><b>(3)</b>
         }
     }
 }</code></pre>
 </div>
 </div>
 <div class="colist arabic">
-<ol>
-<li>
-<p>Both top and bottom margin set in inches</p>
-</li>
-<li>
-<p>Font size set in points</p>
-</li>
-<li>
-<p>Height and width of image set in pixels</p>
-</li>
-</ol>
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Both top and bottom margin set in inches</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Font size set in points</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Height and width of image set in pixels</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect2">
@@ -523,32 +522,36 @@ and the coversion will be done for you</p>
 <div class="listingblock">
 <div class="content">
 <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
-    document(font: [family: 'Helvetica', color: '#000000', size: 14.pt]) { <b class="conum">(1)</b>
+    document(font: [family: 'Helvetica', color: '#000000', size: 14.pt]) { <i class="conum" data-value="1"></i><b>(1)</b>
         paragraph(font: [size: 12.pt]) {
-            text 'Paragraph text ' <b class="conum">(2)</b>
-            text 'Hello', font: [color: '#333333'] <b class="conum">(3)</b>
+            text 'Paragraph text ' <i class="conum" data-value="2"></i><b>(2)</b>
+            text 'Hello', font: [color: '#333333'] <i class="conum" data-value="3"></i><b>(3)</b>
         }
 
-        paragraph 'Default styles' <b class="conum">(4)</b>
+        paragraph 'Default styles' <i class="conum" data-value="4"></i><b>(4)</b>
     }
 }</code></pre>
 </div>
 </div>
 <div class="colist arabic">
-<ol>
-<li>
-<p>Sets the defaults for font family, color and size for all text in the document</p>
-</li>
-<li>
-<p>The paragraph text inherits font family and color from the document but overrides the font size.</p>
-</li>
-<li>
-<p>Here the font color is overridden at the text level</p>
-</li>
-<li>
-<p>Nothing has been overridden so the default document font styles apply here</p>
-</li>
-</ol>
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Sets the defaults for font family, color and size for all text in the document</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The paragraph text inherits font family and color from the document but overrides the font size.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Here the font color is overridden at the text level</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Nothing has been overridden so the default document font styles apply here</td>
+</tr>
+</table>
 </div>
 <div class="paragraph">
 <p>In addition to being able to set the font property while creating an element you can also directly change the
@@ -560,33 +563,37 @@ text styling at any point allowing you to do some interesting things.</p>
 
 builder.create {
     document {
-        paragraph(font: [size: 20.pt]) { <b class="conum">(1)</b>
+        paragraph(font: [size: 20.pt]) { <i class="conum" data-value="1"></i><b>(1)</b>
              "Hello World".eachWithIndex { letter, index -&gt;
-                font.color = COLORS[ index % COLORS.size() ] <b class="conum">(2)</b>
+                font.color = COLORS[ index % COLORS.size() ] <i class="conum" data-value="2"></i><b>(2)</b>
                 text letter
-                font.size += 5 <b class="conum">(3)</b>
+                font.size += 5 <i class="conum" data-value="3"></i><b>(3)</b>
             }
         }
-        paragraph "Paragraph with default styles" <b class="conum">(4)</b>
+        paragraph "Paragraph with default styles" <i class="conum" data-value="4"></i><b>(4)</b>
     }
 }</code></pre>
 </div>
 </div>
 <div class="colist arabic">
-<ol>
-<li>
-<p>Initial font size for the first paragraph is 20 points.</p>
-</li>
-<li>
-<p>Alternate through the different colors of the rainbow for each letter</p>
-</li>
-<li>
-<p>Increase the font size by 5 point of each letter</p>
-</li>
-<li>
-<p>The styles in this paragraph are unaffected by the changes within the first paragraph</p>
-</li>
-</ol>
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Initial font size for the first paragraph is 20 points.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Alternate through the different colors of the rainbow for each letter</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Increase the font size by 5 point of each letter</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The styles in this paragraph are unaffected by the changes within the first paragraph</td>
+</tr>
+</table>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -604,8 +611,8 @@ the template setting.</p>
 <div class="content">
 <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">Map customTemplate = [
     document: [font: [family: 'Helvetica'],
-    paragraph: [font: [color: '#333333'], <b class="conum">(1)</b>
-    'paragraph.myStyle': [font: [bold: true]] <b class="conum">(2)</b>
+    paragraph: [font: [color: '#333333'], <i class="conum" data-value="1"></i><b>(1)</b>
+    'paragraph.myStyle': [font: [bold: true]] <i class="conum" data-value="2"></i><b>(2)</b>
 ]
 
 builder.create {
@@ -617,14 +624,16 @@ builder.create {
 </div>
 </div>
 <div class="colist arabic">
-<ol>
-<li>
-<p>Defaults for all paragraphs</p>
-</li>
-<li>
-<p>Specific style that applied when a paragraph</p>
-</li>
-</ol>
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Defaults for all paragraphs</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Specific style that applied when a paragraph</td>
+</tr>
+</table>
 </div>
 </div>
 <div class="sect2">
@@ -640,18 +649,18 @@ byte[] imageData = new URL(GROOVY_IMAGE_URL).bytes
 
 builder.create {
     document(
-        margin: [top: 1.5.inches, bottom: 1.inch], <b class="conum">(1)</b>
-        pageCount: 5, <b class="conum">(2)</b>
+        margin: [top: 1.5.inches, bottom: 1.inch], <i class="conum" data-value="1"></i><b>(1)</b>
+        pageCount: 1, <i class="conum" data-value="2"></i><b>(2)</b>
         header: { info -&gt;
-            paragraph { <b class="conum">(3)</b>
-                image(data: imageData, height: 106.px, width: 213.px, name: 'groovy.png') <b class="conum">(4)</b>
+            paragraph { <i class="conum" data-value="3"></i><b>(3)</b>
+                image(data: imageData, height: 106.px, width: 213.px, name: 'groovy.png') <i class="conum" data-value="4"></i><b>(4)</b>
             }
         },
         footer: { info -&gt;
             table(border: [size: 0]) {
                 row {
-                    cell "Date Generated: ${info.dateGenerated.format('yyyy-MM-dd hh:mm a')}" <b class="conum">(5)</b>
-                    cell "Page ${info.pageNumber} of ${info.pageCount}", align: 'right' <b class="conum">(6)</b>
+                    cell "Date Generated: ${info.dateGenerated.format('yyyy-MM-dd hh:mm a')}" <i class="conum" data-value="5"></i><b>(5)</b>
+                    cell "Page ${info.pageNumber} of ${info.pageCount}", align: 'right' <i class="conum" data-value="6"></i><b>(6)</b>
                 }
             }
         }
@@ -662,26 +671,32 @@ builder.create {
 </div>
 </div>
 <div class="colist arabic">
-<ol>
-<li>
-<p>The header and footers reside in the margins of the page so it&#8217;s important that the top and bottom are large enough.</p>
-</li>
-<li>
-<p>If you display the <strong>pageCount</strong> within the header or footer it must be set here for the Word Builder (this can be omitted for the Pdf Builder)</p>
-</li>
-<li>
-<p>Both the header and footer can either be a single paragraph or table.</p>
-</li>
-<li>
-<p>You can include images in addition to formatted text in your headers and footers.</p>
-</li>
-<li>
-<p>The <strong>dateGenerated</strong> property is a Date value that can be used in either the header or footer</p>
-</li>
-<li>
-<p>The <strong>pageNumber</strong> and <strong>pageCount</strong> are String values</p>
-</li>
-</ol>
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The header and footers reside in the margins of the page so it&#8217;s important that the top and bottom are large enough.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>If you display the <strong>pageCount</strong> within the header or footer it must be set here for the Word Builder (this can be omitted for the Pdf Builder)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Both the header and footer can either be a single paragraph or table.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>You can include images in addition to formatted text in your headers and footers.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>The <strong>dateGenerated</strong> property is a Date value that can be used in either the header or footer</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>The <strong>pageNumber</strong> and <strong>pageCount</strong> are String values</td>
+</tr>
+</table>
 </div>
 <div class="imageblock">
 <div class="content">
@@ -709,84 +724,204 @@ builder.create {
 </div>
 </div>
 <div class="sect1">
-<h2 id="_paragraphs">Paragraphs</h2>
-<div class="sectionbody">
-
-</div>
-</div>
-<div class="sect1">
-<h2 id="_headings">Headings</h2>
+<h2 id="_paragraph">Paragraph</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Headings can be styled much like simple paragraphs and are used to create a document structure. Headings with
-levels 1-6 can be used to delimit sections.</p>
+<p>A paragraph is a block element that can contain text or images and have margins and alignment applied to it.</p>
 </div>
 <div class="listingblock">
 <div class="content">
 <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
     document {
-        heading1 "1. Main Page Heading" <b class="conum">(1)</b>
-
-        heading2 "1.1 First Section" <b class="conum">(2)</b>
-        paragraph "First section"
-
-        heading3 "1.1.1 Subsection" <b class="conum">(3)</b>
-        heading4 "1.1.1.1 Subsection"
-        heading5 "1.1.1.1.1 Subsection"
-        heading6 "1.1.1.1.1.1 Subsection"
-
-        heading2 "1.2 Second Section" <b class="conum">(4)</b>
+        paragraph 'Paragraph 1', margin: [left: 1.inch, top: 0] <i class="conum" data-value="1"></i><b>(1)</b>
+        paragraph 'Paragraph 2', align: 'right' <i class="conum" data-value="2"></i><b>(2)</b>
     }
 }</code></pre>
 </div>
 </div>
 <div class="colist arabic">
-<ol>
-<li>
-<p>Main document heading</p>
-</li>
-<li>
-<p>The first main section of the document</p>
-</li>
-<li>
-<p>A subsection within the first section</p>
-</li>
-<li>
-<p>The second main section of the document</p>
-</li>
-</ol>
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Custom paragraph margin</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Sets the alignment to right for all the content in the paragraph</td>
+</tr>
+</table>
 </div>
 <div class="sect2">
 <h3 id="_text">Text</h3>
-
+<div class="paragraph">
+<p>You can add text to a paragraph by passing the value of the text to the constructor or by creating a series of text elements</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
+    document {
+        paragraph 'Paragraph 1' <i class="conum" data-value="1"></i><b>(1)</b>
+        paragraph { <i class="conum" data-value="2"></i><b>(2)</b>
+            text 'Paragraph '
+            text '2', font: [bold: true] <i class="conum" data-value="3"></i><b>(3)</b>
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Paragraph text set by the constructor</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Paragraph text set by individual text elements</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>By breaking the paragraph text into text elements we can change the style of individual portions of the text</td>
+</tr>
+</table>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_images">Images</h3>
+<div class="paragraph">
+<p>You can add an image to a paragraph by providing the bytes of the image as well as a unique file name.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">String GROOVY_IMAGE_URL = 'http://www.craigburke.com/images/posts/groovy-logo.png'
+byte[] imageData = new URL(GROOVY_IMAGE_URL).bytes <i class="conum" data-value="1"></i><b>(1)</b>
 
+builder.create {
+    document {
+        paragraph {
+            image(data: imageData, height: 106.px, width: 213.px, name: 'groovy.png') <i class="conum" data-value="2"></i><b>(2)</b>
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We need to provide the bytes of the image</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>In addition to the bytes we need to include a name (should be unique). The height and the width if not specified
+will default to the dimensions of the raw image.</td>
+</tr>
+</table>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_line_breaks">Line Breaks</h3>
+<div class="paragraph">
+<p>Line breaks are added to a paragraph whenever there&#8217;s a newline character in the text. A line break can be explicitly added by calling <strong>lineBreak</strong></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
+    document {
+        paragraph "John Doe\n123 Fake Street" <i class="conum" data-value="1"></i><b>(1)</b>
 
+        paragraph "John Doe"
+        lineBreak() <i class="conum" data-value="2"></i><b>(2)</b>
+        paragraph "123 Fake Street"
+
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Implicit line break because of newline character</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Explicit linebreak</td>
+</tr>
+</table>
+</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_tables">Tables</h2>
+<h2 id="_heading">Heading</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_rows">Rows</h3>
-
+<div class="paragraph">
+<p>Headings can be styled much like simple paragraphs (with margins, alignment and text style) and are used to create a document structure. Headings with
+levels 1-6 can be used to denote sections.</p>
 </div>
-<div class="sect2">
-<h3 id="_cells">Cells</h3>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
+    document {
+        heading1 "1. Main Page Heading" <i class="conum" data-value="1"></i><b>(1)</b>
 
+        heading2 "1.1 First Section", font: [color: '#333333'] <i class="conum" data-value="2"></i><b>(2)</b>
+        paragraph "First section"
+
+        heading3 "1.1.1 Subsection" <i class="conum" data-value="3"></i><b>(3)</b>
+        heading4 "1.1.1.1 Subsection"
+        heading5 "1.1.1.1.1 Subsection"
+        heading6 "1.1.1.1.1.1 Subsection"
+
+        heading2 "1.2 Second Section" <i class="conum" data-value="4"></i><b>(4)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Main document heading</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The first main section of the document and also contains custom text styling</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>A subsection within the first section</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The second main section of the document</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_table">Table</h2>
+<div class="sectionbody">
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+A table with a border size of 0 can be used to build more complex layouts.
+</td>
+</tr>
+</table>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-03-30 11:08:04 EDT
+Last updated 2015-03-30 13:07:56 EDT
 </div>
 </div>
 </body>
