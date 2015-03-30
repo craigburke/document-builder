@@ -6,7 +6,7 @@ image::https://codeship.com/projects/c4c04780-74d2-0132-8185-6662d475f668/status
 
 A document builder for Groovy for PDF or Word documents. This is still very much a work in progress.
 
-http://www.craigburke.com/document-builder/[Full Documentation]
+http://www.craigburke.com/document-builder/[Documentation]
 
 == Example
 
