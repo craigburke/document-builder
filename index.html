@@ -670,7 +670,7 @@ builder.create {
             }
         }
     ){
-        paragraph "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+        paragraph 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     }
 }</code></pre>
 </div>
@@ -843,11 +843,11 @@ will default to the dimensions of the raw image.</td>
 <div class="content">
 <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
     document {
-        paragraph "John Doe\n123 Fake Street" <i class="conum" data-value="1"></i><b>(1)</b>
+        paragraph 'John Doe\n123 Fake Street' <i class="conum" data-value="1"></i><b>(1)</b>
 
-        paragraph "John Doe"
+        paragraph 'John Doe'
         lineBreak() <i class="conum" data-value="2"></i><b>(2)</b>
-        paragraph "123 Fake Street"
+        paragraph '123 Fake Street'
 
     }
 }</code></pre>
@@ -879,17 +879,17 @@ levels 1-6 can be used to denote sections.</p>
 <div class="content">
 <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
     document {
-        heading1 "1. Main Page Heading" <i class="conum" data-value="1"></i><b>(1)</b>
+        heading1 '1. Main Page Heading' <i class="conum" data-value="1"></i><b>(1)</b>
 
-        heading2 "1.1 First Section", font: [color: '#333333'] <i class="conum" data-value="2"></i><b>(2)</b>
-        paragraph "First section"
+        heading2 '1.1 First Section', font: [color: '#333333'] <i class="conum" data-value="2"></i><b>(2)</b>
+        paragraph 'First section'
 
-        heading3 "1.1.1 Subsection" <i class="conum" data-value="3"></i><b>(3)</b>
-        heading4 "1.1.1.1 Subsection"
-        heading5 "1.1.1.1.1 Subsection"
-        heading6 "1.1.1.1.1.1 Subsection"
+        heading3 '1.1.1 Subsection' <i class="conum" data-value="3"></i><b>(3)</b>
+        heading4 '1.1.1.1 Subsection'
+        heading5 '1.1.1.1.1 Subsection'
+        heading6 '1.1.1.1.1.1 Subsection'
 
-        heading2 "1.2 Second Section" <i class="conum" data-value="4"></i><b>(4)</b>
+        heading2 '1.2 Second Section' <i class="conum" data-value="4"></i><b>(4)</b>
     }
 }</code></pre>
 </div>
@@ -919,11 +919,64 @@ levels 1-6 can be used to denote sections.</p>
 <div class="sect1">
 <h2 id="_table">Table</h2>
 <div class="sectionbody">
-<div class="admonitionblock note">
+<div class="paragraph">
+<p>Tables are another block element that can have custom margins. There is also the <strong>border</strong> and <strong>padding</strong> properties
+that change how the tables are rendered.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
+    document {
+        table {  <i class="conum" data-value="1"></i><b>(1)</b>
+            row {
+                cell "Cell1"
+                cell {
+                    text "Cell2" <i class="conum" data-value="2"></i><b>(2)</b>
+                }
+            }
+        }
+
+        table(width: 6.inches, padding: 20.px, border: [size: 3.px, color: '#FF0000']) { <i class="conum" data-value="3"></i><b>(3)</b>
+            row {
+                cell 'Cell1', width: 2.inches
+                cell 'Cell2', align: 'right' <i class="conum" data-value="4"></i><b>(4)</b>
+            }
+        }
+
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Table with default padding, width and border. If not specified width is 100% of the available area.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The cell contains a single paragraph so the same elements can be added here (text, images or line breaks).</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Table with custom width padding and border</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>The width of the second cell is calculated based on the table width and the previous cell width</td>
+</tr>
+</table>
+</div>
+<div class="imageblock thumb">
+<div class="content">
+<img src="images/table1.png" alt="table1">
+</div>
+</div>
+<div class="admonitionblock tip">
 <table>
 <tr>
 <td class="icon">
-<i class="fa icon-note" title="Note"></i>
+<i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
 A table with a border size of 0 can be used to build more complex layouts.
@@ -936,7 +989,7 @@ A table with a border size of 0 can be used to build more complex layouts.
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-03-30 14:02:14 EDT
+Last updated 2015-03-30 14:23:05 EDT
 </div>
 </div>
 </body>
