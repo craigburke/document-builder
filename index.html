@@ -523,12 +523,12 @@ and the coversion will be done for you</p>
 <div class="content">
 <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
     document(font: [family: 'Helvetica', color: '#000000', size: 14.pt]) { <i class="conum" data-value="1"></i><b>(1)</b>
-        paragraph(font: [size: 12.pt]) {
-            text 'Paragraph text ' <i class="conum" data-value="2"></i><b>(2)</b>
-            text 'Hello', font: [color: '#333333'] <i class="conum" data-value="3"></i><b>(3)</b>
+        paragraph(font: [family: 'Courier', size: 12.pt]) {
+            text 'Paragraph text with ' <i class="conum" data-value="2"></i><b>(2)</b>
+            text 'custom styles', font: [color: '#FF0000'] <i class="conum" data-value="3"></i><b>(3)</b>
         }
 
-        paragraph 'Default styles' <i class="conum" data-value="4"></i><b>(4)</b>
+        paragraph 'Default style' <i class="conum" data-value="4"></i><b>(4)</b>
     }
 }</code></pre>
 </div>
@@ -541,7 +541,7 @@ and the coversion will be done for you</p>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>The paragraph text inherits font family and color from the document but overrides the font size.</td>
+<td>The paragraph text inherits font family and color from the document but the font size from the paragraph.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
@@ -552,6 +552,11 @@ and the coversion will be done for you</p>
 <td>Nothing has been overridden so the default document font styles apply here</td>
 </tr>
 </table>
+</div>
+<div class="imageblock thumb">
+<div class="content">
+<img src="images/font1.png" alt="font1">
+</div>
 </div>
 <div class="paragraph">
 <p>In addition to being able to set the font property while creating an element you can also directly change the
@@ -751,6 +756,11 @@ builder.create {
 </tr>
 </table>
 </div>
+<div class="imageblock thumb">
+<div class="content">
+<img src="images/paragraph1.png" alt="paragraph1">
+</div>
+</div>
 <div class="sect2">
 <h3 id="_text">Text</h3>
 <div class="paragraph">
@@ -763,7 +773,7 @@ builder.create {
         paragraph 'Paragraph 1' <i class="conum" data-value="1"></i><b>(1)</b>
         paragraph { <i class="conum" data-value="2"></i><b>(2)</b>
             text 'Paragraph '
-            text '2', font: [bold: true] <i class="conum" data-value="3"></i><b>(3)</b>
+            text '2', font: [bold: true, size: 22.pt, color: '#FF0000'] <i class="conum" data-value="3"></i><b>(3)</b>
         }
     }
 }</code></pre>
@@ -784,6 +794,11 @@ builder.create {
 <td>By breaking the paragraph text into text elements we can change the style of individual portions of the text</td>
 </tr>
 </table>
+</div>
+<div class="imageblock thumb">
+<div class="content">
+<img src="images/paragraph2.png" alt="paragraph2">
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -921,7 +936,7 @@ A table with a border size of 0 can be used to build more complex layouts.
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-03-30 13:18:17 EDT
+Last updated 2015-03-30 14:02:14 EDT
 </div>
 </div>
 </body>
