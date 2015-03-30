@@ -27,7 +27,8 @@ class WordDocument {
     Map<String, DocumentPart> documentParts = [:]
     List<ContentType> contentTypes = []
     ZipOutputStream zipStream
-
+    List<ContentTypeOverride> contentTypeOverrides = []
+    
     WordDocument(OutputStream out) {
         documentParts[DocumentPartType.ROOT.value] = new DocumentPart(type:DocumentPartType.ROOT)
         documentParts[DocumentPartType.DOCUMENT.value] = new DocumentPart(type:DocumentPartType.DOCUMENT)
@@ -56,11 +57,47 @@ class WordDocument {
     }
 
     void write() {
+        writeDocPropsFiles()
         writeRelationships()
         writeContentTypes()
         zipStream.close()
     }
+    
+    void writeDocPropsFiles() {
+        zipStream.putNextEntry(new ZipEntry("docProps/app.xml"))
+        zipStream << new StreamingMarkupBuilder().bind {builder ->
+            mkp.yieldUnescaped(XML_HEADER)
+            namespaces << ['': 'http://schemas.openxmlformats.org/officeDocument/2006/extended-properties']
+            Properties {
+                Application("Groovy Document Builder")
+            }
+        }
+        zipStream.closeEntry()
+        contentTypeOverrides << new ContentTypeOverride(
+                partName: '/docProps/app.xml', 
+                contentType: 'application/vnd.openxmlformats-officedocument.extended-properties+xml'
+        )
 
+        zipStream.putNextEntry(new ZipEntry("docProps/core.xml"))
+        zipStream << new StreamingMarkupBuilder().bind {builder ->
+            mkp.yieldUnescaped(XML_HEADER)
+            namespaces << [
+                    '':'http://schemas.openxmlformats.org/package/2006/metadata/core-properties',
+                    'cp':'http://schemas.openxmlformats.org/package/2006/metadata/core-properties',
+                    'dc':'http://purl.org/dc/elements/1.1/',
+                    'dcterms':'http://purl.org/dc/terms/',
+                    'xsi':'http://www.w3.org/2001/XMLSchema-instance'
+            ]
+            coreProperties {
+                dc.creator("Groovy Document Builder")
+            }
+        }
+        zipStream.closeEntry()
+        contentTypeOverrides << new ContentTypeOverride(partName: '/docProps/core.xml', 
+                contentType: 'conteapplication/vnd.openxmlformats-package.core-properties+xml'
+        )
+    }
+    
     def generateDocument(Closure documentClosure) {
         zipStream.putNextEntry(new ZipEntry("${CONTENT_FOLDER}/${DocumentPartType.DOCUMENT.fileName}"))
         zipStream << new StreamingMarkupBuilder().bind { builder ->
@@ -175,6 +212,10 @@ class WordDocument {
                     Override(PartName:"/${CONTENT_FOLDER}/${documentPart.type.fileName}",
                             ContentType:documentPart.type.contentType)
                 }
+                contentTypeOverrides.each { ContentTypeOverride override ->
+                    Override(PartName: override.partName, ContentType: override.contentType)
+                }
+                
             }
         }.toString()
         zipStream.closeEntry()
