@@ -86,7 +86,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 	}
 
     private void addHeaderFooter() {
-        int pageCount = document.pageCount ?: document.item.pages.size()
+        int pageCount = document.item.pages.size()
         def options = new HeaderFooterOptions(pageCount:pageCount, dateGenerated:new Date())
 
         (1..pageCount).each { int pageNumber ->

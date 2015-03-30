@@ -132,12 +132,12 @@ subprojects {
 }
 
 asciidoctor {
-	sourceDir = file('docs')
+	sourceDir = file('docs') 
+    attributes 'source-highlighter': 'prettify', 'imagesdir': 'images'
 }
 
 githubPages {
 	repoUri = 'https://github.com/craigburke/document-builder.git'
-	
 	credentials {
 		username = project.hasProperty('githubUsername') ? project.githubUsername : ''
 		password = project.hasProperty('githubPassword') ? project.githubPassword : ''

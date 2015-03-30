@@ -1,1 +1,218 @@
+:version: 0.3.0
 = Groovy Document Builder
+Craig Burke <craig@craigburke.com>
+:toc: right
+
+== Getting Started
+
+[source,groovy,subs='attributes']
+----
+@Grab(group='com.craigburke.document', module='pdf', version='{version}')
+@Grab(group='com.craigburke.document', module='word', version='{version}')
+
+import com.craigburke.document.builder.PdfDocumentBuilder
+import com.craigburke.document.builder.WordDocumentBuilder
+
+def wordBuilder = new WordDocumentBuilder(new File('example.docx'))
+def pdfBuilder = new PdfDocumentBuilder(new File('example.pdf'))
+
+wordBuilder.create {
+    document {
+        paragraph 'Hello World (Word)'
+    }
+}
+
+pdfBuilder.create {
+    document {
+        paragraph 'Hello World (PDF)'
+    }
+}
+----
+== Document
+
+=== Units
+
+All numeric values like font size and margins are by default specified in terms of points. Since this isn't always the
+most natural way to express a value you can also set these values in terms of either *inches*, *pixels*, or *points*
+and the coversion will be done for you
+
+[source,groovy]
+----
+builder.create {
+    document(margin: [top: 2.inches, bottom: 1.inch) { // <1>
+        paragraph 'Hello World', font: [size: 14.pt] { // <2>
+            image(height: 120.px, width: 130.px, data: imageData, name: 'foo.png') // <3>
+        }
+    }
+}
+----
+<1> Both top and bottom margin set in inches
+<2> Font size set in points
+<3> Height and width of image set in pixels
+
+=== Text Formatting
+
+The font property can be set on most elements and much like Cascading Style Sheets (CSS), font styles are inherited and can be individually overridden.
+[source,groovy]
+----
+builder.create {
+    document(font: [family: 'Helvetica', color: '#000000', size: 14.pt]) { // <1>
+        paragraph(font: [size: 12.pt]) {
+            text 'Paragraph text ' <2>
+            text 'Hello', font: [color: '#333333'] <3>
+        }
+    
+        paragraph 'Default styles' <4>
+    }
+}
+----
+<1> Sets the defaults for font family, color and size for all text in the document
+<2> The paragraph text inherits font family and color from the document but overrides the font size.
+<3> Here the font color is overridden at the text level
+<4> Nothing has been overridden so the default document font styles apply here
+
+In addition to being able to set the font property while creating an element you can also directly change the
+text styling at any point allowing you to do some interesting things.
+
+[source,groovy]
+----
+String[] COLORS = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8B00FF']
+
+builder.create {
+    document {
+        paragraph(font: [size: 20.pt]) { // <1>
+             "Hello World".eachWithIndex { letter, index ->
+                font.color = COLORS[ index % COLORS.size() ] // <2>
+                text letter
+                font.size += 5 // <3>
+            }
+        }
+        paragraph "Paragraph with default styles" // <4>
+    }
+}
+----
+<1> Initial font size for the first paragraph is 20 points.
+<2> Alternate through the different colors of the rainbow for each letter
+<3> Increase the font size by 5 point of each letter
+<4> The styles in this paragraph are unaffected by the changes within the first paragraph
+
+image::rainbow.png[]
+
+=== Templates and Styles
+
+In addition to setting the font styles for each paragraph individually you can also set general defaults with
+the template setting.
+
+[source,groovy]
+----
+Map customTemplate = [
+    document: [font: [family: 'Helvetica'],
+    paragraph: [font: [color: '#333333'], // <1>
+    'paragraph.myStyle': [font: [bold: true]] // <2>
+]
+
+builder.create {
+    document(template: customTemplate) {
+        paragraph 'Hello'
+        paragraph 'Paragraph with style applied', style: 'important'
+    }
+}
+----
+<1> Defaults for all paragraphs
+<2> Specific style that applied when a paragraph
+
+=== Headers and Footers
+You can specify both a header and footer as a closure. The closure should contain either a single table or 
+a single paragraph that will be rendered on each page.
+
+[source,groovy]
+----
+String GROOVY_IMAGE_URL = 'http://www.craigburke.com/images/posts/groovy-logo.png'
+byte[] imageData = new URL(GROOVY_IMAGE_URL).bytes
+
+builder.create {
+    document(
+        margin: [top: 1.5.inches, bottom: 1.inch], // <1>
+        pageCount: 5, // <2>
+        header: { info ->
+            paragraph { // <3>
+                image(data: imageData, height: 106.px, width: 213.px, name: 'groovy.png') // <4>
+            }
+        },
+        footer: { info ->
+            table(border: [size: 0]) {
+                row {
+                    cell "Date Generated: ${info.dateGenerated.format('yyyy-MM-dd hh:mm a')}" // <5>
+                    cell "Page ${info.pageNumber} of ${info.pageCount}", align: 'right' // <6>
+                }
+            }
+        }
+    ){
+        paragraph "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+    }
+}
+----
+<1> The header and footers reside in the margins of the page so it's important that the top and bottom are large enough.
+<2> If you display the *pageCount* within the header or footer it must be set here for the Word Builder (this can be omitted for the Pdf Builder)
+<3> Both the header and footer can either be a single paragraph or table. 
+<4> You can include images in addition to formatted text in your headers and footers.
+<5> The *dateGenerated* property is a Date value that can be used in either the header or footer
+<6> The *pageNumber* and *pageCount* are String values
+
+image::header-footer.png[]
+
+=== Page Breaks
+
+Although new pages are automatically created to accommodate content but you can also add an explicit page break.
+[source,groovy]
+----
+builder.create {
+    document {
+        paragraph 'This will be on page 1'
+        pageBreak()
+        paragraph 'This will be on page 2'
+    }
+}
+----
+
+== Paragraphs
+
+
+== Headings
+Headings can be styled much like simple paragraphs and are used to create a document structure. Headings with
+levels 1-6 can be used to delimit sections.
+
+[source,groovy]
+----
+builder.create {
+    document {
+        heading1 "1. Main Page Heading" // <1>
+
+        heading2 "1.1 First Section" // <2>
+        paragraph "First section"
+
+        heading3 "1.1.1 Subsection" // <3>
+        heading4 "1.1.1.1 Subsection"
+        heading5 "1.1.1.1.1 Subsection"
+        heading6 "1.1.1.1.1.1 Subsection"
+        
+        heading2 "1.2 Second Section" // <4>
+    }
+}
+----
+<1> Main document heading
+<2> The first main section of the document
+<3> A subsection within the first section
+<4> The second main section of the document
+
+=== Text
+
+=== Images
+
+=== Line Breaks
+
+== Tables
+
+=== Rows
+
+=== Cells
