@@ -425,24 +425,23 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_getting_started">Getting Started</a></li>
-<li><a href="#_document">Document</a>
-<ul class="sectlevel2">
-<li><a href="#_units">Units</a></li>
-<li><a href="#_text_formatting">Text Formatting</a></li>
-<li><a href="#_templates_and_styles">Templates and Styles</a></li>
-<li><a href="#_headers_and_footers">Headers and Footers</a></li>
-<li><a href="#_page_breaks">Page Breaks</a></li>
-</ul>
-</li>
-<li><a href="#_paragraph">Paragraph</a>
+<li><a href="#_paragraphs">Paragraphs</a>
 <ul class="sectlevel2">
 <li><a href="#_text">Text</a></li>
 <li><a href="#_images">Images</a></li>
 <li><a href="#_line_breaks">Line Breaks</a></li>
 </ul>
 </li>
-<li><a href="#_heading">Heading</a></li>
-<li><a href="#_table">Table</a></li>
+<li><a href="#_headings">Headings</a></li>
+<li><a href="#_tables">Tables</a></li>
+<li><a href="#_document">Document</a>
+<ul class="sectlevel2">
+<li><a href="#_units">Units</a></li>
+<li><a href="#_headers_and_footers">Headers and Footers</a></li>
+<li><a href="#_templates_and_styles">Templates and Styles</a></li>
+<li><a href="#_page_breaks">Page Breaks</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
@@ -477,21 +476,54 @@ pdfBuilder.create {
 </div>
 </div>
 <div class="sect1">
-<h2 id="_document">Document</h2>
+<h2 id="_paragraphs">Paragraphs</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_units">Units</h3>
 <div class="paragraph">
-<p>All numeric values like font size and margins are by default specified in terms of points. Since this isn&#8217;t always the
-most natural way to express a value you can also set these values in terms of either <strong>inches</strong>, <strong>pixels</strong>, or <strong>points</strong>
-and the coversion will be done for you</p>
+<p>A paragraph is a block element that can contain text or images and have margins and alignment applied to it.</p>
 </div>
 <div class="listingblock">
+<div class="title">paragraph.groovy</div>
 <div class="content">
 <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
-    document(margin: [top: 2.inches, bottom: 1.inch) { <i class="conum" data-value="1"></i><b>(1)</b>
-        paragraph 'Hello World', font: [size: 14.pt] { <i class="conum" data-value="2"></i><b>(2)</b>
-            image(height: 120.px, width: 130.px, data: imageData, name: 'foo.png') <i class="conum" data-value="3"></i><b>(3)</b>
+    document {
+        paragraph 'Paragraph 1', margin: [left: 1.inch, top: 0] <i class="conum" data-value="1"></i><b>(1)</b>
+        paragraph 'Paragraph 2', align: 'right' <i class="conum" data-value="2"></i><b>(2)</b>
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Custom paragraph margin</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Sets the alignment to right for all the content in the paragraph</td>
+</tr>
+</table>
+</div>
+<div class="imageblock thumb">
+<div class="content">
+<img src="images/paragraph1.png" alt="paragraph1">
+</div>
+<div class="title">Figure 1. result of paragraph.groovy</div>
+</div>
+<div class="sect2">
+<h3 id="_text">Text</h3>
+<div class="paragraph">
+<p>You can add text to a paragraph by passing the value of the text to the constructor or by creating a series of text elements</p>
+</div>
+<div class="listingblock">
+<div class="title">text.groovy</div>
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
+    document {
+        paragraph 'Paragraph 1' <i class="conum" data-value="1"></i><b>(1)</b>
+        paragraph { <i class="conum" data-value="2"></i><b>(2)</b>
+            text 'Paragraph '
+            text '2', font: [bold: true, size: 22.pt, color: '#FF0000'] <i class="conum" data-value="3"></i><b>(3)</b>
         }
     }
 }</code></pre>
@@ -501,25 +533,31 @@ and the coversion will be done for you</p>
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Both top and bottom margin set in inches</td>
+<td>Paragraph text set by the constructor</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Font size set in points</td>
+<td>Paragraph text set by individual text elements</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Height and width of image set in pixels</td>
+<td>By breaking the paragraph text into text elements we can change the style of individual portions of the text</td>
 </tr>
 </table>
 </div>
+<div class="imageblock thumb">
+<div class="content">
+<img src="images/paragraph2.png" alt="paragraph2">
 </div>
-<div class="sect2">
-<h3 id="_text_formatting">Text Formatting</h3>
+<div class="title">Figure 2. result of text.groovy</div>
+</div>
+<div class="sect3">
+<h4 id="_basic_text_formatting">Basic Text Formatting</h4>
 <div class="paragraph">
 <p>The font property can be set on most elements and much like Cascading Style Sheets (CSS), font styles are inherited and can be individually overridden.</p>
 </div>
 <div class="listingblock">
+<div class="title">basic-text.groovy</div>
 <div class="content">
 <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
     document(font: [family: 'Helvetica', color: '#000000', size: 14.pt]) { <i class="conum" data-value="1"></i><b>(1)</b>
@@ -557,12 +595,17 @@ and the coversion will be done for you</p>
 <div class="content">
 <img src="images/font1.png" alt="font1">
 </div>
+<div class="title">Figure 3. result of basic-text.groovy</div>
 </div>
+</div>
+<div class="sect3">
+<h4 id="_advanced_text_formatting">Advanced Text Formatting</h4>
 <div class="paragraph">
 <p>In addition to being able to set the font property while creating an element you can also directly change the
 text styling at any point allowing you to do some interesting things.</p>
 </div>
 <div class="listingblock">
+<div class="title">advanced-text.groovy</div>
 <div class="content">
 <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">String[] COLORS = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8B00FF']
 
@@ -604,200 +647,7 @@ builder.create {
 <div class="content">
 <img src="images/rainbow.png" alt="rainbow">
 </div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_templates_and_styles">Templates and Styles</h3>
-<div class="paragraph">
-<p>In addition to setting the font styles for each paragraph individually you can also set general defaults with
-the template setting.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">Map customTemplate = [
-    document: [font: [family: 'Helvetica'],
-    paragraph: [font: [color: '#333333'], <i class="conum" data-value="1"></i><b>(1)</b>
-    'paragraph.myStyle': [font: [bold: true]] <i class="conum" data-value="2"></i><b>(2)</b>
-]
-
-builder.create {
-    document(template: customTemplate) {
-        paragraph 'Hello'
-        paragraph 'Paragraph with style applied', style: 'myStyle'
-    }
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Defaults for all paragraphs</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Specific style that applied when a paragraph</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_headers_and_footers">Headers and Footers</h3>
-<div class="paragraph">
-<p>You can specify both a header and footer as a closure. The closure should contain either a single table or
-a single paragraph that will be rendered on each page.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">String GROOVY_IMAGE_URL = 'http://www.craigburke.com/images/posts/groovy-logo.png'
-byte[] imageData = new URL(GROOVY_IMAGE_URL).bytes
-
-builder.create {
-    document(
-        margin: [top: 1.5.inches, bottom: 1.inch], <i class="conum" data-value="1"></i><b>(1)</b>
-        pageCount: 1, <i class="conum" data-value="2"></i><b>(2)</b>
-        header: { info -&gt;
-            paragraph { <i class="conum" data-value="3"></i><b>(3)</b>
-                image(data: imageData, height: 106.px, width: 213.px, name: 'groovy.png') <i class="conum" data-value="4"></i><b>(4)</b>
-            }
-        },
-        footer: { info -&gt;
-            table(border: [size: 0]) {
-                row {
-                    cell "Date Generated: ${info.dateGenerated.format('yyyy-MM-dd hh:mm a')}" <i class="conum" data-value="5"></i><b>(5)</b>
-                    cell "Page ${info.pageNumber} of ${info.pageCount}", align: 'right' <i class="conum" data-value="6"></i><b>(6)</b>
-                }
-            }
-        }
-    ){
-        paragraph 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-    }
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>The header and footers reside in the margins of the page so it&#8217;s important that the top and bottom are large enough.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>If you display the <strong>pageCount</strong> within the header or footer it must be set here for the Word Builder (this can be omitted for the Pdf Builder)</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Both the header and footer can either be a single paragraph or table.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>You can include images in addition to formatted text in your headers and footers.</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>The <strong>dateGenerated</strong> property is a Date value that can be used in either the header or footer</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>The <strong>pageNumber</strong> and <strong>pageCount</strong> are String values</td>
-</tr>
-</table>
-</div>
-<div class="imageblock thumb">
-<div class="content">
-<img src="images/header-footer.png" alt="header footer">
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_page_breaks">Page Breaks</h3>
-<div class="paragraph">
-<p>Although new pages are automatically created to accommodate content but you can also add an explicit page break.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
-    document {
-        paragraph 'This will be on page 1'
-        pageBreak()
-        paragraph 'This will be on page 2'
-    }
-}</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="sect1">
-<h2 id="_paragraph">Paragraph</h2>
-<div class="sectionbody">
-<div class="paragraph">
-<p>A paragraph is a block element that can contain text or images and have margins and alignment applied to it.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
-    document {
-        paragraph 'Paragraph 1', margin: [left: 1.inch, top: 0] <i class="conum" data-value="1"></i><b>(1)</b>
-        paragraph 'Paragraph 2', align: 'right' <i class="conum" data-value="2"></i><b>(2)</b>
-    }
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Custom paragraph margin</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Sets the alignment to right for all the content in the paragraph</td>
-</tr>
-</table>
-</div>
-<div class="imageblock thumb">
-<div class="content">
-<img src="images/paragraph1.png" alt="paragraph1">
-</div>
-</div>
-<div class="sect2">
-<h3 id="_text">Text</h3>
-<div class="paragraph">
-<p>You can add text to a paragraph by passing the value of the text to the constructor or by creating a series of text elements</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
-    document {
-        paragraph 'Paragraph 1' <i class="conum" data-value="1"></i><b>(1)</b>
-        paragraph { <i class="conum" data-value="2"></i><b>(2)</b>
-            text 'Paragraph '
-            text '2', font: [bold: true, size: 22.pt, color: '#FF0000'] <i class="conum" data-value="3"></i><b>(3)</b>
-        }
-    }
-}</code></pre>
-</div>
-</div>
-<div class="colist arabic">
-<table>
-<tr>
-<td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Paragraph text set by the constructor</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Paragraph text set by individual text elements</td>
-</tr>
-<tr>
-<td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>By breaking the paragraph text into text elements we can change the style of individual portions of the text</td>
-</tr>
-</table>
-</div>
-<div class="imageblock thumb">
-<div class="content">
-<img src="images/paragraph2.png" alt="paragraph2">
+<div class="title">Figure 4. result of advanced-text.groovy</div>
 </div>
 </div>
 </div>
@@ -869,13 +719,14 @@ will default to the dimensions of the raw image.</td>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_heading">Heading</h2>
+<h2 id="_headings">Headings</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Headings can be styled much like simple paragraphs (with margins, alignment and text style) and are used to create a document structure. Headings with
 levels 1-6 can be used to denote sections.</p>
 </div>
 <div class="listingblock">
+<div class="title">heading.groovy</div>
 <div class="content">
 <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
     document {
@@ -918,17 +769,19 @@ levels 1-6 can be used to denote sections.</p>
 <div class="content">
 <img src="images/heading.png" alt="heading">
 </div>
+<div class="title">Figure 5. result of heading.groovy</div>
 </div>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_table">Table</h2>
+<h2 id="_tables">Tables</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>Tables are another block element that can have custom margins. There is also the <strong>border</strong> and <strong>padding</strong> properties
 that change how the tables are rendered.</p>
 </div>
 <div class="listingblock">
+<div class="title">table.groovy</div>
 <div class="content">
 <pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
     document {
@@ -976,6 +829,7 @@ that change how the tables are rendered.</p>
 <div class="content">
 <img src="images/table1.png" alt="table1">
 </div>
+<div class="title">Figure 6. result of table.groovy</div>
 </div>
 <div class="admonitionblock tip">
 <table>
@@ -991,10 +845,180 @@ A table with a border size of 0 can be used to build more complex layouts.
 </div>
 </div>
 </div>
+<div class="sect1">
+<h2 id="_document">Document</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_units">Units</h3>
+<div class="paragraph">
+<p>All numeric values like font size and margins are by default specified in terms of points. Since this isn&#8217;t always the
+most natural way to express a value you can also set these values in terms of either <strong>inches</strong>, <strong>pixels</strong>, or <strong>points</strong>
+and the coversion will be done for you</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
+    document(margin: [top: 2.inches, bottom: 1.inch) { <i class="conum" data-value="1"></i><b>(1)</b>
+        paragraph 'Hello World', font: [size: 14.pt] { <i class="conum" data-value="2"></i><b>(2)</b>
+            image(height: 120.px, width: 130.px, data: imageData, name: 'foo.png') <i class="conum" data-value="3"></i><b>(3)</b>
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Both top and bottom margin set in inches</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Font size set in points</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Height and width of image set in pixels</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_headers_and_footers">Headers and Footers</h3>
+<div class="paragraph">
+<p>The header and footer should be specified as a closure. This closure should contain either a single table or
+a single paragraph that will be rendered on each page.</p>
+</div>
+<div class="listingblock">
+<div class="title">header-footer.groovy</div>
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">String GROOVY_IMAGE_URL = 'http://www.craigburke.com/images/posts/groovy-logo.png'
+byte[] imageData = new URL(GROOVY_IMAGE_URL).bytes
+
+builder.create {
+    document(
+        margin: [top: 1.5.inches, bottom: 1.inch], <i class="conum" data-value="1"></i><b>(1)</b>
+        pageCount: 1, <i class="conum" data-value="2"></i><b>(2)</b>
+        header: { info -&gt;
+            paragraph { <i class="conum" data-value="3"></i><b>(3)</b>
+                image(data: imageData, height: 106.px, width: 213.px, name: 'groovy.png') <i class="conum" data-value="4"></i><b>(4)</b>
+            }
+        },
+        footer: { info -&gt;
+            table(border: [size: 0]) {
+                row {
+                    cell "Date Generated: ${info.dateGenerated.format('yyyy-MM-dd hh:mm a')}" <i class="conum" data-value="5"></i><b>(5)</b>
+                    cell "Page ${info.pageNumber} of ${info.pageCount}", align: 'right' <i class="conum" data-value="6"></i><b>(6)</b>
+                }
+            }
+        }
+    ){
+        paragraph 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>The header and footers reside in the margins of the page so it&#8217;s important that the top and bottom are large enough.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>If you display the <strong>pageCount</strong> within the header or footer it must be set here for the Word Builder (this can be omitted for the Pdf Builder)</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Both the header and footer can either be a single paragraph or table.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>You can include images in addition to formatted text in your headers and footers.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>The <strong>dateGenerated</strong> property is a Date value that can be used in either the header or footer</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>The <strong>pageNumber</strong> and <strong>pageCount</strong> are String values</td>
+</tr>
+</table>
+</div>
+<div class="imageblock thumb">
+<div class="content">
+<img src="images/header-footer.png" alt="header footer">
+</div>
+<div class="title">Figure 7. result of header-footer.groovy</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_templates_and_styles">Templates and Styles</h3>
+<div class="paragraph">
+<p>In addition to setting the font styles for each paragraph individually you can also set general defaults with
+the template setting.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">Map customTemplate = [
+    document: [font: [family: 'Helvetica'],
+    paragraph: [font: [color: '#333333'], <i class="conum" data-value="1"></i><b>(1)</b>
+    'paragraph.myStyle': [font: [bold: true]] <i class="conum" data-value="2"></i><b>(2)</b>
+]
+
+builder.create {
+    document(template: customTemplate) {
+        paragraph 'Hello'
+        paragraph 'Paragraph with style applied', style: 'myStyle'
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Defaults for all paragraphs</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Specific style that applied when a paragraph</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_page_breaks">Page Breaks</h3>
+<div class="paragraph">
+<p>Although new pages are automatically created to accommodate content but you can also add an explicit page break.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
+    document {
+        paragraph 'This will be on page 1'
+        pageBreak() <i class="conum" data-value="1"></i><b>(1)</b>
+        paragraph 'This will be on page 2'
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Page break happens here regardless of how much content came before</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-03-30 14:28:30 EDT
+Last updated 2015-03-30 15:08:58 EDT
 </div>
 </div>
 </body>
