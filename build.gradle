@@ -133,7 +133,7 @@ subprojects {
 
 asciidoctor {
 	sourceDir = file('docs') 
-    attributes 'source-highlighter': 'prettify', 'imagesdir': 'images'
+    attributes 'source-highlighter': 'prettify', 'imagesdir': 'images', icons: 'font'
 }
 
 githubPages {

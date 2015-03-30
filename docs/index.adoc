@@ -57,19 +57,22 @@ The font property can be set on most elements and much like Cascading Style Shee
 ----
 builder.create {
     document(font: [family: 'Helvetica', color: '#000000', size: 14.pt]) { // <1>
-        paragraph(font: [size: 12.pt]) {
-            text 'Paragraph text ' <2>
-            text 'Hello', font: [color: '#333333'] <3>
+        paragraph(font: [family: 'Courier', size: 12.pt]) {
+            text 'Paragraph text with ' // <2>
+            text 'custom styles', font: [color: '#FF0000'] // <3>
         }
-    
-        paragraph 'Default styles' <4>
+
+        paragraph 'Default style' // <4>
     }
 }
 ----
 <1> Sets the defaults for font family, color and size for all text in the document
-<2> The paragraph text inherits font family and color from the document but overrides the font size.
+<2> The paragraph text inherits font family and color from the document but the font size from the paragraph.
 <3> Here the font color is overridden at the text level
 <4> Nothing has been overridden so the default document font styles apply here
+
+[.thumb]
+image::font1.png[]
 
 In addition to being able to set the font property while creating an element you can also directly change the
 text styling at any point allowing you to do some interesting things.
@@ -96,6 +99,7 @@ builder.create {
 <3> Increase the font size by 5 point of each letter
 <4> The styles in this paragraph are unaffected by the changes within the first paragraph
 
+[.thumb]
 image::rainbow.png[]
 
 === Templates and Styles
@@ -114,7 +118,7 @@ Map customTemplate = [
 builder.create {
     document(template: customTemplate) {
         paragraph 'Hello'
-        paragraph 'Paragraph with style applied', style: 'important'
+        paragraph 'Paragraph with style applied', style: 'myStyle'
     }
 }
 ----
@@ -133,7 +137,7 @@ byte[] imageData = new URL(GROOVY_IMAGE_URL).bytes
 builder.create {
     document(
         margin: [top: 1.5.inches, bottom: 1.inch], // <1>
-        pageCount: 5, // <2>
+        pageCount: 1, // <2>
         header: { info ->
             paragraph { // <3>
                 image(data: imageData, height: 106.px, width: 213.px, name: 'groovy.png') // <4>
@@ -148,7 +152,7 @@ builder.create {
             }
         }
     ){
-        paragraph "Lorem ipsum dolor sit amet, consectetur adipiscing elit."
+        paragraph 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
     }
 }
 ----
@@ -159,6 +163,7 @@ builder.create {
 <5> The *dateGenerated* property is a Date value that can be used in either the header or footer
 <6> The *pageNumber* and *pageCount* are String values
 
+[.thumb]
 image::header-footer.png[]
 
 === Page Breaks
@@ -175,44 +180,145 @@ builder.create {
 }
 ----
 
-== Paragraphs
-
-
-== Headings
-Headings can be styled much like simple paragraphs and are used to create a document structure. Headings with
-levels 1-6 can be used to delimit sections.
+== Paragraph
+A paragraph is a block element that can contain text or images and have margins and alignment applied to it.
 
 [source,groovy]
 ----
 builder.create {
     document {
-        heading1 "1. Main Page Heading" // <1>
+        paragraph 'Paragraph 1', margin: [left: 1.inch, top: 0] // <1>
+        paragraph 'Paragraph 2', align: 'right' // <2>
+    }
+}
+----
+<1> Custom paragraph margin
+<2> Sets the alignment to right for all the content in the paragraph
 
-        heading2 "1.1 First Section" // <2>
-        paragraph "First section"
+[.thumb]
+image::paragraph1.png[]
 
-        heading3 "1.1.1 Subsection" // <3>
-        heading4 "1.1.1.1 Subsection"
-        heading5 "1.1.1.1.1 Subsection"
-        heading6 "1.1.1.1.1.1 Subsection"
+=== Text
+You can add text to a paragraph by passing the value of the text to the constructor or by creating a series of text elements
+[source,groovy]
+----
+builder.create {
+    document {
+        paragraph 'Paragraph 1' // <1>
+        paragraph { // <2>
+            text 'Paragraph '
+            text '2', font: [bold: true, size: 22.pt, color: '#FF0000'] // <3>
+        }
+    }
+}
+----
+<1> Paragraph text set by the constructor
+<2> Paragraph text set by individual text elements
+<3> By breaking the paragraph text into text elements we can change the style of individual portions of the text
+
+[.thumb]
+image::paragraph2.png[]
+
+=== Images
+You can add an image to a paragraph by providing the bytes of the image as well as a unique file name.
+[source,groovy]
+----
+String GROOVY_IMAGE_URL = 'http://www.craigburke.com/images/posts/groovy-logo.png'
+byte[] imageData = new URL(GROOVY_IMAGE_URL).bytes // <1>
+
+builder.create {
+    document {
+        paragraph {
+            image(data: imageData, height: 106.px, width: 213.px, name: 'groovy.png') // <2>
+        }
+    }
+}
+----
+<1> We need to provide the bytes of the image
+<2> In addition to the bytes we need to include a name (should be unique). The height and the width if not specified
+will default to the dimensions of the raw image.
+
+
+=== Line Breaks
+Line breaks are added to a paragraph whenever there's a newline character in the text. A line break can be explicitly added by calling *lineBreak*
+
+[source,groovy]
+----
+builder.create {
+    document {
+        paragraph 'John Doe\n123 Fake Street' // <1>
         
-        heading2 "1.2 Second Section" // <4>
+        paragraph 'John Doe'
+        lineBreak() // <2>
+        paragraph '123 Fake Street'
+        
+    }
+}
+----
+<1> Implicit line break because of newline character
+<2> Explicit linebreak
+
+
+== Heading
+Headings can be styled much like simple paragraphs (with margins, alignment and text style) and are used to create a document structure. Headings with
+levels 1-6 can be used to denote sections.
+
+[source,groovy]
+----
+builder.create {
+    document {
+        heading1 '1. Main Page Heading' // <1>
+
+        heading2 '1.1 First Section', font: [color: '#333333'] // <2>
+        paragraph 'First section'
+
+        heading3 '1.1.1 Subsection' // <3>
+        heading4 '1.1.1.1 Subsection'
+        heading5 '1.1.1.1.1 Subsection'
+        heading6 '1.1.1.1.1.1 Subsection'
+        
+        heading2 '1.2 Second Section' // <4>
     }
 }
 ----
 <1> Main document heading
-<2> The first main section of the document
+<2> The first main section of the document and also contains custom text styling
 <3> A subsection within the first section
 <4> The second main section of the document
 
-=== Text
+== Table
 
-=== Images
+Tables are another block element that can have custom margins. There is also the *border* and *padding* properties
+that change how the tables are rendered.
+[source,groovy]
+----
+builder.create {
+    document {
+        table {  // <1>
+            row {
+                cell "Cell1" 
+                cell {
+                    text "Cell2" // <2> 
+                }
+            }
+        }
+        
+        table(width: 6.inches, padding: 20.px, border: [size: 3.px, color: '#FF0000']) { // <3>
+            row {
+                cell 'Cell1', width: 2.inches
+                cell 'Cell2', align: 'right' // <4>
+            }
+        }
+        
+    }
+}
+----
+<1> Table with default padding, width and border. If not specified width is 100% of the available area.
+<2> The cell contains a single paragraph so the same elements can be added here (text, images or line breaks).
+<3> Table with custom width padding and border
+<4> The width of the second cell is calculated based on the table width and the previous cell width
 
-=== Line Breaks
+[.thumb]
+image::table1.png[]
 
-== Tables
-
-=== Rows
-
-=== Cells
+TIP: A table with a border size of 0 can be used to build more complex layouts.
