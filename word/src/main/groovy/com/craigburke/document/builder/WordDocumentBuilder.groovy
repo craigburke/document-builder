@@ -70,8 +70,9 @@ class WordDocumentBuilder extends DocumentBuilder {
 								'w:top':pointToTwip(document.margin.top),
 								'w:right':pointToTwip(document.margin.right),
 								'w:left':pointToTwip(document.margin.left),
-								'w:footer':0,
-								'w:header':0)
+								'w:footer':pointToTwip(footer ? footer.node.margin.bottom : 0),
+								'w:header':0
+						)
 						if (header) {
 							w.headerReference('r:id':header.id, 'w:type':'default')
 						}

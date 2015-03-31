@@ -58,7 +58,7 @@ class ParagraphRenderer {
         pdfDocument.x = renderStartX
         pdfDocument.y += line.height
         if (line.height == line.paragraph.textHeight) {
-            pdfDocument.y += line.paragraph.textHeightOffset
+            pdfDocument.y -= line.paragraph.textHeightOffset
         }
 
         line.elements.each { element ->
@@ -76,7 +76,7 @@ class ParagraphRenderer {
         }
 
         if (line.height == line.paragraph.textHeight) {
-            pdfDocument.y -= line.paragraph.textHeightOffset
+            pdfDocument.y += line.paragraph.textHeightOffset
         }
     }
 

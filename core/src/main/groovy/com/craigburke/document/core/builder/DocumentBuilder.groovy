@@ -52,31 +52,45 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements TextBloc
 		}
 	}
 
-	void setStyles(StyledNode node, Map attributes) {
+	void setStyles(StyledNode node, Map attributes, String defaultKey = null) {
+		String nodeKey = defaultKey ?: node.getClass().simpleName.toLowerCase()
+
 		node.font = (node instanceof Document) ? new Font() : node.parent.font.clone()
 		node.font.size = (node instanceof Heading) ? null : node.font.size
-		getStyleKeys(node).each { String key ->
-			Map font = (document.template && document.template.containsKey(key)) ? document.template[key].font : [:]
-			node.font << font
-		}
-		node.font << attributes.font
-		if (node instanceof Heading && !node.font.size) {
-			node.font.size = document.font.size * Heading.FONT_SIZE_MULTIPLIERS[node.level - 1]
-		}
+		String[] keys = [nodeKey]
+		keys += getStyleKeys(nodeKey, node)
+
 		if (node instanceof BlockNode) {
 			Margin defaultMargin = node.getClass().DEFAULT_MARGIN
 			node.margin.setDefaults(defaultMargin)
 		}
+
+		keys.each { String key ->
+			Map font = (document.template && document.template.containsKey(key)) ? document.template[key].font : [:]
+			node.font << font
+			if (node instanceof BlockNode) {
+				Map margin = (document.template && document.template.containsKey(key)) ? document.template[key].margin : [:]
+				node.margin << margin
+			}
+		}
+		node.font << attributes.font
+		if (node instanceof BlockNode) {
+			node.margin << attributes.margin
+		}
+
+		if (node instanceof Heading && !node.font.size) {
+			node.font.size = document.font.size * Heading.FONT_SIZE_MULTIPLIERS[node.level - 1]
+		}
+
 	}
 
-	 String[] getStyleKeys(StyledNode node) {
-		String className = node.getClass().simpleName.toLowerCase()
-		def keys = [className]
+	 String[] getStyleKeys(String nodeKey, StyledNode node) {
+		def keys = []
 		if (node instanceof Heading) {
 			keys << "heading${node.level}"
 		}
 		if (node.style) {
-			keys << "${className}.${node.style}"
+			keys << "${nodeKey}.${node.style}"
 			if (node instanceof Heading) {
 				keys << "heading${node.level}.${node.style}"
 			}

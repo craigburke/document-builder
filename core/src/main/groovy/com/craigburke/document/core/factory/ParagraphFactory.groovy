@@ -19,7 +19,7 @@ class ParagraphFactory extends AbstractFactory {
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		TextBlock paragraph = new TextBlock(attributes)
 		paragraph.parent = builder.parentName == 'create' ? builder.document : builder.current
-		builder.setStyles(paragraph, attributes)
+		builder.setStyles(paragraph, attributes, 'paragraph')
 
         if (paragraph.parent instanceof Document) {
 			paragraph.align = paragraph.align ?: Align.LEFT

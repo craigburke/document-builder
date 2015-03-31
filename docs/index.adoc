@@ -28,32 +28,56 @@ pdfBuilder.create {
     }
 }
 ----
-== Document
 
-=== Units
-
-All numeric values like font size and margins are by default specified in terms of points. Since this isn't always the
-most natural way to express a value you can also set these values in terms of either *inches*, *pixels*, or *points*
-and the coversion will be done for you
+== Paragraphs
+A paragraph is a block element that can contain text or images and have margins and alignment applied to it.
 
 [source,groovy]
+.paragraph.groovy
 ----
 builder.create {
-    document(margin: [top: 2.inches, bottom: 1.inch) { // <1>
-        paragraph 'Hello World', font: [size: 14.pt] { // <2>
-            image(height: 120.px, width: 130.px, data: imageData, name: 'foo.png') // <3>
+    document {
+        paragraph 'Paragraph 1', margin: [left: 1.inch, top: 0] // <1>
+        paragraph 'Paragraph 2', align: 'right' // <2>
+    }
+}
+----
+<1> Custom paragraph margin
+<2> Sets the alignment to right for all the content in the paragraph
+
+[.thumb]
+.result of paragraph.groovy
+image::paragraph1.png[]
+
+
+=== Text
+You can add text to a paragraph by passing the value of the text to the constructor or by creating a series of text elements
+[source,groovy]
+.text.groovy
+----
+builder.create {
+    document {
+        paragraph 'Paragraph 1' // <1>
+        paragraph { // <2>
+            text 'Paragraph '
+            text '2', font: [bold: true, size: 22.pt, color: '#FF0000'] // <3>
         }
     }
 }
 ----
-<1> Both top and bottom margin set in inches
-<2> Font size set in points
-<3> Height and width of image set in pixels
+<1> Paragraph text set by the constructor
+<2> Paragraph text set by individual text elements
+<3> By breaking the paragraph text into text elements we can change the style of individual portions of the text
 
-=== Text Formatting
+[.thumb]
+.result of text.groovy
+image::paragraph2.png[]
+
+==== Basic Text Formatting
 
 The font property can be set on most elements and much like Cascading Style Sheets (CSS), font styles are inherited and can be individually overridden.
 [source,groovy]
+.basic-text.groovy
 ----
 builder.create {
     document(font: [family: 'Helvetica', color: '#000000', size: 14.pt]) { // <1>
@@ -72,12 +96,16 @@ builder.create {
 <4> Nothing has been overridden so the default document font styles apply here
 
 [.thumb]
+.result of basic-text.groovy
 image::font1.png[]
+
+==== Advanced Text Formatting
 
 In addition to being able to set the font property while creating an element you can also directly change the
 text styling at any point allowing you to do some interesting things.
 
 [source,groovy]
+.advanced-text.groovy
 ----
 String[] COLORS = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8B00FF']
 
@@ -100,124 +128,9 @@ builder.create {
 <4> The styles in this paragraph are unaffected by the changes within the first paragraph
 
 [.thumb]
+.result of advanced-text.groovy
 image::rainbow.png[]
 
-=== Templates and Styles
-
-In addition to setting the font styles for each paragraph individually you can also set general defaults with
-the template setting.
-
-[source,groovy]
-----
-Map customTemplate = [
-    document: [font: [family: 'Helvetica'],
-    paragraph: [font: [color: '#333333'], // <1>
-    'paragraph.myStyle': [font: [bold: true]] // <2>
-]
-
-builder.create {
-    document(template: customTemplate) {
-        paragraph 'Hello'
-        paragraph 'Paragraph with style applied', style: 'myStyle'
-    }
-}
-----
-<1> Defaults for all paragraphs
-<2> Specific style that applied when a paragraph
-
-=== Headers and Footers
-You can specify both a header and footer as a closure. The closure should contain either a single table or 
-a single paragraph that will be rendered on each page.
-
-[source,groovy]
-----
-String GROOVY_IMAGE_URL = 'http://www.craigburke.com/images/posts/groovy-logo.png'
-byte[] imageData = new URL(GROOVY_IMAGE_URL).bytes
-
-builder.create {
-    document(
-        margin: [top: 1.5.inches, bottom: 1.inch], // <1>
-        pageCount: 1, // <2>
-        header: { info ->
-            paragraph { // <3>
-                image(data: imageData, height: 106.px, width: 213.px, name: 'groovy.png') // <4>
-            }
-        },
-        footer: { info ->
-            table(border: [size: 0]) {
-                row {
-                    cell "Date Generated: ${info.dateGenerated.format('yyyy-MM-dd hh:mm a')}" // <5>
-                    cell "Page ${info.pageNumber} of ${info.pageCount}", align: 'right' // <6>
-                }
-            }
-        }
-    ){
-        paragraph 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
-    }
-}
-----
-<1> The header and footers reside in the margins of the page so it's important that the top and bottom are large enough.
-<2> If you display the *pageCount* within the header or footer it must be set here for the Word Builder (this can be omitted for the Pdf Builder)
-<3> Both the header and footer can either be a single paragraph or table. 
-<4> You can include images in addition to formatted text in your headers and footers.
-<5> The *dateGenerated* property is a Date value that can be used in either the header or footer
-<6> The *pageNumber* and *pageCount* are String values
-
-[.thumb]
-image::header-footer.png[]
-
-=== Page Breaks
-
-Although new pages are automatically created to accommodate content but you can also add an explicit page break.
-[source,groovy]
-----
-builder.create {
-    document {
-        paragraph 'This will be on page 1'
-        pageBreak()
-        paragraph 'This will be on page 2'
-    }
-}
-----
-
-== Paragraph
-A paragraph is a block element that can contain text or images and have margins and alignment applied to it.
-
-[source,groovy]
-----
-builder.create {
-    document {
-        paragraph 'Paragraph 1', margin: [left: 1.inch, top: 0] // <1>
-        paragraph 'Paragraph 2', align: 'right' // <2>
-    }
-}
-----
-<1> Custom paragraph margin
-<2> Sets the alignment to right for all the content in the paragraph
-
-[.thumb]
-image::paragraph1.png[]
-
-=== Text
-You can add text to a paragraph by passing the value of the text to the constructor or by creating a series of text elements
-[source,groovy]
-----
-builder.create {
-    document {
-        paragraph 'Paragraph 1' // <1>
-        paragraph { // <2>
-            text 'Paragraph '
-            text '2', font: [bold: true, size: 22.pt, color: '#FF0000'] // <3>
-        }
-    }
-}
-----
-<1> Paragraph text set by the constructor
-<2> Paragraph text set by individual text elements
-<3> By breaking the paragraph text into text elements we can change the style of individual portions of the text
-
-[.thumb]
-image::paragraph2.png[]
 
 === Images
 You can add an image to a paragraph by providing the bytes of the image as well as a unique file name.
@@ -258,12 +171,12 @@ builder.create {
 <1> Implicit line break because of newline character
 <2> Explicit linebreak
 
-
-== Heading
+== Headings
 Headings can be styled much like simple paragraphs (with margins, alignment and text style) and are used to create a document structure. Headings with
 levels 1-6 can be used to denote sections.
 
 [source,groovy]
+.heading.groovy
 ----
 builder.create {
     document {
@@ -287,13 +200,15 @@ builder.create {
 <4> The second main section of the document
 
 [.thumb]
+.result of heading.groovy
 image::heading.png[]
 
-== Table
+== Tables
 
 Tables are another block element that can have custom margins. There is also the *border* and *padding* properties
 that change how the tables are rendered.
 [source,groovy]
+.table.groovy
 ----
 builder.create {
     document {
@@ -322,6 +237,111 @@ builder.create {
 <4> The width of the second cell is calculated based on the table width and the previous cell width
 
 [.thumb]
+.result of table.groovy
 image::table1.png[]
 
 TIP: A table with a border size of 0 can be used to build more complex layouts.
+
+== Document
+
+=== Units
+
+All numeric values like font size and margins are by default specified in terms of points. Since this isn't always the
+most natural way to express a value you can also set these values in terms of either *inches*, *pixels*, or *points*
+and the coversion will be done for you
+
+[source,groovy]
+----
+builder.create {
+    document(margin: [top: 2.inches, bottom: 1.inch) { // <1>
+        paragraph 'Hello World', font: [size: 14.pt] { // <2>
+            image(height: 120.px, width: 130.px, data: imageData, name: 'foo.png') // <3>
+        }
+    }
+}
+----
+<1> Both top and bottom margin set in inches
+<2> Font size set in points
+<3> Height and width of image set in pixels
+
+=== Headers and Footers
+The header and footer should be specified as a closure. This closure should contain either a single table or
+a single paragraph that will be rendered on each page.
+
+[source,groovy]
+.header-footer.groovy
+----
+String GROOVY_IMAGE_URL = 'http://www.craigburke.com/images/posts/groovy-logo.png'
+byte[] imageData = new URL(GROOVY_IMAGE_URL).bytes
+
+builder.create {
+    document(
+        margin: [top: 1.5.inches, bottom: 1.inch], // <1>
+        pageCount: 1, // <2>
+        header: { info ->
+            paragraph { // <3>
+                image(data: imageData, height: 106.px, width: 213.px, name: 'groovy.png') // <4>
+            }
+        },
+        footer: { info ->
+            table(border: [size: 0]) {
+                row {
+                    cell "Date Generated: ${info.dateGenerated.format('yyyy-MM-dd hh:mm a')}" // <5>
+                    cell "Page ${info.pageNumber} of ${info.pageCount}", align: 'right' // <6>
+                }
+            }
+        }
+    ){
+        paragraph 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+    }
+}
+----
+<1> The header and footers reside in the margins of the page so it's important that the top and bottom are large enough.
+<2> If you display the *pageCount* within the header or footer it must be set here for the Word Builder (this can be omitted for the Pdf Builder)
+<3> Both the header and footer can either be a single paragraph or table.
+<4> You can include images in addition to formatted text in your headers and footers.
+<5> The *dateGenerated* property is a Date value that can be used in either the header or footer
+<6> The *pageNumber* and *pageCount* are String values
+
+[.thumb]
+.result of header-footer.groovy
+image::header-footer.png[]
+
+
+=== Templates and Styles
+
+In addition to setting the font styles for each paragraph individually you can also set general defaults with
+the template setting.
+
+[source,groovy]
+----
+Map customTemplate = [
+    document: [font: [family: 'Helvetica'],
+    paragraph: [font: [color: '#333333'], // <1>
+    'paragraph.myStyle': [font: [bold: true]] // <2>
+]
+
+builder.create {
+    document(template: customTemplate) {
+        paragraph 'Hello'
+        paragraph 'Paragraph with style applied', style: 'myStyle'
+    }
+}
+----
+<1> Defaults for all paragraphs
+<2> Specific style that applied when a paragraph
+
+=== Page Breaks
+
+Although new pages are automatically created to accommodate content but you can also add an explicit page break.
+[source,groovy]
+----
+builder.create {
+    document {
+        paragraph 'This will be on page 1'
+        pageBreak() // <1>
+        paragraph 'This will be on page 2'
+    }
+}
+----
+<1> Page break happens here regardless of how much content came before

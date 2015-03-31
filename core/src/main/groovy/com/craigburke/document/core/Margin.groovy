@@ -17,4 +17,9 @@ class Margin {
         left = (left == null) ? defaultMargin.left : left
         right = (right == null) ? defaultMargin.right : right
     }
+
+    def leftShift(Map properties) {
+        properties?.each { key, value -> this[key] = value }
+    }
+
 }
