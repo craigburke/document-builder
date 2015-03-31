@@ -35,7 +35,7 @@ class ParagraphFactory extends AbstractFactory {
 			List elements = paragraph.addText(value.toString())
 			elements.each { node ->
 				if (node instanceof Text) {
-					builder.setStyles(node, [:])
+					builder.setStyles(node, [:], 'text')
 					if (builder.addTextToTextBlock) {
 						builder.addTextToTextBlock(node, paragraph)
 					}

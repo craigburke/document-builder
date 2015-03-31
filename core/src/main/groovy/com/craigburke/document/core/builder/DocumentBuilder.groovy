@@ -52,9 +52,7 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements TextBloc
 		}
 	}
 
-	void setStyles(StyledNode node, Map attributes, String defaultKey = null) {
-		String nodeKey = defaultKey ?: node.getClass().simpleName.toLowerCase()
-
+	void setStyles(StyledNode node, Map attributes, String nodeKey) {
 		node.font = (node instanceof Document) ? new Font() : node.parent.font.clone()
 		node.font.size = (node instanceof Heading) ? null : node.font.size
 		String[] keys = [nodeKey]

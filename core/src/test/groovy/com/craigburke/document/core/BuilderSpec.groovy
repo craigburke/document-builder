@@ -46,7 +46,7 @@ class BuilderSpec extends Specification {
         testFile?.delete()
     }
 
-    def "user typographic units"() {
+    def "use typographic units"() {
         when:
         builder.create {
             document(margin:[top:2.inches, bottom:1.inch]) {

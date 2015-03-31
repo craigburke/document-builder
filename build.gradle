@@ -133,18 +133,19 @@ subprojects {
 
 asciidoctor {
 	sourceDir = file('docs') 
-    attributes 'source-highlighter': 'prettify', 'imagesdir': 'images', icons: 'font'
+    	attributes 'source-highlighter': 'prettify', 'imagesdir': 'images', icons: 'font'
 }
 
 githubPages {
 	repoUri = 'https://github.com/craigburke/document-builder.git'
+
 	credentials {
 		username = project.hasProperty('githubUsername') ? project.githubUsername : ''
 		password = project.hasProperty('githubPassword') ? project.githubPassword : ''
 	}
 
 	pages {
-		from 'build/asciidoc/html5'
+		from file(asciidoctor.outputDir.path + '/html5')
 	}
 }
 
