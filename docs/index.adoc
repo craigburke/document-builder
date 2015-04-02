@@ -329,7 +329,7 @@ builder.create {
 }
 ----
 <1> Defaults for all paragraphs
-<2> Specific style that applied when a paragraph
+<2> Specific style that applied when a paragraph has the style *myStyle*
 
 === Page Breaks
 

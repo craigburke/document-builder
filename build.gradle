@@ -140,8 +140,8 @@ githubPages {
 	repoUri = 'https://github.com/craigburke/document-builder.git'
 
 	credentials {
-		username = project.hasProperty('githubUsername') ? project.githubUsername : ''
-		password = project.hasProperty('githubPassword') ? project.githubPassword : ''
+		username = project.hasProperty('githubToken') ? project.githubToken : ''
+		password = 'x-oauth-basic'
 	}
 
 	pages {
