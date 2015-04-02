@@ -141,7 +141,7 @@ githubPages {
 
 	credentials {
 		username = project.hasProperty('githubToken') ? project.githubToken : ''
-		password = 'x-oauth-basic'
+		password = ''
 	}
 
 	pages {
