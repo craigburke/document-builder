@@ -1,6 +1,6 @@
 package com.craigburke.document.core.factory
 
-import com.craigburke.document.core.Margin
+import com.craigburke.document.core.LineBreak
 import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.Row
@@ -27,18 +27,24 @@ class CellFactory extends AbstractFactory {
         }
 
 		TextBlock paragraph = new TextBlock(font:cell.font.clone(), parent:cell, align:cell.align)
-		paragraph.margin.setDefaults(new Margin(top:0, bottom:0, left:0, right:0))
-        if (builder.addTextBlockToCell) {
+        builder.setStyles(paragraph, [margin:[top:0, left:0, bottom:0, right:0]], 'paragraph')
+		if (builder.addTextBlockToCell) {
             builder.addTextBlockToCell(paragraph, cell)
         }
 		cell.children << paragraph
 
 		if (value) {
-			Text text = new Text(value:value, font:cell.font.clone(), parent:paragraph)
-		    paragraph.children << text
-            if (builder.addTextToTextBlock) {
-                builder.addTextToTextBlock(text, paragraph)
-            }
+			List elements = paragraph.addText(value.toString())
+			elements.each { node ->
+				if (node instanceof Text) {
+					builder.setStyles(node, [:], 'text')
+					if (builder.addTextToTextBlock) {
+						builder.addTextToTextBlock(node, paragraph)
+					}
+				} else if (node instanceof LineBreak && builder.addLineBreakToTextBlock) {
+					builder.addLineBreakToTextBlock(node, paragraph)
+				}
+			}
 		}
 
 		cell

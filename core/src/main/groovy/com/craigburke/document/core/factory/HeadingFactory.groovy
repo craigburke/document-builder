@@ -18,6 +18,7 @@ class HeadingFactory extends AbstractFactory {
         builder.setStyles(heading, attributes, 'heading')
         Text text = new Text(value:value, parent:heading)
         heading.children << text
+        builder.setStyles(text, [:], 'text')
 
         if (builder.addTextToTextBlock) {
             builder.addTextToTextBlock(text, heading)

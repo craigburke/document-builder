@@ -71,7 +71,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 								'w:right':pointToTwip(document.margin.right),
 								'w:left':pointToTwip(document.margin.left),
 								'w:footer':pointToTwip(footer ? footer.node.margin.bottom : 0),
-								'w:header':0
+								'w:header':pointToTwip(header ? header.node.margin.top : 0)
 						)
 						if (header) {
 							w.headerReference('r:id':header.id, 'w:type':'default')
@@ -134,21 +134,48 @@ class WordDocumentBuilder extends DocumentBuilder {
 	}
 
 	int calculateSpacingAfter(BlockNode node) {
-		int totalSpacing = node.margin.bottom
+		Integer totalSpacing
 
-		def items = node.parent.children
-		int index = items.findIndexOf { it == node }
+		switch (renderState) {
+			case RenderState.PAGE:
+				totalSpacing = node.margin.bottom
 
-		if (index != items.size() - 1) {
-			def nextSibling = items[index + 1]
-			if (nextSibling instanceof BlockNode) {
-				totalSpacing += nextSibling.margin.top
-			}
+				def items = node.parent.children
+				int index = items.findIndexOf { it == node }
+
+				if (index != items.size() - 1) {
+					def nextSibling = items[index + 1]
+					if (nextSibling instanceof BlockNode) {
+						totalSpacing += nextSibling.margin.top
+					}
+				}
+				break
+
+			case RenderState.HEADER:
+				totalSpacing = node.margin.bottom
+				break
+
+			case RenderState.FOOTER:
+				totalSpacing = 0
+		}
+
+		totalSpacing
+	}
+
+	int calculatedSpacingBefore(BlockNode node) {
+		int totalSpacing
+
+		if (renderState == RenderState.HEADER) {
+			totalSpacing = 0
+		}
+		else {
+			totalSpacing = node.margin.top
 		}
 		totalSpacing
 	}
 
 	void addParagraph(builder, TextBlock paragraph) {
+
 		builder.w.p {
 			w.pPr {
 				String lineRule = (paragraph.lineHeight) ? 'exact' : 'auto'
@@ -156,7 +183,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 						pointToTwip(paragraph.lineHeight) : (paragraph.textHeightMultiplier * 240)
 
 				w.spacing(
-						'w:before':pointToTwip(paragraph.margin.top),
+						'w:before':pointToTwip(calculatedSpacingBefore(paragraph)),
 						'w:after':pointToTwip(calculateSpacingAfter(paragraph)),
 						'w:lineRule':lineRule,
 						'w:line':lineValue
