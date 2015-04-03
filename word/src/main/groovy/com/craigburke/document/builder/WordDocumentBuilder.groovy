@@ -178,15 +178,11 @@ class WordDocumentBuilder extends DocumentBuilder {
 
 		builder.w.p {
 			w.pPr {
-				String lineRule = (paragraph.lineHeight) ? 'exact' : 'auto'
-				BigDecimal lineValue = (paragraph.lineHeight) ?
-						pointToTwip(paragraph.lineHeight) : (paragraph.textHeightMultiplier * 240)
-
 				w.spacing(
 						'w:before':pointToTwip(calculatedSpacingBefore(paragraph)),
 						'w:after':pointToTwip(calculateSpacingAfter(paragraph)),
-						'w:lineRule':lineRule,
-						'w:line':lineValue
+						'w:lineRule':'exact',
+						'w:line':pointToTwip(paragraph.textHeight)
 				)
 				w.ind(
 						'w:left':pointToTwip(paragraph.margin.left),

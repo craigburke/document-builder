@@ -42,7 +42,7 @@ class ParagraphRenderer {
 
     static void renderLine(Document document, ParagraphLine line, int renderStartX, RenderState renderState) {
         PdfDocument pdfDocument = document.item
-
+        
         if (renderState == RenderState.PAGE && pdfDocument.remainingPageHeight < line.height) {
             pdfDocument.addPage()
         }
@@ -57,9 +57,6 @@ class ParagraphRenderer {
 
         pdfDocument.x = renderStartX
         pdfDocument.y += line.height
-        if (line.height == line.paragraph.textHeight) {
-            pdfDocument.y -= line.paragraph.textHeightOffset
-        }
 
         line.elements.each { element ->
 
@@ -67,6 +64,7 @@ class ParagraphRenderer {
                 case TextElement:
                     renderTextElement(element, document)
                     pdfDocument.x += element.width
+                    pdfDocument.y += line.paragraph.textHeightOffset
                     break
                 case ImageElement:
                     renderImageElement(element, document)
@@ -75,9 +73,6 @@ class ParagraphRenderer {
             }
         }
 
-        if (line.height == line.paragraph.textHeight) {
-            pdfDocument.y += line.paragraph.textHeightOffset
-        }
     }
 
     private static void renderTextElement(TextElement element, Document document) {

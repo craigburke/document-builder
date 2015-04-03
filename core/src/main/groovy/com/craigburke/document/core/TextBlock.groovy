@@ -8,7 +8,7 @@ class TextBlock extends BaseNode implements BlockNode, StyledNode {
 	final static Margin DEFAULT_MARGIN = new Margin(top:12, bottom:12, left:0, right:0)
 
 	Integer lineHeight
-	BigDecimal textHeightMultiplier = 1.1
+	BigDecimal textHeightMultiplier = 1.2
 
 	List children = []
 
