@@ -66,6 +66,10 @@ class WordDocumentBuilder extends DocumentBuilder {
 						}
 					}
 					w.sectPr {
+						w.pgSz(	'w:h':pointToTwip(document.height),
+								'w:w':pointToTwip(document.width),
+								'w:orient':'portrait'
+						)
 						w.pgMar('w:bottom':pointToTwip(document.margin.bottom),
 								'w:top':pointToTwip(document.margin.top),
 								'w:right':pointToTwip(document.margin.right),
