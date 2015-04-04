@@ -17,27 +17,6 @@ class ParagraphSpec extends Specification {
         paragraph.children << new Text(font:[size:DEFAULT_FONT_SIZE])
     }
 
-    def "no leading or text for empty paragraph"() {
-        TextBlock emptyParagraph = new TextBlock(font:[size:10])
-
-        expect:
-        emptyParagraph.textHeight == 0
-        emptyParagraph.text == ''
-    }
-
-    def "leading default"() {
-        expect:
-        paragraph.textHeight == Math.ceil(DEFAULT_FONT_SIZE * paragraph.textHeightMultiplier)
-    }
-
-    def "leading override"() {
-        paragraph.lineHeight = 20
-
-        expect:
-        paragraph.lineHeight == 20
-        paragraph.textHeight == 20
-    }
-
     def "text combines text values"() {
         paragraph.children = [
             new Text(value:'FOO'),
