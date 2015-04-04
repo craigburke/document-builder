@@ -171,7 +171,7 @@ ruleset {
     SpaceAfterSwitch
     SpaceAfterWhile
     SpaceAroundClosureArrow
-    SpaceAroundMapEntryColon
+    'SpaceAroundMapEntryColon' doNotApplyToFilesMatching: '.*Spec.groovy'
     SpaceAroundOperator
     SpaceBeforeClosingBrace
     SpaceBeforeOpeningBrace

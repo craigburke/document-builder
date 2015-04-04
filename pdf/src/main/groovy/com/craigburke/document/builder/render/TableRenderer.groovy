@@ -14,14 +14,28 @@ class TableRenderer {
 
     Document document
     Table table
+    private List<RowElement> rowElements = []
 
     TableRenderer(Table table, Document document) {
         this.document = document
         this.table = table
+        table.children.each { Row row ->
+            rowElements << new RowElement(row)
+        }
+    }
+
+    int getTotalHeight() {
+        int height = table.margin.top + table.margin.bottom
+
+        rowElements.each {
+            height += it.totalHeight
+        }
+
+        height
     }
 
     void render(RenderState renderState = RenderState.PAGE) {
-        table.children.each { renderRow(it, renderState) }
+        rowElements.each { renderRow(it, renderState) }
     }
 
     int translateY(int y) {
@@ -95,10 +109,8 @@ class TableRenderer {
         contentStream.setLineWidth(table.border.size)
     }
 
-   private void renderRow(Row row, RenderState renderState) {
+   private void renderRow(RowElement rowElement, RenderState renderState) {
        int rowStartX = document.margin.left + table.margin.left
-
-       RowElement rowElement = new RowElement(row)
 
        rowElement.startY = document.item.y
        if (rowElement.firstRow) {

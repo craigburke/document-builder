@@ -220,4 +220,64 @@ abstract class BaseBuilderSpec extends Specification {
 		notThrown(Exception)
 	}
 
+	def "paragraph header"() {
+		when:
+		builder.create {
+			document ( header: { paragraph 'HEADER' } ) {
+				paragraph 'Content'
+			}
+		}
+
+		then:
+		notThrown(Exception)
+	}
+
+	def "paragraph footer"() {
+		when:
+		builder.create {
+			document ( footer: { paragraph 'FOOTER' } ) {
+				paragraph 'Content'
+			}
+		}
+
+		then:
+		notThrown(Exception)
+	}
+
+	def "paragraph header and footer"() {
+		when:
+		builder.create {
+			document (header: { paragraph 'HEADER' }, footer: { paragraph 'FOOTER' }) {
+				paragraph 'Content'
+			}
+		}
+
+		then:
+		notThrown(Exception)
+	}
+
+	def "table header"() {
+		when:
+		builder.create {
+			document ( header: { table { row { cell 'HEADER' } } } ) {
+				paragraph 'Content'
+			}
+		}
+
+		then:
+		notThrown(Exception)
+	}
+
+	def "table footer"() {
+		when:
+		builder.create {
+			document ( footer: { table { row { cell 'FOOTER' } } } ) {
+				paragraph 'Content'
+			}
+		}
+
+		then:
+		notThrown(Exception)
+	}
+
 }

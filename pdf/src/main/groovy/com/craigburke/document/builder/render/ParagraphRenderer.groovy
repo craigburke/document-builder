@@ -34,6 +34,12 @@ class ParagraphRenderer {
         paragraphElement = new ParagraphElement(paragraph, maxLineWidth)
     }
 
+    int getTotalHeight() {
+        int height = paragraph.margin.top + paragraph.margin.bottom
+        height += paragraphElement.totalHeight
+        height
+    }
+
     void render(RenderState renderState = RenderState.PAGE) {
         paragraphElement.lines.each { ParagraphLine line ->
             ParagraphRenderer.renderLine(document, line, renderStartX, renderState)

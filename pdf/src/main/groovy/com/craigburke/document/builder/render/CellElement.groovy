@@ -27,8 +27,11 @@ class CellElement {
         position = new LinePosition(element:0, line:0)
     }
 
-    void moveToNextLine() {
+    int getTotalHeight() {
+        paragraphElements.sum { it.totalHeight }
+    }
 
+    void moveToNextLine() {
         if (position.line == (currentElement.lines.size() - 1)) {
             if (position.element < (paragraphElements.size() - 1)) {
                 position.element++

@@ -16,4 +16,8 @@ class ParagraphElement {
         lines = ParagraphParser.getLines(paragraph, maxWidth)
     }
 
+    int getTotalHeight() {
+        node.margin.top + lines.sum { it.height } + node.margin.bottom
+    }
+
 }

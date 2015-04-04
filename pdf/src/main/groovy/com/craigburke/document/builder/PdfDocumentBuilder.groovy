@@ -96,31 +96,37 @@ class PdfDocumentBuilder extends DocumentBuilder {
             if (document.header) {
                 renderState = RenderState.HEADER
                 def header = document.header(options)
-                document.item.y = header.margin.top
-                int xStart = document.margin.left + header.margin.left
-                renderHeaderFooter(header, xStart)
+                renderHeaderFooter(header)
             }
             if (document.footer) {
                 renderState = RenderState.FOOTER
                 def footer = document.footer(options)
-                document.item.y = document.item.pageBottomY + footer.margin.top
-                int xStart =  document.margin.left + footer.margin.left
-                renderHeaderFooter(footer, xStart)
+                renderHeaderFooter(footer)
             }
         }
 
         renderState = RenderState.PAGE
     }
 
-    private void renderHeaderFooter(headerFooter, int xStart) {
+    private void renderHeaderFooter(headerFooter) {
+        int xStart = document.margin.left + headerFooter.margin.left
+
+        def renderer
         if (headerFooter instanceof TextBlock) {
-            ParagraphRenderer renderer = new ParagraphRenderer(headerFooter, document, xStart, document.width)
-            renderer.render(renderState)
+            renderer = new ParagraphRenderer(headerFooter, document, xStart, document.width)
         }
         else if (headerFooter instanceof Table) {
-            TableRenderer renderer = new TableRenderer(headerFooter, document)
-            renderer.render(renderState)
+            renderer = new TableRenderer(headerFooter, document)
         }
+
+        if (renderState == RenderState.HEADER) {
+            document.item.y = headerFooter.margin.top
+        }
+        else {
+            document.item.y = document.item.pageBottomY - renderer.totalHeight
+        }
+
+        renderer.render(renderState)
     }
 
 	private void addMetadata() {

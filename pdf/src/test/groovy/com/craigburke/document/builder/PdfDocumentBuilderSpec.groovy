@@ -18,4 +18,5 @@ class PdfDocumentBuilderSpec extends BaseBuilderSpec {
 	Document getDocument(byte[] data) {
 		PdfDocumentLoader.load(data)
 	}
+
 }

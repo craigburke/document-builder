@@ -21,6 +21,10 @@ class RowElement {
         }
     }
 
+    int getTotalHeight() {
+        cellElements.max { it.totalHeight }.totalHeight
+    }
+
     int getRenderedHeight() {
         cellElements.max { it.renderedHeight }.renderedHeight
     }
