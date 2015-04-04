@@ -64,21 +64,21 @@ class ParagraphRenderer {
             switch (element.getClass()) {
                 case TextElement:
                     offset = line.height - element.node.font.size
-                    pdfDocument.y += offset
+                    pdfDocument.y -= offset
                     renderTextElement(element, document)
+
                     pdfDocument.x += element.width
                     break
                 case ImageElement:
                     offset = line.height - element.node.height
-                    pdfDocument.y += offset
+                    pdfDocument.y -= offset
                     renderImageElement(element, document)
                     pdfDocument.x += element.node.width
                     break
             }
 
-            pdfDocument.y -= offset
+            pdfDocument.y += offset
         }
-        line
     }
 
     private static void renderTextElement(TextElement element, Document document) {

@@ -162,8 +162,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 			case RenderState.FOOTER:
 				totalSpacing = 0
 		}
-
-		totalSpacing
+		pointToTwip(totalSpacing)
 	}
 
 	int calculatedSpacingBefore(BlockNode node) {
@@ -175,7 +174,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 		else {
 			totalSpacing = node.margin.top
 		}
-		totalSpacing
+		pointToTwip(totalSpacing)
 	}
 
 	void addParagraph(builder, TextBlock paragraph) {
@@ -187,8 +186,8 @@ class WordDocumentBuilder extends DocumentBuilder {
 						pointToTwip(paragraph.lineHeight) : (paragraph.textHeightMultiplier * 240)
 
 				w.spacing(
-						'w:before':pointToTwip(calculatedSpacingBefore(paragraph)),
-						'w:after':pointToTwip(calculateSpacingAfter(paragraph)),
+						'w:before':calculatedSpacingBefore(paragraph),
+						'w:after':calculateSpacingAfter(paragraph),
 						'w:lineRule':lineRule,
 						'w:line':lineValue
 				)

@@ -43,6 +43,7 @@ class TableRenderer {
 
         if (shouldRenderTopBorder(rowElement)) {
             contentStream.drawLine(xStart, translateY(yTop), xEnd, translateY(yTop))
+            document.item.y += table.border.size
         }
 
         int yBottom
