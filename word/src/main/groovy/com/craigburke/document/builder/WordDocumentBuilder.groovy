@@ -138,7 +138,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 	}
 
 	int calculateSpacingAfter(BlockNode node) {
-		Integer totalSpacing
+		int totalSpacing
 
 		switch (renderState) {
 			case RenderState.PAGE:
@@ -168,12 +168,28 @@ class WordDocumentBuilder extends DocumentBuilder {
 	int calculatedSpacingBefore(BlockNode node) {
 		int totalSpacing
 
-		if (renderState == RenderState.HEADER) {
-			totalSpacing = 0
+		switch (renderState) {
+			case RenderState.PAGE:
+				totalSpacing = node.margin.top
+				def items = node.parent.children
+				int index = items.findIndexOf { it == node }
+				if (index > 0) {
+					def previousSibling = items[index - 1]
+					if (previousSibling instanceof Table) {
+						totalSpacing += previousSibling.margin.bottom
+					}
+				}
+				break
+
+			case RenderState.HEADER:
+				totalSpacing = 0
+				break
+
+			case RenderState.FOOTER:
+				totalSpacing = node.margin.top
+				break
 		}
-		else {
-			totalSpacing = node.margin.top
-		}
+
 		pointToTwip(totalSpacing)
 	}
 
