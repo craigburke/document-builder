@@ -123,7 +123,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
             document.item.y = headerFooter.margin.top
         }
         else {
-            document.item.y = document.item.pageBottomY - renderer.totalHeight
+            document.item.y = document.item.pageBottomY + document.margin.bottom - renderer.totalHeight
         }
 
         renderer.render(renderState)
