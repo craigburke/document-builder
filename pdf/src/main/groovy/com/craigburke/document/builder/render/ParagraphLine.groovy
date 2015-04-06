@@ -22,15 +22,15 @@ class ParagraphLine {
     }
 
     int getHeight() {
-        if (paragraph.lineHeight) {
-            paragraph.lineHeight
+        if (paragraph.lineSpacing) {
+            paragraph.lineSpacing
         }
         else {
-            BigDecimal result = elements.collect {
-                (it instanceof ImageElement) ? it.node.height :
-                    (it.node.font.size * paragraph.textHeightMultiplier)
-            }.max() ?: 0
-            Math.ceil(result)
+            BigDecimal maxFontSize = elements
+                    .findAll { it instanceof TextElement }
+                    .collect { it.node.font.size }
+                    .max() ?: paragraph.font.size
+           Math.ceil(maxFontSize * paragraph.lineSpacingMultiplier)
         }
     }
 

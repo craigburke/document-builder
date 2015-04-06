@@ -99,7 +99,7 @@ class PdfContentExtractor extends PDFTextStripper {
             int totalPageWidth = text.pageWidth - document.margin.right - document.margin.left
             paragraph.margin.right = totalPageWidth - text.width - paragraph.margin.left
 
-            BigDecimal lineHeight = font.size * paragraph.textHeightMultiplier
+            BigDecimal lineHeight = font.size + (font.size * paragraph.lineSpacingMultiplier)
             BigDecimal textOffset = lineHeight - font.size
 
             int topMargin = Math.ceil(text.y - document.margin.top - lineHeight + textOffset)
