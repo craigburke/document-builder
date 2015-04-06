@@ -129,11 +129,19 @@ subprojects {
     }
 
     bintrayUpload.dependsOn build, sourcesJar, javadoc
+
+    task release {
+        dependsOn bintrayUpload, publishGhPages
+    }
 }
 
 asciidoctor {
-	sourceDir = file('docs') 
-    	attributes 'source-highlighter': 'prettify', 'imagesdir': 'images', icons: 'font'
+	sourceDir = file('docs')
+    attributes  'source-highlighter': 'prettify',
+                'imagesdir': 'images',
+                icons: 'font',
+                'toc': 'right',
+                version: project.version
 }
 
 githubPages {
