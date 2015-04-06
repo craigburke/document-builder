@@ -200,7 +200,6 @@ class WordDocumentBuilder extends DocumentBuilder {
 				String lineRule = (paragraph.lineHeight) ? 'exact' : 'auto'
 				BigDecimal lineValue = (paragraph.lineHeight) ?
 						pointToTwip(paragraph.lineHeight) : (paragraph.textHeightMultiplier * 240)
-
 				w.spacing(
 						'w:before':calculatedSpacingBefore(paragraph),
 						'w:after':calculateSpacingAfter(paragraph),
@@ -314,6 +313,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 					row.children.each { Cell cell ->
 						w.tc {
 							w.tcPr {
+								w.vAlign('w:val':'center')
 								w.tcW('w:w':pointToTwip(cell.width - (table.padding * 2)))
 								w.tcMar {
 									w.top('w:w':pointToTwip(table.padding))
