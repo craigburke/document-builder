@@ -17,7 +17,7 @@ class ParagraphElement {
     }
 
     int getTotalHeight() {
-        node.margin.top + lines.sum { it.height } + node.margin.bottom
+        node.margin.top + lines.sum { it.contentHeight + it.lineSpacing } + node.margin.bottom
     }
 
 }

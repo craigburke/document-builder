@@ -1,5 +1,7 @@
 package com.craigburke.document.builder.render
 
+import com.craigburke.document.builder.PdfFont
+import com.craigburke.document.core.Font
 import com.craigburke.document.core.TextBlock
 
 /**
@@ -21,16 +23,25 @@ class ParagraphLine {
         maxWidth - contentWidth
     }
 
-    int getHeight() {
+    int getContentHeight() {
+        elements.collect {
+            if (it instanceof TextElement) { it.node.font.size }
+            else if (it instanceof ImageElement ) { it.node.height }
+            else { 0 }
+        }.max() ?: 0
+    }
+
+    int getLineSpacing() {
         if (paragraph.lineSpacing) {
             paragraph.lineSpacing
         }
         else {
-            BigDecimal maxFontSize = elements
+            Font maxFont = elements
                     .findAll { it instanceof TextElement }
-                    .collect { it.node.font.size }
-                    .max() ?: paragraph.font.size
-           Math.ceil(maxFontSize * paragraph.lineSpacingMultiplier)
+                    .max { it.node.font.size }?.node?.font ?: paragraph.font
+
+            BigDecimal xHeight = PdfFont.getXHeight(maxFont)
+            Math.ceil((maxFont.size - xHeight) * paragraph.lineSpacingMultiplier)
         }
     }
 

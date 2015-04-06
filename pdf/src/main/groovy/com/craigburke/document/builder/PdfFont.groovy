@@ -49,6 +49,11 @@ class PdfFont {
         pdfFont
     }
 
+    static BigDecimal getXHeight(Font font) {
+        PDFont pdFont = PdfFont.getFont(font)
+        (font.size * pdFont.getFontHeight(['x'.bytes[0]] as byte[], 0, 1) / 1000f)
+    }
+
     static void addFont(PDDocument document, EmbeddedFont embeddedFont) {
         PDFont font = PDTrueTypeFont.loadTTF(document, embeddedFont.file)
         String fontName = embeddedFont.name ?: font.baseFont
