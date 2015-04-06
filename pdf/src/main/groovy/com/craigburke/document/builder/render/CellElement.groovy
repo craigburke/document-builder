@@ -12,6 +12,11 @@ class CellElement {
     Cell node
     List<ParagraphElement> paragraphElements = []
 
+    class LinePosition {
+        int line
+        int element
+    }
+
     private LinePosition position
     boolean fullyRendered = false
     int renderedHeight = 0
@@ -71,11 +76,3 @@ class CellElement {
 
 }
 
-/**
- * Paragraph line position
- * @author Craig Burke
- */
-class LinePosition {
-    int line
-    int element
-}
