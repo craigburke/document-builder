@@ -41,11 +41,6 @@ class PdfDocumentBuilder extends DocumentBuilder {
         PdfFont.addFont(document.item.pdDocument, embeddedFont)
     }
 
-	def addTextBlockToDocument = { TextBlock paragraph, Document document ->
-		document.item.x = paragraph.margin.left + document.margin.left
-        document.item.scrollDownPage(paragraph.margin.top)
-	}
-
     def addPageBreakToDocument = { PageBreak pageBreak, Document document ->
         document.item.addPage()
     }
@@ -56,6 +51,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
             int maxLineWidth = pageWidth - paragraph.margin.left - paragraph.margin.right
             int renderStartX = document.margin.left + paragraph.margin.left
 
+            document.item.scrollDownPage(paragraph.margin.top)
+
             ParagraphRenderer paragraphRenderer = new ParagraphRenderer(paragraph, document, renderStartX, maxLineWidth)
             paragraphRenderer.render(renderState)
 
@@ -63,13 +60,10 @@ class PdfDocumentBuilder extends DocumentBuilder {
         }
     }
 
-	def addTableToDocument = { Table table, Document document ->
-        document.item.x = table.margin.left + document.margin.left
-        document.item.scrollDownPage(table.margin.top)
-	}
-
     def onTableComplete = { Table table ->
         if (renderState == RenderState.PAGE) {
+            document.item.x = table.margin.left + document.margin.left
+            document.item.scrollDownPage(table.margin.top)
             TableRenderer tableRenderer = new TableRenderer(table, document)
             tableRenderer.render(renderState)
             document.item.scrollDownPage(table.margin.bottom)
@@ -120,7 +114,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
         }
 
         if (renderState == RenderState.HEADER) {
-            document.item.y = 0
+            document.item.y = headerFooter.margin.top
         }
         else {
             document.item.y = document.item.pageBottomY + document.margin.bottom - renderer.totalHeight

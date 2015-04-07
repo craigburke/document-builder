@@ -32,6 +32,10 @@ class ParagraphLine {
         }.max() ?: 0
     }
 
+    int getTotalHeight() {
+        contentHeight + lineSpacing
+    }
+
     int getLineSpacing() {
         TextBlock paragraph = paragraphElement.node
 
@@ -44,7 +48,7 @@ class ParagraphLine {
                     .max { it.node.font.size }?.node?.font ?: paragraph.font
 
             BigDecimal xHeight = PdfFont.getXHeight(maxFont)
-            Math.ceil((maxFont.size - xHeight) * paragraph.lineSpacingMultiplier)
+            Math.round((maxFont.size - xHeight) * paragraph.lineSpacingMultiplier)
         }
     }
 

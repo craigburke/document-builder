@@ -43,7 +43,7 @@ class TableRenderer {
     }
 
     private void renderBorders(RowElement rowElement) {
-        document.item.y = rowElement.startY
+        document.item.y = rowElement.startY - table.border.size
 
         int borderOffset = Math.floor(table.border.size.doubleValue() / 2)
 
@@ -53,7 +53,7 @@ class TableRenderer {
         int xStart = document.margin.left + table.margin.left
         int xEnd = xStart + table.width
 
-        int yTop = rowElement.startY
+        int yTop = rowElement.startY - table.border.size
 
         if (shouldRenderTopBorder(rowElement)) {
             contentStream.drawLine(xStart, translateY(yTop), xEnd, translateY(yTop))
@@ -69,12 +69,13 @@ class TableRenderer {
            yBottom = document.item.y + document.item.remainingPageHeight
         }
 
-        int offsetYBottom = yBottom + borderOffset
+        int translatedOffsetYBottom = translateY(yBottom + borderOffset)
+        int translatedYTop = translateY(yTop)
 
         int currentX = document.margin.left + table.margin.left + borderOffset
         rowElement.cellElements.eachWithIndex { cellElement, i ->
             if (i == 0) {
-                contentStream.drawLine(currentX, translateY(yTop), currentX, translateY(offsetYBottom))
+                contentStream.drawLine(currentX, translatedYTop, currentX, translatedOffsetYBottom)
             }
             currentX += cellElement.node.width
 
@@ -85,9 +86,8 @@ class TableRenderer {
                 currentX += table.border.size
             }
 
-            contentStream.drawLine(currentX, translateY(yTop), currentX, translateY(offsetYBottom))
+            contentStream.drawLine(currentX, translatedYTop, currentX, translatedOffsetYBottom)
         }
-
     }
 
     private boolean shouldRenderTopBorder(RowElement rowElement) {
@@ -121,7 +121,7 @@ class TableRenderer {
             document.item.x = rowStartX + table.border.size
 
             rowElement.cellElements.each {
-                document.item.y = rowElement.startY
+                document.item.y = rowElement.startY + table.padding
                 renderContentUntilEndPoint(it, renderState)
             }
 
@@ -151,7 +151,6 @@ class TableRenderer {
 
             if (canRenderCurrentLineOnPage(cellElement, renderState)) {
                 if (cellElement.onFirstLine) {
-                    document.item.y += table.padding
                     cellElement.renderedHeight += table.padding
                 }
 
@@ -187,7 +186,7 @@ class TableRenderer {
 
         int remainingHeight = document.item.remainingPageHeight
 
-        int totalRequiredHeight = line.lineSpacing
+        int totalRequiredHeight = line.totalHeight
 
         if (cellElement.onFirstLine) {
             totalRequiredHeight += table.padding + table.border.size

@@ -207,8 +207,10 @@ class WordDocumentBuilder extends DocumentBuilder {
 						'w:line':lineValue
 				)
 				w.ind(
+						'w:start':pointToTwip(paragraph.margin.left),
 						'w:left':pointToTwip(paragraph.margin.left),
-						'w:right':pointToTwip(paragraph.margin.right)
+						'w:right':pointToTwip(paragraph.margin.right),
+						'w:end':pointToTwip(paragraph.margin.right)
 				)
 				w.jc('w:val':paragraph.align.value)
 			}
