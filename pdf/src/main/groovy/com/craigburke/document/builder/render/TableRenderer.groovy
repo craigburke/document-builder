@@ -157,7 +157,7 @@ class TableRenderer {
 
                 int renderStartX = cellStartX + table.padding
                 ParagraphRenderer.renderLine(document, line, renderStartX, renderState)
-                cellElement.renderedHeight += line.lineSpacing
+                cellElement.renderedHeight += line.contentHeight + line.lineSpacing
 
                 if (cellElement.onLastLine) {
                     cellElement.renderedHeight += table.padding
