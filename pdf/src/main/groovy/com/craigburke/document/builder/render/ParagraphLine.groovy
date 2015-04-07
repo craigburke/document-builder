@@ -33,10 +33,6 @@ class ParagraphLine {
     }
 
     int getLineSpacing() {
-        if (paragraphElement.lines?.last() == this) {
-            return 0
-        }
-
         TextBlock paragraph = paragraphElement.node
 
         if (paragraph.lineSpacing) {
