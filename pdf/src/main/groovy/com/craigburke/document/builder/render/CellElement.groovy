@@ -27,7 +27,7 @@ class CellElement {
 
         cell.children.each { paragraph ->
             int renderWidth = cell.width - (table.padding * 2)
-            paragraphElements << new ParagraphElement(paragraph, renderWidth)
+            paragraphElements << ParagraphElementBuilder.buildParagraphElement(paragraph, renderWidth)
         }
         position = new LinePosition(element:0, line:0)
     }

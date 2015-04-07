@@ -31,7 +31,7 @@ class ParagraphRenderer {
         this.document = document
         this.renderStartX = renderStartX
         this.maxLineWidth = maxLineWidth
-        paragraphElement = new ParagraphElement(paragraph, maxLineWidth)
+        paragraphElement = ParagraphElementBuilder.buildParagraphElement(paragraph, maxLineWidth)
     }
 
     int getTotalHeight() {
@@ -53,7 +53,7 @@ class ParagraphRenderer {
             pdfDocument.addPage()
         }
 
-        switch (line.paragraph.align) {
+        switch (line.paragraphElement.node.align) {
             case Align.RIGHT:
                 renderStartX += line.maxWidth - line.contentWidth
                 break

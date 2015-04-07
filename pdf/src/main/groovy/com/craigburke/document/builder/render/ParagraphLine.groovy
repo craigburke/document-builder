@@ -9,13 +9,14 @@ import com.craigburke.document.core.TextBlock
  * @author Craig Burke
  */
 class ParagraphLine {
+
+    ParagraphElement paragraphElement
     final int maxWidth
     int contentWidth = 0
     List elements = []
-    TextBlock paragraph
 
-    ParagraphLine(TextBlock paragraph, int maxWidth) {
-        this.paragraph = paragraph
+    ParagraphLine(ParagraphElement paragraphElement, int maxWidth) {
+        this.paragraphElement = paragraphElement
         this.maxWidth = maxWidth
     }
 
@@ -32,6 +33,8 @@ class ParagraphLine {
     }
 
     int getLineSpacing() {
+        TextBlock paragraph = paragraphElement.node
+
         if (paragraph.lineSpacing) {
             paragraph.lineSpacing
         }
