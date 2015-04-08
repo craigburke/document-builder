@@ -1,5 +1,6 @@
 package com.craigburke.document.core.builder
 
+import com.craigburke.document.core.AssignableBackground
 import com.craigburke.document.core.BaseNode
 import com.craigburke.document.core.BlockNode
 import com.craigburke.document.core.EmbeddedFont
@@ -69,13 +70,16 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
 		if (node instanceof BlockNode) {
 			setNodeMargins(node, nodeProperties)
 		}
+		if (node instanceof AssignableBackground) {
+			setNodeBackground(node, nodeProperties)
+		}
 	}
 
 	protected void setNodeFont(StyledNode node, nodeProperties) {
 		node.font = (node instanceof Document) ? new Font() : node.parent.font.clone()
 		node.font.size = (node instanceof Heading) ? null : node.font.size
-		nodeProperties.each { property ->
-			node.font << property.font
+		nodeProperties.each {
+			node.font << it.font
 		}
 		if (node instanceof Heading && !node.font.size) {
 			node.font.size = document.font.size * Heading.FONT_SIZE_MULTIPLIERS[node.level - 1]
@@ -84,8 +88,17 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
 
 	protected void setNodeMargins(BlockNode node, nodeProperties) {
 		node.margin = node.getClass().DEFAULT_MARGIN
-		nodeProperties.each { property ->
-			node.margin << property.margin
+		nodeProperties.each {
+			node.margin << it.margin
+		}
+	}
+
+	protected void setNodeBackground(AssignableBackground node, nodeProperties) {
+		nodeProperties.each {
+			node.backgroundColor = it.backgroundColor
+		}
+		if (!node.backgroundColor && node.parent instanceof AssignableBackground && node.parent.backgroundColor) {
+			node.backgroundColor = "#${node.parent.backgroundColor.hex}"
 		}
 	}
 

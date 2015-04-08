@@ -443,4 +443,59 @@ class BuilderSpec extends Specification {
         notThrown(Exception)
     }
 
+    def "background color cascades"() {
+        given:
+        String[] backgroundColors = ['#000000', '#111111', '#333333']
+
+        when:
+        Document result = builder.create {
+            document {
+                table(backgroundColor:backgroundColors[0]) {
+                    row {
+                        cell '1.1'
+                        cell '1.2'
+                    }
+                }
+
+                table {
+                    row(backgroundColor:backgroundColors[1]) {
+                        cell '2.1'
+                        cell '2.2'
+                    }
+                }
+
+                table {
+                    row {
+                        cell '3-1', backgroundColor:backgroundColors[2]
+                        cell '3-2'
+                    }
+                }
+            }
+        }.document
+
+        Table table1 = result.children[0]
+        Table table2 = result.children[1]
+        Table table3 = result.children[2]
+
+        then:
+        table1.backgroundColor.hex == backgroundColors[0] - '#'
+        table1.children[0].backgroundColor.hex == backgroundColors[0] - '#'
+        table1.children[0].children.each { Cell cell ->
+            assert cell.backgroundColor.hex == backgroundColors[0] - '#'
+        }
+
+        and:
+        table2.backgroundColor == null
+        table2.children[0].backgroundColor.hex == backgroundColors[1] - '#'
+        table2.children[0].children.each { Cell cell ->
+            assert cell.backgroundColor.hex == backgroundColors[1] - '#'
+        }
+
+        and:
+        table3.backgroundColor == null
+        table3.children[0].backgroundColor == null
+        table3.children[0].children[0].backgroundColor.hex == backgroundColors[2] - '#'
+        table3.children[0].children[1].backgroundColor == null
+    }
+
 }
