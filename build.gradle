@@ -137,11 +137,21 @@ subprojects {
 
 asciidoctor {
 	sourceDir = file('docs')
+    
+    resources {
+        from(sourceDir) {
+            include 'css/**', 'images/**'
+        }
+    }
+    
     attributes  'source-highlighter': 'prettify',
+                'docinfo1': ['version' : project.version],
                 'imagesdir': 'images',
+                'stylesdir': 'css',
                 icons: 'font',
-                'toc': 'right',
-                version: project.version
+                'toc': 'left',
+                version: project.version,
+                'projectUrl': 'https://github.com/craigburke/document-builder'
 }
 
 githubPages {

@@ -1,6 +1,9 @@
 = Groovy Document Builder
 Craig Burke <craig@craigburke.com>
 
+[.ribbon]
+image::ribbon.png[link={projectUrl}]
+
 == Getting Started
 
 [source,groovy,subs='attributes']
