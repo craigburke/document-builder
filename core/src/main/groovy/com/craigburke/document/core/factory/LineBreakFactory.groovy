@@ -16,10 +16,6 @@ class LineBreakFactory extends AbstractFactory {
 
 		TextBlock paragraph = builder.parentName == 'paragraph' ? builder.current : builder.current.children[0]
 		lineBreak.parent = paragraph
-
-		if (builder.addLineBreakToTextBlock) {
-		    builder.addLineBreakToTextBlock(lineBreak, paragraph)
-        }
 		paragraph.children << lineBreak
 
 		lineBreak

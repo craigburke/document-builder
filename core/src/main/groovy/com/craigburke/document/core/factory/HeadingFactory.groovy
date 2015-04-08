@@ -20,10 +20,6 @@ class HeadingFactory extends AbstractFactory {
         heading.children << text
         builder.setNodeProperties(text, [:], 'text')
 
-        if (builder.addTextToTextBlock) {
-            builder.addTextToTextBlock(text, heading)
-        }
-
         heading
     }
 

@@ -1,6 +1,5 @@
 package com.craigburke.document.core.factory
 
-import com.craigburke.document.core.LineBreak
 import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Text
 
@@ -20,17 +19,8 @@ class TextFactory extends AbstractFactory {
             node.parent = paragraph
             if (node instanceof Text) {
                 builder.setNodeProperties(node, attributes, 'text')
-                if (builder.addTextToTextBlock) {
-                    builder.addTextToTextBlock(node, paragraph)
-                }
-            }
-            else if (node instanceof LineBreak) {
-                if (builder.addLineBreakToTextBlock) {
-                    builder.addLineBreakToTextBlock(node, paragraph)
-                }
             }
         }
-
 		elements
 	}
 

@@ -29,10 +29,6 @@ class ImageFactory extends AbstractFactory {
         image.parent = paragraph
         paragraph.children << image
 
-        if (builder.parentName in ['paragraph', 'cell'] && builder.addImageToTextBlock) {
-            builder.addImageToTextBlock(image, paragraph)
-        }
-
         image
 	}
 }

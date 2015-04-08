@@ -6,6 +6,5 @@ package com.craigburke.document.core
  */
 class Row extends BaseNode implements StyledNode {
 	List<Cell> children = []
-	Integer position = 0
     Integer width
 }

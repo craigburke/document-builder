@@ -12,24 +12,15 @@ class RowFactory extends AbstractFactory {
     boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
 
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
-		builder.tablePosition.cell = 0
 		Row row = new Row(attributes)
 		row.parent = builder.current
 		builder.setNodeProperties(row, attributes, 'row')
-
-		row.position = builder.tablePosition.row
-
-		if (builder.addRowToTable) {
-            builder.addRowToTable(row, builder.current)
-        }
-
 		row
 	}
 
 	void setChild(FactoryBuilderSupport builder, row, cell) {
 		cell.parent = row
 		row.children << cell
-		builder.tablePosition.cell++
 	}
 
 	void onNodeCompleted(FactoryBuilderSupport builder, parent, child) {

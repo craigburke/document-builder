@@ -1,6 +1,5 @@
 package com.craigburke.document.core.factory
 
-import com.craigburke.document.core.LineBreak
 import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.Row
@@ -21,16 +20,8 @@ class CellFactory extends AbstractFactory {
 		cell.parent = row
 		builder.setNodeProperties(cell, attributes, 'cell')
 
-		cell.position = builder.tablePosition.cell
-        if (builder.addCellToRow) {
-            builder.addCellToRow(cell, row)
-        }
-
 		TextBlock paragraph = new TextBlock(font:cell.font.clone(), parent:cell, align:cell.align)
         builder.setNodeProperties(paragraph, [margin:[top:0, left:0, bottom:0, right:0]], 'paragraph')
-		if (builder.addTextBlockToCell) {
-            builder.addTextBlockToCell(paragraph, cell)
-        }
 		cell.children << paragraph
 
 		if (value) {
@@ -38,11 +29,6 @@ class CellFactory extends AbstractFactory {
 			elements.each { node ->
 				if (node instanceof Text) {
 					builder.setNodeProperties(node, [:], 'text')
-					if (builder.addTextToTextBlock) {
-						builder.addTextToTextBlock(node, paragraph)
-					}
-				} else if (node instanceof LineBreak && builder.addLineBreakToTextBlock) {
-					builder.addLineBreakToTextBlock(node, paragraph)
 				}
 			}
 		}

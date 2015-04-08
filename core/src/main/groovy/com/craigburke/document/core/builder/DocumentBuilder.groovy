@@ -26,7 +26,7 @@ import com.craigburke.document.core.Font
  * Document Builder base class
  * @author Craig Burke
  */
-abstract class DocumentBuilder extends FactoryBuilderSupport implements TextBlockBuilder, TableBuilder {
+abstract class DocumentBuilder extends FactoryBuilderSupport {
 
 	Document document
 	OutputStream out
@@ -113,9 +113,14 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements TextBloc
         document.embeddedFonts << embeddedFont
     }
 
-	def addPageBreakToDocument
     abstract void initializeDocument(Document document, OutputStream out)
 	abstract void writeDocument(Document document, OutputStream out)
+
+	def addPageBreakToDocument
+	def onTextBlockComplete
+	def onTableComplete
+	def onRowComplete
+	def onCellComplete
 
 	def registerObjectFactories() {
 		registerFactory('create', new CreateFactory())

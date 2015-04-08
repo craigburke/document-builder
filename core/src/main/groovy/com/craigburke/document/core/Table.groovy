@@ -9,8 +9,11 @@ class Table extends BaseNode implements BlockNode, StyledNode {
     List<Row> children = []
 
     Integer padding = 10
-	Integer columns
 	Integer width
+
+    int getColumns() {
+        (children) ? children.max { it.children.size() }.children.size() : 0
+    }
 
     void updateColumnWidths() {
         Document document = parent
