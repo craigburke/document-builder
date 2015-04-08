@@ -15,10 +15,10 @@ class HeadingFactory extends AbstractFactory {
         Heading heading = new Heading(attributes)
         heading.level = Integer.valueOf(builder.currentName - 'heading')
         heading.parent = builder.document
-        builder.setStyles(heading, attributes, 'heading')
+        builder.setNodeProperties(heading, attributes, 'heading')
         Text text = new Text(value:value, parent:heading)
         heading.children << text
-        builder.setStyles(text, [:], 'text')
+        builder.setNodeProperties(text, [:], 'text')
 
         if (builder.addTextToTextBlock) {
             builder.addTextToTextBlock(text, heading)

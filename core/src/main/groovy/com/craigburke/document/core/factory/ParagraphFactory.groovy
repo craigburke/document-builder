@@ -19,7 +19,7 @@ class ParagraphFactory extends AbstractFactory {
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		TextBlock paragraph = new TextBlock(attributes)
 		paragraph.parent = builder.parentName == 'create' ? builder.document : builder.current
-		builder.setStyles(paragraph, attributes, 'paragraph')
+		builder.setNodeProperties(paragraph, attributes, 'paragraph')
 
         if (paragraph.parent instanceof Document) {
 			paragraph.align = paragraph.align ?: Align.LEFT
@@ -35,7 +35,7 @@ class ParagraphFactory extends AbstractFactory {
 			List elements = paragraph.addText(value.toString())
 			elements.each { node ->
 				if (node instanceof Text) {
-					builder.setStyles(node, [:], 'text')
+					builder.setNodeProperties(node, [:], 'text')
 					if (builder.addTextToTextBlock) {
 						builder.addTextToTextBlock(node, paragraph)
 					}

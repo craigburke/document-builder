@@ -1,9 +1,9 @@
 package com.craigburke.document.core.builder
 
+import com.craigburke.document.core.BaseNode
 import com.craigburke.document.core.BlockNode
 import com.craigburke.document.core.EmbeddedFont
 import com.craigburke.document.core.Heading
-import com.craigburke.document.core.Margin
 import com.craigburke.document.core.StyledNode
 import com.craigburke.document.core.UnitCategory
 
@@ -52,42 +52,49 @@ abstract class DocumentBuilder extends FactoryBuilderSupport implements TextBloc
 		}
 	}
 
-	void setStyles(StyledNode node, Map attributes, String nodeKey) {
-		node.font = (node instanceof Document) ? new Font() : node.parent.font.clone()
-		node.font.size = (node instanceof Heading) ? null : node.font.size
-		String[] keys = [nodeKey]
-		keys += getStyleKeys(nodeKey, node)
+	void setNodeProperties(BaseNode node, Map attributes, String nodeKey) {
+		String[] templateKeys = getTemplateKeys(node, nodeKey)
+		def nodeProperties = []
 
-		if (node instanceof BlockNode) {
-			Margin defaultMargin = node.getClass().DEFAULT_MARGIN
-			node.margin.setDefaults(defaultMargin)
-		}
-
-		keys.each { String key ->
-			Map font = (document.template && document.template.containsKey(key)) ? document.template[key].font : [:]
-			node.font << font
-			if (node instanceof BlockNode) {
-				Map margin = (document.template && document.template.containsKey(key)) ? document.template[key].margin : [:]
-				node.margin << margin
+		templateKeys.each { String key ->
+			if (document.template && document.template.containsKey(key)) {
+				nodeProperties << document.template[key]
 			}
 		}
-		node.font << attributes.font
-		if (node instanceof BlockNode) {
-			node.margin << attributes.margin
-		}
+		nodeProperties << attributes
 
+		if (node instanceof StyledNode) {
+			setNodeFont(node, nodeProperties)
+		}
+		if (node instanceof BlockNode) {
+			setNodeMargins(node, nodeProperties)
+		}
+	}
+
+	protected void setNodeFont(StyledNode node, nodeProperties) {
+		node.font = (node instanceof Document) ? new Font() : node.parent.font.clone()
+		node.font.size = (node instanceof Heading) ? null : node.font.size
+		nodeProperties.each { property ->
+			node.font << property.font
+		}
 		if (node instanceof Heading && !node.font.size) {
 			node.font.size = document.font.size * Heading.FONT_SIZE_MULTIPLIERS[node.level - 1]
 		}
-
 	}
 
-	 String[] getStyleKeys(String nodeKey, StyledNode node) {
-		def keys = []
+	protected void setNodeMargins(BlockNode node, nodeProperties) {
+		node.margin = node.getClass().DEFAULT_MARGIN
+		nodeProperties.each { property ->
+			node.margin << property.margin
+		}
+	}
+
+	protected String[] getTemplateKeys(BaseNode node, String nodeKey) {
+		def keys = [nodeKey]
 		if (node instanceof Heading) {
 			keys << "heading${node.level}"
 		}
-		if (node.style) {
+		if (node instanceof StyledNode && node.style) {
 			keys << "${nodeKey}.${node.style}"
 			if (node instanceof Heading) {
 				keys << "heading${node.level}.${node.style}"

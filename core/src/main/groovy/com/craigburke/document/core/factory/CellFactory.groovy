@@ -19,7 +19,7 @@ class CellFactory extends AbstractFactory {
 		Cell cell = new Cell(attributes)
 		Row row = builder.current
 		cell.parent = row
-		builder.setStyles(cell, attributes, 'cell')
+		builder.setNodeProperties(cell, attributes, 'cell')
 
 		cell.position = builder.tablePosition.cell
         if (builder.addCellToRow) {
@@ -27,7 +27,7 @@ class CellFactory extends AbstractFactory {
         }
 
 		TextBlock paragraph = new TextBlock(font:cell.font.clone(), parent:cell, align:cell.align)
-        builder.setStyles(paragraph, [margin:[top:0, left:0, bottom:0, right:0]], 'paragraph')
+        builder.setNodeProperties(paragraph, [margin:[top:0, left:0, bottom:0, right:0]], 'paragraph')
 		if (builder.addTextBlockToCell) {
             builder.addTextBlockToCell(paragraph, cell)
         }
@@ -37,7 +37,7 @@ class CellFactory extends AbstractFactory {
 			List elements = paragraph.addText(value.toString())
 			elements.each { node ->
 				if (node instanceof Text) {
-					builder.setStyles(node, [:], 'text')
+					builder.setNodeProperties(node, [:], 'text')
 					if (builder.addTextToTextBlock) {
 						builder.addTextToTextBlock(node, paragraph)
 					}

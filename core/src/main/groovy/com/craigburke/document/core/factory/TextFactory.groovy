@@ -19,7 +19,7 @@ class TextFactory extends AbstractFactory {
          elements.each { node ->
             node.parent = paragraph
             if (node instanceof Text) {
-                builder.setStyles(node, attributes, 'text')
+                builder.setNodeProperties(node, attributes, 'text')
                 if (builder.addTextToTextBlock) {
                     builder.addTextToTextBlock(node, paragraph)
                 }
