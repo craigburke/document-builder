@@ -323,6 +323,9 @@ class WordDocumentBuilder extends DocumentBuilder {
 									w.left('w:w':pointToTwip(table.padding))
 									w.right('w:w':pointToTwip(table.padding))
 								}
+								if (cell.backgroundColor) {
+									w.shd('w:val':'clear', 'w:color':'auto', 'w:fill':cell.backgroundColor.hex)
+								}
 							}
 							cell.children.each { addParagraph(builder, it) }
 						}
