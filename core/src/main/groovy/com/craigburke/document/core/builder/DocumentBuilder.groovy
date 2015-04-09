@@ -124,6 +124,9 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
 
     void addFont(EmbeddedFont embeddedFont) {
         document.embeddedFonts << embeddedFont
+		if (addEmbeddedFont) {
+			addEmbeddedFont(embeddedFont)
+		}
     }
 
     abstract void initializeDocument(Document document, OutputStream out)
@@ -134,6 +137,7 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
 	def onTableComplete
 	def onRowComplete
 	def onCellComplete
+	def addEmbeddedFont
 
 	def registerObjectFactories() {
 		registerFactory('create', new CreateFactory())

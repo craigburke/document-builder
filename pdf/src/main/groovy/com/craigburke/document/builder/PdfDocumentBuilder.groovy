@@ -35,9 +35,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
         document.item = pdfDocument
     }
 
-    @Override
-    void addFont(EmbeddedFont embeddedFont) {
-        super.addFont(embeddedFont)
+    def addEmbeddedFont = { EmbeddedFont embeddedFont ->
         PdfFont.addFont(document.item.pdDocument, embeddedFont)
     }
 
