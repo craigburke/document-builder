@@ -86,10 +86,13 @@ class TableRenderer {
 
         rowElement.cellElements.eachWithIndex { cellElement, i ->
             if (i == 0) {
-                float cellStartX = cellElement.startX - table.border.size as float
+                float cellStartX = cellElement.startX - table.border.size
                 contentStream.drawLine(cellStartX, translatedYTop, cellStartX, translatedYBottom)
             }
-            float cellEndX = cellElement.startX + cellElement.node.width + table.border.size as float
+            float cellEndX = cellElement.startX + cellElement.node.width
+            if (i == rowElement.cellElements.size() - 1) {
+                cellEndX += table.border.size
+            }
             contentStream.drawLine(cellEndX, translatedYTop, cellEndX, translatedYBottom)
         }
     }
