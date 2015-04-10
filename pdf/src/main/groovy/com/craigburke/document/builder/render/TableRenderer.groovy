@@ -1,5 +1,6 @@
 package com.craigburke.document.builder.render
 
+import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Row
 import com.craigburke.document.core.Table
@@ -43,7 +44,25 @@ class TableRenderer {
         document.item.translateY(y)
     }
 
+    private void renderBackgrounds(RowElement rowElement) {
+        float translatedStartY = translateY(rowElement.startY + rowElement.renderedHeight)
+        PDPageContentStream contentStream = document.item.contentStream
+        rowElement.cellElements.each { CellElement cellElement ->
+            Cell cell = cellElement.node
+            if (cell.backgroundColor) {
+                contentStream.setNonStrokingColor(*cell.backgroundColor.rgb)
+                float totalWidth = cell.width + table.border.size
+                float totalHeight = rowElement.renderedHeight + table.border.size
+                contentStream.fillRect(cellElement.startX, translatedStartY, totalWidth, totalHeight)
+            }
+        }
+    }
+
     private void renderBorders(RowElement rowElement) {
+        if (!table.border.size) {
+            return
+        }
+
         float borderOffset = table.border.size.floatValue() / 2f
 
         float translatedYTop = translateY(rowElement.startY - table.border.size)
@@ -106,7 +125,8 @@ class TableRenderer {
                 renderContentUntilEndPoint(it, renderState)
             }
 
-            if (rowElement.renderedHeight && table.border.size) {
+            if (rowElement.renderedHeight) {
+                renderBackgrounds(rowElement)
                 renderBorders(rowElement)
             }
 
