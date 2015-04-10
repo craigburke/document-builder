@@ -9,8 +9,10 @@ import spock.lang.Specification
  */
 class BuilderSpec extends Specification {
 
-    @Shared TestBuilder builder
-    @Shared byte[] imageData = getClass().classLoader.getResource('test/images/cheeseburger.jpg')?.bytes
+    @Shared
+    TestBuilder builder
+    @Shared
+    byte[] imageData = getClass().classLoader.getResource('test/images/cheeseburger.jpg')?.bytes
 
     def setup() {
         OutputStream out = new ByteArrayOutputStream()
@@ -49,11 +51,11 @@ class BuilderSpec extends Specification {
     def "use typographic units"() {
         when:
         builder.create {
-            document(margin:[top:2.inches, bottom:1.inch]) {
-                paragraph(font:[size:12.pt]) {
+            document(margin: [top: 2.inches, bottom: 1.inch]) {
+                paragraph(font: [size: 12.pt]) {
                     text 'Foo'
                 }
-                table(border:[size:2.px]) {
+                table(border: [size: 2.px]) {
                     row {
                         cell 'Bar'
                     }
@@ -69,7 +71,7 @@ class BuilderSpec extends Specification {
         when:
         def result = builder.create {
             document {
-                addFont('/open-sans.ttf', name:'Open Sans', bold:true)
+                addFont('/open-sans.ttf', name: 'Open Sans', bold: true)
             }
         }
 
@@ -226,9 +228,9 @@ class BuilderSpec extends Specification {
         def result = builder.create {
             document {
                 paragraph 'default'
-                paragraph 'left', align:Align.LEFT
-                paragraph 'center', align:Align.CENTER
-                paragraph 'right', align:Align.RIGHT
+                paragraph 'left', align: Align.LEFT
+                paragraph 'center', align: Align.CENTER
+                paragraph 'right', align: Align.RIGHT
             }
         }
 
@@ -345,9 +347,9 @@ class BuilderSpec extends Specification {
         when:
         def result = builder.create {
             document {
-                table(width:250, padding:0, border:[size:0]) {
+                table(width: 250, padding: 0, border: [size: 0]) {
                     row {
-                        cell('FOOBAR', width:100)
+                        cell('FOOBAR', width: 100)
                         cell('BLAH')
                     }
                 }
@@ -371,18 +373,18 @@ class BuilderSpec extends Specification {
     def "override or inherit font settings"() {
         when:
         def result = builder.create {
-            document(font:[family:'Helvetica', color:'#121212']) {
+            document(font: [family: 'Helvetica', color: '#121212']) {
 
-                paragraph(font:[family:'Courier', color:'#333333']) {
+                paragraph(font: [family: 'Courier', color: '#333333']) {
                     text 'Paragraph override'
                 }
                 paragraph 'Inherit doc font'
 
                 paragraph {
-                    text 'Text override', font:[family:'Times-Roman', color:'#FFFFFF']
+                    text 'Text override', font: [family: 'Times-Roman', color: '#FFFFFF']
                 }
 
-                table(font:[family:'Courier', color:'#111111']) {
+                table(font: [family: 'Courier', color: '#111111']) {
                     row {
                         cell('Override')
                     }
@@ -429,7 +431,7 @@ class BuilderSpec extends Specification {
                 table {
                     row {
                         cell {
-                            image(data:imageData, width:500.px, height:431.px)
+                            image(data: imageData, width: 500.px, height: 431.px)
                             lineBreak()
                             text 'A cheeseburger'
                         }
@@ -450,7 +452,7 @@ class BuilderSpec extends Specification {
         when:
         Document result = builder.create {
             document {
-                table(backgroundColor:backgroundColors[0]) {
+                table(backgroundColor: backgroundColors[0]) {
                     row {
                         cell '1.1'
                         cell '1.2'
@@ -458,7 +460,7 @@ class BuilderSpec extends Specification {
                 }
 
                 table {
-                    row(backgroundColor:backgroundColors[1]) {
+                    row(backgroundColor: backgroundColors[1]) {
                         cell '2.1'
                         cell '2.2'
                     }
@@ -466,7 +468,7 @@ class BuilderSpec extends Specification {
 
                 table {
                     row {
-                        cell '3-1', backgroundColor:backgroundColors[2]
+                        cell '3-1', backgroundColor: backgroundColors[2]
                         cell '3-2'
                     }
                 }
@@ -498,4 +500,41 @@ class BuilderSpec extends Specification {
         table3.children[0].children[1].backgroundColor == null
     }
 
+    def "set link on linkable nodes"() {
+        String url = 'http://www.craigburke.com'
+
+        when:
+        Document result = builder.create {
+            document {
+               heading1 'HEADING1', url:url
+               heading2 'HEADING2'
+
+               paragraph 'Paragraph1', url:url
+               paragraph {
+                   text 'Check this out: '
+                   text 'Click on me', url:url
+               }
+            }
+        }.document
+
+        Heading heading1 = result.children[0]
+        Heading heading2 = result.children[1]
+        TextBlock paragraph1 = result.children[2]
+        TextBlock paragraph2 = result.children[3]
+
+        then:
+        heading1.url == url
+
+        and:
+        heading2.url == null
+
+        and:
+        paragraph1.url == url
+        paragraph1.children[0].url == url
+
+        and:
+        paragraph2.url == null
+        paragraph2.children[0].url == null
+        paragraph2.children[1].url == url
+    }
 }

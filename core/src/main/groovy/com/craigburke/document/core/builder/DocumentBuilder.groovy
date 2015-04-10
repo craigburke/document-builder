@@ -5,6 +5,7 @@ import com.craigburke.document.core.BaseNode
 import com.craigburke.document.core.BlockNode
 import com.craigburke.document.core.EmbeddedFont
 import com.craigburke.document.core.Heading
+import com.craigburke.document.core.LinkNode
 import com.craigburke.document.core.StyledNode
 import com.craigburke.document.core.UnitCategory
 
@@ -73,6 +74,10 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
 		}
 		if (node instanceof AssignableBackground) {
 			setNodeBackground(node, nodeProperties)
+		}
+		if (node instanceof LinkNode) {
+			String parentUrl = (node.parent instanceof LinkNode) ? node.parent.url : null
+			node.url = node.url ?: parentUrl
 		}
 	}
 
