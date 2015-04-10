@@ -1,6 +1,8 @@
 package com.craigburke.document.builder.render
 
+import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Row
+import com.craigburke.document.core.Table
 
 /**
  * Rendering element for the Row node
@@ -8,28 +10,34 @@ import com.craigburke.document.core.Row
  */
 class RowElement {
 
-    int startY
+    float startY
+    float startX
     boolean spansMultiplePages = false
 
     Row node
     List<CellElement> cellElements = []
 
-    RowElement(Row row) {
+    RowElement(Row row, int startX) {
         this.node = row
-        row.children.each { cell ->
-            cellElements << new CellElement(cell)
+        this.startX = startX
+
+        Table table = row.parent
+        int cellX = this.startX + table.border.size
+        row.children.each { Cell cell ->
+            cellElements << new CellElement(cell, cellX)
+            cellX += cell.width + table.border.size
         }
     }
 
-    int getTotalHeight() {
+    float getTotalHeight() {
         cellElements.max { it.totalHeight }.totalHeight
     }
 
-    int getRenderedHeight() {
+    float getRenderedHeight() {
         cellElements.max { it.renderedHeight }.renderedHeight
     }
 
-    void setRenderedHeight(int height) {
+    void setRenderedHeight(float height) {
         cellElements.each { it.renderedHeight = height }
     }
 

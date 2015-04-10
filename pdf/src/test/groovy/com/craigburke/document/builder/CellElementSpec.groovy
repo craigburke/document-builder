@@ -31,7 +31,7 @@ class CellElementSpec extends Specification {
             }
             cell.children << paragraph
         }
-        cellElement = new CellElement(cell)
+        cellElement = new CellElement(cell, 0)
     }
 
     def "onLastLine returns true when on last line"() {

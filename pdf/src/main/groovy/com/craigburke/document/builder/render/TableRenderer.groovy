@@ -19,8 +19,9 @@ class TableRenderer {
     TableRenderer(Table table, Document document) {
         this.document = document
         this.table = table
+        int startX = document.item.x
         table.children.each { Row row ->
-            rowElements << new RowElement(row)
+            rowElements << new RowElement(row, startX)
         }
     }
 
@@ -38,55 +39,36 @@ class TableRenderer {
         rowElements.each { renderRow(it, renderState) }
     }
 
-    int translateY(int y) {
+    float translateY(BigDecimal y) {
         document.item.translateY(y)
     }
 
     private void renderBorders(RowElement rowElement) {
-        document.item.y = rowElement.startY - table.border.size
+        float borderOffset = table.border.size.floatValue() / 2f
 
-        int borderOffset = Math.floor(table.border.size.doubleValue() / 2)
+        float translatedYTop = translateY(rowElement.startY - table.border.size)
+        float translatedYBottom = translateY(rowElement.startY + rowElement.renderedHeight.floatValue())
+        float rowStartX = rowElement.startX - borderOffset
+        float rowEndX = rowElement.startX + table.width.floatValue() + borderOffset
 
         PDPageContentStream contentStream = document.item.contentStream
         setBorderOptions(contentStream)
 
-        int xStart = document.margin.left + table.margin.left
-        int xEnd = xStart + table.width
-
-        int yTop = rowElement.startY - table.border.size
-
         if (shouldRenderTopBorder(rowElement)) {
-            contentStream.drawLine(xStart, translateY(yTop), xEnd, translateY(yTop))
-            document.item.y += table.border.size
+            contentStream.drawLine(rowStartX, translatedYTop, rowEndX, translatedYTop)
         }
 
-        int yBottom
         if (rowElement.fullyRendered) {
-            yBottom = document.item.y + rowElement.renderedHeight + table.border.size
-            contentStream.drawLine(xStart, translateY(yBottom), xEnd, translateY(yBottom))
-        }
-        else {
-           yBottom = document.item.y + document.item.remainingPageHeight
+            contentStream.drawLine(rowStartX, translatedYBottom, rowEndX, translatedYBottom)
         }
 
-        int translatedOffsetYBottom = translateY(yBottom + borderOffset)
-        int translatedYTop = translateY(yTop)
-
-        int currentX = document.margin.left + table.margin.left + borderOffset
         rowElement.cellElements.eachWithIndex { cellElement, i ->
             if (i == 0) {
-                contentStream.drawLine(currentX, translatedYTop, currentX, translatedOffsetYBottom)
+                float cellStartX = cellElement.startX - table.border.size as float
+                contentStream.drawLine(cellStartX, translatedYTop, cellStartX, translatedYBottom)
             }
-            currentX += cellElement.node.width
-
-            if (i == rowElement.cellElements.size() - 1) {
-                currentX = xEnd - borderOffset
-            }
-            else {
-                currentX += table.border.size
-            }
-
-            contentStream.drawLine(currentX, translatedYTop, currentX, translatedOffsetYBottom)
+            float cellEndX = cellElement.startX + cellElement.node.width + table.border.size as float
+            contentStream.drawLine(cellEndX, translatedYTop, cellEndX, translatedYBottom)
         }
     }
 
@@ -110,15 +92,14 @@ class TableRenderer {
     }
 
    private void renderRow(RowElement rowElement, RenderState renderState) {
-       int rowStartX = document.margin.left + table.margin.left
-
+       rowElement.startX = document.margin.left + table.margin.left
        rowElement.startY = document.item.y
        if (rowElement.firstRow) {
            rowElement.startY += table.border.size
        }
 
         while (!rowElement.fullyRendered) {
-            document.item.x = rowStartX + table.border.size
+            document.item.x = rowElement.startX + table.border.size
 
             rowElement.cellElements.each {
                 document.item.y = rowElement.startY + table.padding

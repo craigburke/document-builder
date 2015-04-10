@@ -9,6 +9,7 @@ import com.craigburke.document.core.Table
  */
 class CellElement {
 
+    float startX
     Cell node
     List<ParagraphElement> paragraphElements = []
 
@@ -21,8 +22,9 @@ class CellElement {
     boolean fullyRendered = false
     int renderedHeight = 0
 
-    CellElement(Cell cell) {
+    CellElement(Cell cell, float startX) {
         this.node = cell
+        this.startX = startX
         Table table = cell.parent.parent
 
         cell.children.each { paragraph ->
@@ -32,8 +34,12 @@ class CellElement {
         position = new LinePosition(element:0, line:0)
     }
 
-    int getTotalHeight() {
+    float getTotalHeight() {
         paragraphElements.sum { it.totalHeight }
+    }
+
+    float getEndX() {
+        startX + node.width
     }
 
     void moveToNextLine() {

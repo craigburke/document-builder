@@ -11,8 +11,8 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
  */
 class PdfDocument {
 
-    int x = 0
-    int y = 0
+    float x = 0
+    float y = 0
 
     Document document
     PDDocument pdDocument
@@ -59,7 +59,7 @@ class PdfDocument {
         scrollToStartPosition()
     }
 
-    int getTranslatedY() {
+    float getTranslatedY() {
         currentPage.mediaBox.height - y
     }
 
@@ -75,11 +75,11 @@ class PdfDocument {
 
     }
 
-    int translateY(int value) {
+    float translateY(Number value) {
         currentPage.mediaBox.height - value
     }
 
-    int getRemainingPageHeight() {
+    float getRemainingPageHeight() {
         (currentPage.mediaBox.height - document.margin.bottom) - y
     }
 
