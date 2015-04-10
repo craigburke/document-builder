@@ -46,7 +46,7 @@ class ParagraphRenderer {
         }
     }
 
-    static void renderLine(Document document, ParagraphLine line, int renderStartX, RenderState renderState) {
+    static void renderLine(Document document, ParagraphLine line, float renderStartX, RenderState renderState) {
         PdfDocument pdfDocument = document.item
 
         if (renderState == RenderState.PAGE && pdfDocument.remainingPageHeight < line.lineSpacing) {

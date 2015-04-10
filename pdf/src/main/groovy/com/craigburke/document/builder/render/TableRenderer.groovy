@@ -45,14 +45,14 @@ class TableRenderer {
     }
 
     private void renderBackgrounds(RowElement rowElement) {
-        float translatedStartY = translateY(rowElement.startY + rowElement.renderedHeight)
+        float translatedStartY = translateY(rowElement.startY + rowElement.currentHeight)
         PDPageContentStream contentStream = document.item.contentStream
         rowElement.cellElements.each { CellElement cellElement ->
             Cell cell = cellElement.node
             if (cell.backgroundColor) {
                 contentStream.setNonStrokingColor(*cell.backgroundColor.rgb)
                 float totalWidth = cell.width + table.border.size
-                float totalHeight = rowElement.renderedHeight + table.border.size
+                float totalHeight = rowElement.currentHeight + table.border.size
                 contentStream.fillRect(cellElement.startX, translatedStartY, totalWidth, totalHeight)
             }
         }
@@ -66,7 +66,7 @@ class TableRenderer {
         float borderOffset = table.border.size.floatValue() / 2f
 
         float translatedYTop = translateY(rowElement.startY - table.border.size)
-        float translatedYBottom = translateY(rowElement.startY + rowElement.renderedHeight.floatValue())
+        float translatedYBottom = translateY(rowElement.startY + rowElement.currentHeight.floatValue())
         float rowStartX = rowElement.startX - borderOffset
         float rowEndX = rowElement.startX + table.width.floatValue() + borderOffset
 
@@ -88,6 +88,17 @@ class TableRenderer {
             }
             float cellEndX = cellElement.startX + cellElement.node.width + table.border.size as float
             contentStream.drawLine(cellEndX, translatedYTop, cellEndX, translatedYBottom)
+        }
+    }
+
+    private void renderContent(RowElement rowElement, RenderState renderState) {
+        rowElement.cellElements.each { CellElement cellElement ->
+            document.item.y = rowElement.startY + table.padding + table.border.size
+            cellElement.currentLines.each { ParagraphLine line ->
+                float startX = cellElement.startX + table.padding
+                ParagraphRenderer.renderLine(document, line, startX, renderState)
+            }
+            cellElement.markCurrentLinesRendered()
         }
     }
 
@@ -120,80 +131,22 @@ class TableRenderer {
         while (!rowElement.fullyRendered) {
             document.item.x = rowElement.startX + table.border.size
 
-            rowElement.cellElements.each {
-                document.item.y = rowElement.startY + table.padding
-                renderContentUntilEndPoint(it, renderState)
-            }
-
-            if (rowElement.renderedHeight) {
-                renderBackgrounds(rowElement)
-                renderBorders(rowElement)
-            }
+            float height = document.item.remainingPageHeight
+            rowElement.parseCellsUntilHeight(height)
+            renderBackgrounds(rowElement)
+            renderContent(rowElement, renderState)
+            renderBorders(rowElement)
 
             if (!rowElement.fullyRendered) {
                 rowElement.startY = document.margin.top
-                if (rowElement.renderedHeight) {
+                if (rowElement.currentHeight) {
                     rowElement.spansMultiplePages = true
                 }
                 document.item.addPage()
-                rowElement.renderedHeight = 0
             }
         }
 
-        document.item.y = rowElement.startY + rowElement.renderedHeight + table.border.size
+        document.item.y = rowElement.startY + rowElement.currentHeight + table.border.size
    }
-
-    private void renderContentUntilEndPoint(CellElement cellElement, RenderState renderState) {
-        boolean reachedBottomOfPage = false
-        int cellStartX = document.item.x
-
-        while (!reachedBottomOfPage && !cellElement.fullyRendered) {
-            ParagraphLine line = cellElement.currentLine
-
-            if (canRenderCurrentLineOnPage(cellElement, renderState)) {
-                if (cellElement.onFirstLine) {
-                    cellElement.renderedHeight += table.padding
-                }
-
-                int renderStartX = cellStartX + table.padding
-                ParagraphRenderer.renderLine(document, line, renderStartX, renderState)
-                cellElement.renderedHeight += line.contentHeight + line.lineSpacing
-
-                if (cellElement.onLastLine) {
-                    cellElement.renderedHeight += table.padding
-                    cellElement.fullyRendered = true
-                }
-            }
-            else {
-                cellElement.moveToPreviousLine()
-                reachedBottomOfPage = true
-            }
-
-            if (!reachedBottomOfPage && !cellElement.fullyRendered) {
-                cellElement.moveToNextLine()
-            }
-
-        }
-
-        document.item.x = cellStartX + cellElement.node.width + table.border.size
-    }
-
-    boolean canRenderCurrentLineOnPage(CellElement cellElement, RenderState renderState) {
-        if (renderState != RenderState.PAGE) {
-            return true
-        }
-
-        ParagraphLine line = cellElement.currentLine
-
-        int remainingHeight = document.item.remainingPageHeight
-
-        int totalRequiredHeight = line.totalHeight
-
-        if (cellElement.onFirstLine) {
-            totalRequiredHeight += table.padding + table.border.size
-        }
-
-        (totalRequiredHeight <= remainingHeight)
-    }
 
 }

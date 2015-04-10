@@ -29,16 +29,16 @@ class RowElement {
         }
     }
 
+    void parseCellsUntilHeight(float height) {
+        cellElements*.parseUntilHeight(height)
+    }
+
     float getTotalHeight() {
         cellElements.max { it.totalHeight }.totalHeight
     }
 
-    float getRenderedHeight() {
-        cellElements.max { it.renderedHeight }.renderedHeight
-    }
-
-    void setRenderedHeight(float height) {
-        cellElements.each { it.renderedHeight = height }
+    float getCurrentHeight() {
+        cellElements.max { it.currentHeight }.currentHeight
     }
 
     boolean isFullyRendered() {

@@ -20,101 +20,40 @@ class CellElementSpec extends Specification {
     @Shared CellElement cellElement
 
     def setup() {
-        Table table = new Table()
+        Table table = new Table(padding: 0, border: [size: 0])
         Row row = new Row(parent:table)
         def cell = new Cell(width:72, parent:row)
-        5.times { i ->
-            def paragraph = new TextBlock()
-            i.times {
-                paragraph.children << new Text(value:"FOO${i}", font:new Font(family:'Helvetica', size:12))
-                paragraph.children << new LineBreak()
-            }
-            cell.children << paragraph
-        }
+        def paragraph = new TextBlock(font:new Font(family:'Helvetica', size:12), margin:[top:0, bottom:0])
+        paragraph.children << new Text(value:'FOO1', font:new Font(family:'Helvetica', size:13))
+        paragraph.children << new LineBreak()
+        paragraph.children << new Text(value:'FOO2', font:new Font(family:'Helvetica', size:14))
+        cell.children << paragraph
+
         cellElement = new CellElement(cell, 0)
     }
 
-    def "onLastLine returns true when on last line"() {
+    def "getLines returns both elements when given enough space"() {
         given:
-        cellElement.onLastLine == false
+        float height = cellElement.paragraphElements[0].totalHeight
 
         when:
-        13.times {
-            cellElement.moveToNextLine()
-            assert cellElement.onLastLine == false
-        }
-
-        cellElement.moveToNextLine()
+        cellElement.parseUntilHeight(height)
+        def lines = cellElement.currentLines
 
         then:
-        cellElement.onLastLine == true
-
-        when:
-        cellElement.moveToNextLine()
-
-        then:
-        cellElement.onLastLine == true
+        lines.size() == 2
     }
 
-    def "moveToNextLine and moveToPrevious line allow you to change position"() {
-        when:
-        while (!cellElement.onLastLine) {
-            cellElement.moveToNextLine()
-        }
-
-        then:
-        cellElement.position.element == 4
-        cellElement.position.line == 4
+    def "getLines returns one element when not enough space to render both"() {
+        given:
+        float height = cellElement.paragraphElements[0].totalHeight - 1
 
         when:
-        cellElement.moveToPreviousLine()
+        cellElement.parseUntilHeight(height)
+        def lines = cellElement.currentLines
 
         then:
-        cellElement.position.element == 4
-        cellElement.position.line == 3
-
-        when:
-        4.times {
-            cellElement.moveToPreviousLine()
-        }
-
-        then:
-        cellElement.position.element == 3
-        cellElement.position.line == 3
-
-        when:
-        4.times {
-            cellElement.moveToPreviousLine()
-        }
-
-        then:
-        cellElement.position.element == 2
-        cellElement.position.line == 2
-
-        when:
-        3.times {
-            cellElement.moveToPreviousLine()
-        }
-
-        then:
-        cellElement.position.element == 1
-        cellElement.position.line == 1
-
-        when:
-        2.times {
-            cellElement.moveToPreviousLine()
-        }
-
-        then:
-        cellElement.position.element == 0
-        cellElement.position.line == 0
-
-        when:
-        cellElement.moveToPreviousLine()
-
-        then:
-        cellElement.position.element == 0
-        cellElement.position.line == 0
+        lines.size() == 1
     }
 
 }

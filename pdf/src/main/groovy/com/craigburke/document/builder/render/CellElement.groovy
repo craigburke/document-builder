@@ -2,6 +2,7 @@ package com.craigburke.document.builder.render
 
 import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Table
+import groovy.transform.AutoClone
 
 /**
  * Rendering element for the Cell node
@@ -13,14 +14,17 @@ class CellElement {
     Cell node
     List<ParagraphElement> paragraphElements = []
 
+    @AutoClone
     class LinePosition {
         int line
         int element
     }
 
-    private LinePosition position
+    private LinePosition startPosition
+    private LinePosition endPosition
+
     boolean fullyRendered = false
-    int renderedHeight = 0
+    float currentHeight = 0
 
     CellElement(Cell cell, float startX) {
         this.node = cell
@@ -31,18 +35,78 @@ class CellElement {
             int renderWidth = cell.width - (table.padding * 2)
             paragraphElements << ParagraphElementBuilder.buildParagraphElement(paragraph, renderWidth)
         }
-        position = new LinePosition(element:0, line:0)
+        startPosition = new LinePosition(element:0, line:0)
+        endPosition = startPosition
     }
 
     float getTotalHeight() {
         paragraphElements.sum { it.totalHeight }
     }
 
-    float getEndX() {
-        startX + node.width
+    void parseUntilHeight(float height) {
+        boolean reachedEnd = false
+
+        currentHeight = 0
+        startPosition = endPosition.clone()
+
+        while (!reachedEnd) {
+            Table table = node.parent.parent
+
+            float previousHeight = currentHeight
+            ParagraphLine line = getParagraphLine(endPosition)
+            currentHeight += line.contentHeight + line.lineSpacing
+
+            if (onFirstLine(endPosition)) {
+                currentHeight += table.padding + table.border.size
+            }
+            if (onLastLine(endPosition)) {
+                currentHeight += table.padding + table.border.size
+                reachedEnd = true
+            }
+
+            if (currentHeight == height) {
+                reachedEnd = true
+            }
+            else if (currentHeight > height) {
+                currentHeight = previousHeight
+                moveToPreviousLine(endPosition)
+                reachedEnd = true
+            }
+
+            if (!reachedEnd) {
+                moveToNextLine(endPosition)
+            }
+        }
     }
 
-    void moveToNextLine() {
+    List<ParagraphLine> getCurrentLines() {
+        List<ParagraphLine> result = []
+        LinePosition tempPosition = startPosition.clone()
+        boolean lastElementFound = false
+
+        while (!lastElementFound) {
+            ParagraphLine currentLine = getParagraphLine(tempPosition)
+            result << currentLine
+            if (currentLine == getParagraphLine(endPosition)) {
+                lastElementFound = true
+            }
+            else {
+                moveToNextLine(tempPosition)
+            }
+        }
+
+        result
+    }
+
+    void markCurrentLinesRendered() {
+        if (onLastLine(endPosition)) {
+            fullyRendered = true
+        }
+    }
+
+    private void moveToNextLine(LinePosition position) {
+        ParagraphElement currentElement = paragraphElements[position.element]
+
         if (position.line == (currentElement.lines.size() - 1)) {
             if (position.element < (paragraphElements.size() - 1)) {
                 position.element++
@@ -54,7 +118,7 @@ class CellElement {
         }
     }
 
-    void moveToPreviousLine() {
+    private void moveToPreviousLine(LinePosition position) {
         if (position.line > 0) {
             position.line--
         }
@@ -64,20 +128,25 @@ class CellElement {
         }
     }
 
-    boolean isOnLastLine() {
-        (currentElement == paragraphElements?.last() && currentLine == currentElement?.lines?.last())
-    }
-
-    boolean isOnFirstLine() {
-        (currentElement == paragraphElements?.first() && currentLine == currentElement?.lines?.first())
-    }
-
-    ParagraphElement getCurrentElement() {
+    private ParagraphElement getParagraphElement(LinePosition position) {
         paragraphElements[position.element]
     }
 
-    ParagraphLine getCurrentLine() {
+    private ParagraphLine getParagraphLine(LinePosition position) {
+        ParagraphElement currentElement = getParagraphElement(position)
         currentElement.lines[position.line]
+    }
+
+    boolean onFirstLine(LinePosition position) {
+        ParagraphElement currentElement = getParagraphElement(position)
+        ParagraphLine currentLine = getParagraphLine(position)
+        (currentElement == paragraphElements?.last() && currentLine == currentElement?.lines?.last())
+    }
+
+    boolean onLastLine(LinePosition position) {
+        ParagraphElement currentElement = getParagraphElement(position)
+        ParagraphLine currentLine = getParagraphLine(position)
+        (currentElement == paragraphElements?.last() && currentLine == currentElement?.lines?.last())
     }
 
 }
