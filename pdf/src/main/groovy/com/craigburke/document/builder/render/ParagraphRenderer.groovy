@@ -3,6 +3,7 @@ package com.craigburke.document.builder.render
 import com.craigburke.document.builder.PdfDocument
 import com.craigburke.document.core.Align
 import com.craigburke.document.core.Document
+import com.craigburke.document.core.ImageType
 import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.builder.RenderState
@@ -112,7 +113,7 @@ class ParagraphRenderer {
         BufferedImage bufferedImage = ImageIO.read(inputStream)
 
         PDXObjectImage img
-        if (element.node.name.endsWith('png')) {
+        if (element.node.type == ImageType.PNG) {
             img = new PDPixelMap(pdfDocument.pdDocument, bufferedImage)
         }
         else {

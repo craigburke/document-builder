@@ -32,6 +32,7 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
 	Document document
 	OutputStream out
 	RenderState renderState = RenderState.PAGE
+	protected List<String> imageFileNames = []
 
 	DocumentBuilder(OutputStream out) {
 		super(true)
