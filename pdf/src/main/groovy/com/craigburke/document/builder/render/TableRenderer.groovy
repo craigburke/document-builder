@@ -44,8 +44,12 @@ class TableRenderer {
         document.item.translateY(y)
     }
 
+    float getTableBorderOffset() {
+        table.border.size.floatValue() / 2f
+    }
+
     private void renderBackgrounds(RowElement rowElement) {
-        float translatedStartY = translateY(rowElement.startY + rowElement.currentHeight)
+        float translatedStartY = translateY(rowElement.startY + rowElement.currentHeight + tableBorderOffset)
         PDPageContentStream contentStream = document.item.contentStream
         rowElement.cellElements.each { CellElement cellElement ->
             Cell cell = cellElement.node
@@ -53,7 +57,8 @@ class TableRenderer {
                 contentStream.setNonStrokingColor(*cell.backgroundColor.rgb)
                 float totalWidth = cell.width + table.border.size
                 float totalHeight = rowElement.currentHeight + table.border.size
-                contentStream.fillRect(cellElement.startX, translatedStartY, totalWidth, totalHeight)
+                float startX = cellElement.startX - tableBorderOffset
+                contentStream.fillRect(startX, translatedStartY, totalWidth, totalHeight)
             }
         }
     }
@@ -63,12 +68,10 @@ class TableRenderer {
             return
         }
 
-        float borderOffset = table.border.size.floatValue() / 2f
-
         float translatedYTop = translateY(rowElement.startY - table.border.size)
         float translatedYBottom = translateY(rowElement.startY + rowElement.currentHeight.floatValue())
-        float rowStartX = rowElement.startX - borderOffset
-        float rowEndX = rowElement.startX + table.width.floatValue() + borderOffset
+        float rowStartX = rowElement.startX - tableBorderOffset
+        float rowEndX = rowElement.startX + table.width.floatValue() + tableBorderOffset
 
         PDPageContentStream contentStream = document.item.contentStream
         setBorderOptions(contentStream)
