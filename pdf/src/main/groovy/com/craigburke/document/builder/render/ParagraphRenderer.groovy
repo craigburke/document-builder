@@ -48,7 +48,7 @@ class ParagraphRenderer {
     }
 
     static void renderLine(Document document, ParagraphLine line, float renderStartX, RenderState renderState) {
-        PdfDocument pdfDocument = document.item
+        PdfDocument pdfDocument = document.element
 
         if (renderState == RenderState.PAGE && pdfDocument.remainingPageHeight < line.lineSpacing) {
             pdfDocument.addPage()
@@ -90,10 +90,10 @@ class ParagraphRenderer {
     }
 
     private static void renderTextElement(TextElement element, Document document) {
-        PdfDocument pdfDocument = document.item
+        PdfDocument pdfDocument = document.element
         Text text = element.node
 
-        PDPageContentStream contentStream = document.item.contentStream
+        PDPageContentStream contentStream = document.element.contentStream
 
         contentStream.beginText()
         contentStream.moveTextPositionByAmount(pdfDocument.x, pdfDocument.translatedY)
@@ -107,7 +107,7 @@ class ParagraphRenderer {
     }
 
     private static void renderImageElement(ImageElement element, Document document) {
-        PdfDocument pdfDocument = document.item
+        PdfDocument pdfDocument = document.element
 
         InputStream inputStream = new ByteArrayInputStream(element.node.data)
         BufferedImage bufferedImage = ImageIO.read(inputStream)

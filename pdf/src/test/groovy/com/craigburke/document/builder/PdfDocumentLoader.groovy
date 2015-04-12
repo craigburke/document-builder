@@ -17,7 +17,7 @@ class PdfDocumentLoader {
 
     static Document load(byte[] data) {
         PDDocument pdfDoc = PDDocument.load(new ByteArrayInputStream(data))
-        Document document = new Document(item:pdfDoc)
+        Document document = new Document(element:pdfDoc)
 
         def metaData = new XmlParser().parse(pdfDoc.documentCatalog.metadata.createInputStream())
 
@@ -69,7 +69,7 @@ class PdfDocumentLoader {
     }
 
     private static void loadChildren(Document document) {
-        def pages = document.item.documentCatalog.allPages
+        def pages = document.element.documentCatalog.allPages
 
         // Set content and margins based on text position
         def extractor = new PdfContentExtractor(document)

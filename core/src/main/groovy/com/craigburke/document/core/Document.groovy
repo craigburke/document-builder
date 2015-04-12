@@ -6,8 +6,8 @@ import static com.craigburke.document.core.UnitUtil.inchToPoint
  * Document node
  * @author Craig Burke
  */
-class Document extends BaseNode implements BlockNode, StyledNode {
-    final static DEFAULT_MARGIN = new Margin(top:72, bottom:72, left:72, right:72)
+class Document extends BlockNode {
+    static Margin defaultMargin = new Margin(top:72, bottom:72, left:72, right:72)
 
     int pageCount
     final int width = inchToPoint(8.5)

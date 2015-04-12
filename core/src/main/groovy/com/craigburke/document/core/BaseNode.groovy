@@ -5,6 +5,6 @@ package com.craigburke.document.core
  * @author Craig Burke
  */
 class BaseNode {
-    def item
+    def element
     def parent
 }

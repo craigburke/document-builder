@@ -1,6 +1,6 @@
 package com.craigburke.document.core
 
-trait AssignableColor {
+trait ColorAssignable {
     Color color = new Color()
 
     void setColor(String value) {

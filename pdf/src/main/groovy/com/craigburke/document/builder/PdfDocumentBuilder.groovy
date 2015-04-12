@@ -27,44 +27,44 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
 	void initializeDocument(Document document, OutputStream out) {
         PdfDocument pdfDocument = new PdfDocument(document)
-        document.item = pdfDocument
+        document.element = pdfDocument
 
         pdfDocument.x = document.margin.left
         pdfDocument.y = document.margin.top
 
-        document.item = pdfDocument
+        document.element = pdfDocument
     }
 
     def addEmbeddedFont = { EmbeddedFont embeddedFont ->
-        PdfFont.addFont(document.item.pdDocument, embeddedFont)
+        PdfFont.addFont(document.element.pdDocument, embeddedFont)
     }
 
     def addPageBreakToDocument = { PageBreak pageBreak, Document document ->
-        document.item.addPage()
+        document.element.addPage()
     }
 
 	def onTextBlockComplete = { TextBlock paragraph ->
         if (renderState == RenderState.PAGE && paragraph.parent instanceof Document) {
-            int pageWidth = document.item.currentPage.mediaBox.width - document.margin.left - document.margin.right
+            int pageWidth = document.element.currentPage.mediaBox.width - document.margin.left - document.margin.right
             int maxLineWidth = pageWidth - paragraph.margin.left - paragraph.margin.right
             int renderStartX = document.margin.left + paragraph.margin.left
 
-            document.item.scrollDownPage(paragraph.margin.top)
+            document.element.scrollDownPage(paragraph.margin.top)
 
             ParagraphRenderer paragraphRenderer = new ParagraphRenderer(paragraph, document, renderStartX, maxLineWidth)
             paragraphRenderer.render(renderState)
 
-            document.item.scrollDownPage(paragraph.margin.bottom)
+            document.element.scrollDownPage(paragraph.margin.bottom)
         }
     }
 
     def onTableComplete = { Table table ->
         if (renderState == RenderState.PAGE) {
-            document.item.x = table.margin.left + document.margin.left
-            document.item.scrollDownPage(table.margin.top)
+            document.element.x = table.margin.left + document.margin.left
+            document.element.scrollDownPage(table.margin.top)
             TableRenderer tableRenderer = new TableRenderer(table, document)
             tableRenderer.render(renderState)
-            document.item.scrollDownPage(table.margin.bottom)
+            document.element.scrollDownPage(table.margin.bottom)
         }
     }
 
@@ -72,17 +72,17 @@ class PdfDocumentBuilder extends DocumentBuilder {
         addHeaderFooter()
 		addMetadata()
 
-		document.item.contentStream?.close()
-		document.item.pdDocument.save(out)
-		document.item.pdDocument.close()
+		document.element.contentStream?.close()
+		document.element.pdDocument.save(out)
+		document.element.pdDocument.close()
 	}
 
     private void addHeaderFooter() {
-        int pageCount = document.item.pages.size()
+        int pageCount = document.element.pages.size()
         def options = new HeaderFooterOptions(pageCount:pageCount, dateGenerated:new Date())
 
         (1..pageCount).each { int pageNumber ->
-            document.item.pageNumber = pageNumber
+            document.element.pageNumber = pageNumber
             options.pageNumber = pageNumber
 
             if (document.header) {
@@ -112,10 +112,10 @@ class PdfDocumentBuilder extends DocumentBuilder {
         }
 
         if (renderState == RenderState.HEADER) {
-            document.item.y = headerFooter.margin.top
+            document.element.y = headerFooter.margin.top
         }
         else {
-            document.item.y = document.item.pageBottomY + document.margin.bottom - renderer.totalHeight
+            document.element.y = document.element.pageBottomY + document.margin.bottom - renderer.totalHeight
         }
 
         renderer.render(renderState)
@@ -143,10 +143,10 @@ class PdfDocumentBuilder extends DocumentBuilder {
 			}
 		}
 
-		def catalog = document.item.pdDocument.documentCatalog
+		def catalog = document.element.pdDocument.documentCatalog
         InputStream inputStream = new ByteArrayInputStream(xmpOut.toByteArray())
 
-		PDMetadata metadata = new PDMetadata(document.item.pdDocument as PDDocument, inputStream, false)
+		PDMetadata metadata = new PDMetadata(document.element.pdDocument as PDDocument, inputStream, false)
 		catalog.metadata = metadata
 	}
 

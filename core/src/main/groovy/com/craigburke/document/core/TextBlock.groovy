@@ -4,8 +4,8 @@ package com.craigburke.document.core
  * Block element that holds text and images
  * @author Craig Burke
  */
-class TextBlock extends BaseNode implements BlockNode, StyledNode, LinkNode {
-	final static Margin DEFAULT_MARGIN = new Margin(top:12, bottom:12, left:0, right:0)
+class TextBlock extends BlockNode implements Linkable {
+	static Margin defaultMargin = new Margin(top:12, bottom:12, left:0, right:0)
 
 	Integer lineSpacing
 	BigDecimal lineSpacingMultiplier = 1.15

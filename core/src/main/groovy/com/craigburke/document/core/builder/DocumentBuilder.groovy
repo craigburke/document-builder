@@ -1,12 +1,12 @@
 package com.craigburke.document.core.builder
 
-import com.craigburke.document.core.AssignableBackground
+import com.craigburke.document.core.BackgroundAssignable
 import com.craigburke.document.core.BaseNode
 import com.craigburke.document.core.BlockNode
 import com.craigburke.document.core.EmbeddedFont
 import com.craigburke.document.core.Heading
-import com.craigburke.document.core.LinkNode
-import com.craigburke.document.core.StyledNode
+import com.craigburke.document.core.Linkable
+import com.craigburke.document.core.Stylable
 import com.craigburke.document.core.UnitCategory
 
 import com.craigburke.document.core.factory.CreateFactory
@@ -66,22 +66,22 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
 		}
 		nodeProperties << attributes
 
-		if (node instanceof StyledNode) {
+		if (node instanceof Stylable) {
 			setNodeFont(node, nodeProperties)
 		}
 		if (node instanceof BlockNode) {
 			setNodeMargins(node, nodeProperties)
 		}
-		if (node instanceof AssignableBackground) {
+		if (node instanceof BackgroundAssignable) {
 			setNodeBackground(node, nodeProperties)
 		}
-		if (node instanceof LinkNode) {
-			String parentUrl = (node.parent instanceof LinkNode) ? node.parent.url : null
+		if (node instanceof Linkable) {
+			String parentUrl = (node.parent instanceof Linkable) ? node.parent.url : null
 			node.url = node.url ?: parentUrl
 		}
 	}
 
-	protected void setNodeFont(StyledNode node, nodeProperties) {
+	protected void setNodeFont(Stylable node, nodeProperties) {
 		node.font = (node instanceof Document) ? new Font() : node.parent.font.clone()
 		node.font.size = (node instanceof Heading) ? null : node.font.size
 		nodeProperties.each {
@@ -93,17 +93,17 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
 	}
 
 	protected void setNodeMargins(BlockNode node, nodeProperties) {
-		node.margin = node.getClass().DEFAULT_MARGIN
+		node.margin = node.getClass().defaultMargin
 		nodeProperties.each {
 			node.margin << it.margin
 		}
 	}
 
-	protected void setNodeBackground(AssignableBackground node, nodeProperties) {
+	protected void setNodeBackground(BackgroundAssignable node, nodeProperties) {
 		nodeProperties.each {
 			node.backgroundColor = it.backgroundColor
 		}
-		if (!node.backgroundColor && node.parent instanceof AssignableBackground && node.parent.backgroundColor) {
+		if (!node.backgroundColor && node.parent instanceof BackgroundAssignable && node.parent.backgroundColor) {
 			node.backgroundColor = "#${node.parent.backgroundColor.hex}"
 		}
 	}
@@ -113,7 +113,7 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
 		if (node instanceof Heading) {
 			keys << "heading${node.level}"
 		}
-		if (node instanceof StyledNode && node.style) {
+		if (node instanceof Stylable && node.style) {
 			keys << "${nodeKey}.${node.style}"
 			if (node instanceof Heading) {
 				keys << "heading${node.level}.${node.style}"

@@ -20,9 +20,9 @@ class WordDocumentLoader {
 
     static Document load(byte[] data) {
         Document document = new Document()
-        document.item = new XWPFDocument(new ByteArrayInputStream(data))
+        document.element = new XWPFDocument(new ByteArrayInputStream(data))
 
-        def documentMargin = document.item.document.body.sectPr.pgMar
+        def documentMargin = document.element.document.body.sectPr.pgMar
         document.margin.top = twipToPoint(documentMargin.top)
         document.margin.bottom = twipToPoint(documentMargin.bottom)
         document.margin.left = twipToPoint(documentMargin.left)
@@ -34,19 +34,19 @@ class WordDocumentLoader {
     }
 
     static private loadParagraphs(Document document) {
-        document.children = getParagraphs(document.item.paragraphs)
+        document.children = getParagraphs(document.element.paragraphs)
     }
 
     static private loadTables(Document document) {
 
-        document.item.tables.each { tableItem ->
-            Table table = new Table(item:tableItem, width:twipToPoint(tableItem.width), parent:document)
+        document.element.tables.each { tableItem ->
+            Table table = new Table(element:tableItem, width:twipToPoint(tableItem.width), parent:document)
 
             tableItem.rows.each { rowItem ->
-                Row row = new Row(item:rowItem, parent:table)
+                Row row = new Row(element:rowItem, parent:table)
                 table.children << row
                 rowItem.tableCells.each { cellItem ->
-                    Cell cell = new Cell(item:cellItem, parent:row)
+                    Cell cell = new Cell(element:cellItem, parent:row)
                     int padding = cellItem.CTTc.tcPr.tcMar.left.w
                     int width = cellItem.CTTc.tcPr.tcW.w
                     cell.width = twipToPoint(width + (padding * 2))

@@ -33,11 +33,11 @@ class WordDocumentBuilder extends DocumentBuilder {
 	private static final Map RUN_TEXT_OPTIONS = ['xml:space':'preserve']
 
 	void initializeDocument(Document document, OutputStream out) {
-		document.item = new WordDocument(out)
+		document.element = new WordDocument(out)
 	}
 
 	WordDocument getWordDocument() {
-		document.item
+		document.element
 	}
 
 	void writeDocument(Document document, OutputStream out) {
@@ -88,7 +88,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 			}
 		}
 
-		document.item.write()
+		document.element.write()
 	}
 
 	def renderHeader(HeaderFooterOptions options) {
@@ -251,7 +251,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 	}
 
 	void addImageRun(builder, Image image) {
-		String blipId = document.item.addImage(image.name, image.data, currentDocumentPart)
+		String blipId = document.element.addImage(image.name, image.data, currentDocumentPart)
 
 		int widthInEmu = pointToEmu(image.width)
 		int heightInEmu = pointToEmu(image.height)

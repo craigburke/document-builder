@@ -20,7 +20,7 @@ class TableRenderer {
     TableRenderer(Table table, Document document) {
         this.document = document
         this.table = table
-        int startX = document.item.x
+        int startX = document.element.x
         table.children.each { Row row ->
             rowElements << new RowElement(row, startX)
         }
@@ -41,7 +41,7 @@ class TableRenderer {
     }
 
     float translateY(BigDecimal y) {
-        document.item.translateY(y)
+        document.element.translateY(y)
     }
 
     float getTableBorderOffset() {
@@ -50,7 +50,7 @@ class TableRenderer {
 
     private void renderBackgrounds(RowElement rowElement) {
         float translatedStartY = translateY(rowElement.startY + rowElement.currentHeight + tableBorderOffset)
-        PDPageContentStream contentStream = document.item.contentStream
+        PDPageContentStream contentStream = document.element.contentStream
         rowElement.cellElements.each { CellElement cellElement ->
             Cell cell = cellElement.node
             if (cell.backgroundColor) {
@@ -73,7 +73,7 @@ class TableRenderer {
         float rowStartX = rowElement.startX - tableBorderOffset
         float rowEndX = rowElement.startX + table.width.floatValue() + tableBorderOffset
 
-        PDPageContentStream contentStream = document.item.contentStream
+        PDPageContentStream contentStream = document.element.contentStream
         setBorderOptions(contentStream)
 
         if (shouldRenderTopBorder(rowElement)) {
@@ -99,7 +99,7 @@ class TableRenderer {
 
     private void renderContent(RowElement rowElement, RenderState renderState) {
         rowElement.cellElements.each { CellElement cellElement ->
-            document.item.y = rowElement.startY + table.padding + table.border.size
+            document.element.y = rowElement.startY + table.padding + table.border.size
             cellElement.currentLines.each { ParagraphLine line ->
                 float startX = cellElement.startX + table.padding
                 ParagraphRenderer.renderLine(document, line, startX, renderState)
@@ -129,15 +129,15 @@ class TableRenderer {
 
    private void renderRow(RowElement rowElement, RenderState renderState) {
        rowElement.startX = document.margin.left + table.margin.left
-       rowElement.startY = document.item.y
+       rowElement.startY = document.element.y
        if (rowElement.firstRow) {
            rowElement.startY += table.border.size
        }
 
         while (!rowElement.fullyRendered) {
-            document.item.x = rowElement.startX + table.border.size
+            document.element.x = rowElement.startX + table.border.size
 
-            float height = document.item.remainingPageHeight
+            float height = document.element.remainingPageHeight
             rowElement.parseCellsUntilHeight(height)
             renderBackgrounds(rowElement)
             renderContent(rowElement, renderState)
@@ -148,11 +148,11 @@ class TableRenderer {
                 if (rowElement.currentHeight) {
                     rowElement.spansMultiplePages = true
                 }
-                document.item.addPage()
+                document.element.addPage()
             }
         }
 
-        document.item.y = rowElement.startY + rowElement.currentHeight + table.border.size
+        document.element.y = rowElement.startY + rowElement.currentHeight + table.border.size
    }
 
 }

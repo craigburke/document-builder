@@ -6,7 +6,7 @@ import org.apache.pdfbox.pdmodel.PDPage
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
 
 /**
- * Document node item
+ * Document node element
  * @author Craig Burke
  */
 class PdfDocument {

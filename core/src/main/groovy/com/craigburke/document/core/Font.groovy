@@ -4,7 +4,7 @@ package com.craigburke.document.core
  * Font config object
  * @author Craig Burke
  */
-class Font implements AssignableColor, Cloneable {
+class Font implements ColorAssignable, Cloneable {
 	String family = 'Helvetica'
 	BigDecimal size = 12
 	Boolean bold = false

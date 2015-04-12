@@ -1,6 +1,6 @@
 package com.craigburke.document.core
 
-trait AssignableBackground {
+trait BackgroundAssignable {
     Color backgroundColor
     
     void setBackgroundColor(String value) {

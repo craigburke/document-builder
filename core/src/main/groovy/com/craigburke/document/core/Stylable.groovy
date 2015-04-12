@@ -1,6 +1,6 @@
 package com.craigburke.document.core
 
-trait StyledNode {
+trait Stylable {
     Font font
     String style
 }
