@@ -1,6 +1,8 @@
 package com.craigburke.document.core.factory
 
+import com.craigburke.document.core.Document
 import com.craigburke.document.core.Table
+import com.craigburke.document.core.builder.RenderState
 
 /**
  * Factory for table nodes
@@ -23,11 +25,11 @@ class TableFactory extends AbstractFactory {
 	}
 
  	void onNodeCompleted(FactoryBuilderSupport builder, parent, table) {
-        table.updateColumnWidths()
-
-		if (builder.onTableComplete) {
+		if (parent instanceof Document || builder.renderState != RenderState.PAGE) {
+			table.updateColumnWidths()
+		}
+		if (parent instanceof Document && builder.onTableComplete) {
 			builder.onTableComplete(table)
 		}
    	}
-
 }

@@ -23,10 +23,4 @@ class RowFactory extends AbstractFactory {
 		row.children << cell
 	}
 
-	void onNodeCompleted(FactoryBuilderSupport builder, parent, child) {
-		if (builder.onRowComplete) {
-			builder.onRowComplete(child, parent)
-		}
-   	}
-
 }

@@ -141,8 +141,6 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
 	def addPageBreakToDocument
 	def onTextBlockComplete
 	def onTableComplete
-	def onRowComplete
-	def onCellComplete
 	def addEmbeddedFont
 
 	def registerObjectFactories() {

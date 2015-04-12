@@ -96,15 +96,9 @@ class BuilderSpec extends Specification {
         1 * onTextBlockComplete.call(_ as TextBlock)
     }
 
-    def 'Table events are all called after they finish'() {
+    def 'onTableComple is called after table finishes'() {
         def onTableComplete = Mock(Closure)
         builder.onTableComplete = { Table table -> onTableComplete(table) }
-
-        def onRowComplete = Mock(Closure)
-        builder.onRowComplete = { Row row, Table table -> onRowComplete(row, table) }
-
-        def onCellComplete = Mock(Closure)
-        builder.onCellComplete = { Cell cell, Row row -> onCellComplete(cell, row) }
 
         when:
         builder.create {
@@ -122,8 +116,6 @@ class BuilderSpec extends Specification {
 
         then:
         1 * onTableComplete.call(_ as Table)
-        1 * onRowComplete.call(_ as Row, _ as Table)
-        3 * onCellComplete.call(_ as Cell, _ as Row)
     }
 
     def "Text element shouldn't have children"() {

@@ -40,9 +40,6 @@ class CellFactory extends AbstractFactory {
 		if (builder.onTextBlockComplete && cell.children) {
 			builder.onTextBlockComplete(cell.children[0])
 		}
-		if (builder.onCellComplete) {
-			builder.onCellComplete(cell, row)
-		}
    	}
 
 }
