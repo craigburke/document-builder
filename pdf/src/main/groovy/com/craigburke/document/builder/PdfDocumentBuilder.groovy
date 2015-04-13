@@ -1,7 +1,7 @@
 package com.craigburke.document.builder
 
 import com.craigburke.document.builder.render.ParagraphElement
-import com.craigburke.document.builder.render.TableRenderer
+import com.craigburke.document.builder.render.TableElement
 import com.craigburke.document.core.EmbeddedFont
 import com.craigburke.document.core.HeaderFooterOptions
 import com.craigburke.document.core.PageBreak
@@ -62,8 +62,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
         if (renderState == RenderState.PAGE) {
             document.element.x = table.margin.left + document.margin.left
             document.element.scrollDownPage(table.margin.top)
-            TableRenderer tableRenderer = new TableRenderer(table, document.element.x as float)
-            tableRenderer.render(document, renderState)
+            TableElement tableElement = new TableElement(table, document.element.x as float)
+            tableElement.render(document, renderState)
             document.element.scrollDownPage(table.margin.bottom)
         }
     }
@@ -108,7 +108,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
             renderer = new ParagraphElement(headerFooter, xStart, document.width)
         }
         else if (headerFooter instanceof Table) {
-            renderer = new TableRenderer(headerFooter, xStart)
+            renderer = new TableElement(headerFooter, xStart)
         }
 
         if (renderState == RenderState.HEADER) {
