@@ -17,10 +17,9 @@ class TableRenderer {
     Table table
     private List<RowElement> rowElements = []
 
-    TableRenderer(Table table, Document document) {
+    TableRenderer(Table table, float startX) {
         this.document = document
         this.table = table
-        int startX = document.element.x
         table.children.each { Row row ->
             rowElements << new RowElement(row, startX)
         }
@@ -36,7 +35,8 @@ class TableRenderer {
         height
     }
 
-    void render(RenderState renderState = RenderState.PAGE) {
+    void render(Document document, RenderState renderState = RenderState.PAGE) {
+        this.document = document
         rowElements.each { renderRow(it, renderState) }
     }
 

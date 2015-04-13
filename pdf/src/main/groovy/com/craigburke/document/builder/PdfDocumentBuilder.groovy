@@ -1,6 +1,6 @@
 package com.craigburke.document.builder
 
-import com.craigburke.document.builder.render.ParagraphRenderer
+import com.craigburke.document.builder.render.ParagraphElement
 import com.craigburke.document.builder.render.TableRenderer
 import com.craigburke.document.core.EmbeddedFont
 import com.craigburke.document.core.HeaderFooterOptions
@@ -51,8 +51,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
             document.element.scrollDownPage(paragraph.margin.top)
 
-            ParagraphRenderer paragraphRenderer = new ParagraphRenderer(paragraph, document, renderStartX, maxLineWidth)
-            paragraphRenderer.render(renderState)
+            ParagraphElement paragraphElement = new ParagraphElement(paragraph, renderStartX, maxLineWidth)
+            paragraphElement.render(document, renderState)
 
             document.element.scrollDownPage(paragraph.margin.bottom)
         }
@@ -62,8 +62,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
         if (renderState == RenderState.PAGE) {
             document.element.x = table.margin.left + document.margin.left
             document.element.scrollDownPage(table.margin.top)
-            TableRenderer tableRenderer = new TableRenderer(table, document)
-            tableRenderer.render(renderState)
+            TableRenderer tableRenderer = new TableRenderer(table, document.element.x as float)
+            tableRenderer.render(document, renderState)
             document.element.scrollDownPage(table.margin.bottom)
         }
     }
@@ -105,10 +105,10 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
         def renderer
         if (headerFooter instanceof TextBlock) {
-            renderer = new ParagraphRenderer(headerFooter, document, xStart, document.width)
+            renderer = new ParagraphElement(headerFooter, xStart, document.width)
         }
         else if (headerFooter instanceof Table) {
-            renderer = new TableRenderer(headerFooter, document)
+            renderer = new TableRenderer(headerFooter, xStart)
         }
 
         if (renderState == RenderState.HEADER) {
@@ -118,7 +118,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
             document.element.y = document.element.pageBottomY + document.margin.bottom - renderer.totalHeight
         }
 
-        renderer.render(renderState)
+        renderer.render(document, renderState)
     }
 
 	private void addMetadata() {

@@ -19,7 +19,7 @@ class RowElement implements Renderable {
     Row node
     List<CellElement> cellElements = []
 
-    RowElement(Row row, int startX) {
+    RowElement(Row row, float startX) {
         this.node = row
         this.startX = startX
 
