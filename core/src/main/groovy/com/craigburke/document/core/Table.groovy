@@ -15,12 +15,8 @@ class Table extends BlockNode implements BackgroundAssignable {
         (children) ? children.max { it.children.size() }.children.size() : 0
     }
 
-    void updateColumnWidths() {
-        Document document = parent
-
-        int defaultPageWidth = document.width - document.margin.left - document.margin.right
-        int defaultTableWidth = defaultPageWidth - margin.right - margin.left
-        this.width = this.width ?: defaultTableWidth
+    void normalizeColumnWidths() {
+        this.width = Math.min(this.width ?: maxWidth, maxWidth)
         int totalBorderWidth = (columns + 1) * border.size
 
         def columnWidths = []
@@ -53,6 +49,25 @@ class Table extends BlockNode implements BackgroundAssignable {
             cells?.last().width += diff
         }
 
+        children.each { row ->
+            row.children.each { cell ->
+                cell.children.findAll { it instanceof Table }.each { it.normalizeColumnWidths() }
+            }
+        }
     }
 
- }
+    private int getMaxWidth() {
+        if (parent instanceof Document) {
+            parent.width - parent.margin.left - parent.margin.right
+        }
+        else if (parent instanceof Cell) {
+            Table outerTable = parent.parent.parent
+            parent.width - (outerTable.padding * 2)
+        }
+        else {
+            0
+        }
+
+    }
+
+}

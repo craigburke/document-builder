@@ -14,7 +14,13 @@ class LineBreakFactory extends AbstractFactory {
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		LineBreak lineBreak = new LineBreak()
 
-		TextBlock paragraph = builder.parentName == 'paragraph' ? builder.current : builder.current.children[0]
+		TextBlock paragraph
+		if (builder.parentName == 'paragraph') {
+			paragraph = builder.current
+		}
+		else {
+			paragraph = builder.getCellParagraph(builder.current)
+		}
 		lineBreak.parent = paragraph
 		paragraph.children << lineBreak
 

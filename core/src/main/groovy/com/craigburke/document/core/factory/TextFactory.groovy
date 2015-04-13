@@ -13,7 +13,13 @@ class TextFactory extends AbstractFactory {
     boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
 
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
-        TextBlock paragraph = (builder.parentName == 'paragraph') ? builder.current : builder.current.children[0]
+        TextBlock paragraph
+        if (builder.parentName == 'paragraph') {
+            paragraph = builder.current
+        }
+        else {
+            paragraph = builder.getCellParagraph(builder.current)
+        }
         List elements = paragraph.addText(value.toString())
          elements.each { node ->
             node.parent = paragraph

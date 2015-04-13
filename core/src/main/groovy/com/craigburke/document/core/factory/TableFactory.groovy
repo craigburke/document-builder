@@ -1,5 +1,6 @@
 package com.craigburke.document.core.factory
 
+import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Table
 import com.craigburke.document.core.builder.RenderState
@@ -16,6 +17,9 @@ class TableFactory extends AbstractFactory {
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
 		Table table = new Table(attributes)
 		table.parent = builder.parentName == 'create' ? builder.document : builder.current
+		if (table.parent instanceof Cell) {
+			table.parent.children << table
+		}
 		builder.setNodeProperties(table, attributes, 'table')
         table
 	}
@@ -26,7 +30,7 @@ class TableFactory extends AbstractFactory {
 
  	void onNodeCompleted(FactoryBuilderSupport builder, parent, table) {
 		if (parent instanceof Document || builder.renderState != RenderState.PAGE) {
-			table.updateColumnWidths()
+			table.normalizeColumnWidths()
 		}
 		if (parent instanceof Document && builder.onTableComplete) {
 			builder.onTableComplete(table)

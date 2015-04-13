@@ -32,7 +32,13 @@ class ImageFactory extends AbstractFactory {
         }
         builder.imageFileNames << image.name
 
-        TextBlock paragraph = builder.parentName == 'paragraph' ? builder.current : builder.current.children[0]
+        TextBlock paragraph
+        if (builder.parentName == 'paragraph') {
+            paragraph = builder.current
+        }
+        else {
+            paragraph = builder.getCellParagraph(builder.current)
+        }
         image.parent = paragraph
         paragraph.children << image
 

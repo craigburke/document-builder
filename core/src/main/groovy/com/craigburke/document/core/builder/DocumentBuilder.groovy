@@ -3,10 +3,12 @@ package com.craigburke.document.core.builder
 import com.craigburke.document.core.BackgroundAssignable
 import com.craigburke.document.core.BaseNode
 import com.craigburke.document.core.BlockNode
+import com.craigburke.document.core.Cell
 import com.craigburke.document.core.EmbeddedFont
 import com.craigburke.document.core.Heading
 import com.craigburke.document.core.Linkable
 import com.craigburke.document.core.Stylable
+import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.UnitCategory
 
 import com.craigburke.document.core.factory.CreateFactory
@@ -120,6 +122,18 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
 			}
 		}
 		keys
+	}
+
+	TextBlock getCellParagraph(Cell cell) {
+		if (cell.children && cell.children[0] instanceof TextBlock) {
+			cell.children[0]
+		}
+		else {
+			TextBlock paragraph = new TextBlock(font:cell.font.clone(), parent:cell, align:cell.align)
+			setNodeProperties(paragraph, [margin:[top:0, left:0, bottom:0, right:0]], 'paragraph')
+			cell.children << paragraph
+			paragraph
+		}
 	}
 
     void addFont(Map params, String location) {

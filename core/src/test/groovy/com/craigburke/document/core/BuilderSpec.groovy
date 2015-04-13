@@ -498,14 +498,14 @@ class BuilderSpec extends Specification {
         when:
         Document result = builder.create {
             document {
-               heading1 'HEADING1', url:url
-               heading2 'HEADING2'
+                heading1 'HEADING1', url: url
+                heading2 'HEADING2'
 
-               paragraph 'Paragraph1', url:url
-               paragraph {
-                   text 'Check this out: '
-                   text 'Click on me', url:url
-               }
+                paragraph 'Paragraph1', url: url
+                paragraph {
+                    text 'Check this out: '
+                    text 'Click on me', url: url
+                }
             }
         }.document
 
@@ -528,5 +528,66 @@ class BuilderSpec extends Specification {
         paragraph2.url == null
         paragraph2.children[0].url == null
         paragraph2.children[1].url == url
+    }
+
+    def "table within a table"() {
+        when:
+        Document result = builder.create {
+            document {
+                table {
+                    row {
+                        cell 'OUTER TABLE'
+                        cell {
+                            table {
+                                row {
+                                    cell 'INNER TABLE'
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }.document
+
+        Table outerTable = result.children[0]
+        Table innerTable = outerTable.children[0].children[1].children[0]
+
+        then:
+        outerTable.children[0].children[0].children[0].text == 'OUTER TABLE'
+
+        and:
+        innerTable.children[0].children[0].children[0].text == 'INNER TABLE'
+    }
+
+    def "widths are set correct with table within a table"() {
+        when:
+        Document result = builder.create {
+            document {
+                table(width: 450) {
+                    row {
+                        cell(width: 200) {
+                            table(width: 400) {
+                                row {
+                                    cell 'INNER TABLE'
+                                }
+                            }
+                        }
+                        cell(width: 250)
+                    }
+                }
+            }
+        }.document
+
+        Table outerTable = result.children[0]
+        Table innerTable = outerTable.children[0].children[0].children[0]
+
+        then:
+        outerTable.width == 450
+
+        and:
+        outerTable.children[0].children[0].width == 200
+
+        and:
+        innerTable.width == 180
     }
 }

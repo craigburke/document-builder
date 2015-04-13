@@ -20,11 +20,8 @@ class CellFactory extends AbstractFactory {
 		cell.parent = row
 		builder.setNodeProperties(cell, attributes, 'cell')
 
-		TextBlock paragraph = new TextBlock(font:cell.font.clone(), parent:cell, align:cell.align)
-        builder.setNodeProperties(paragraph, [margin:[top:0, left:0, bottom:0, right:0]], 'paragraph')
-		cell.children << paragraph
-
 		if (value) {
+			TextBlock paragraph = builder.getCellParagraph(cell)
 			List elements = paragraph.addText(value.toString())
 			elements.each { node ->
 				if (node instanceof Text) {
