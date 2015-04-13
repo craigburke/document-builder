@@ -50,7 +50,7 @@ class ParagraphRenderer {
     static void renderLine(Document document, ParagraphLine line, float renderStartX, RenderState renderState) {
         PdfDocument pdfDocument = document.element
 
-        if (renderState == RenderState.PAGE && pdfDocument.remainingPageHeight < line.lineSpacing) {
+        if (renderState == RenderState.PAGE && pdfDocument.remainingPageHeight < line.totalHeight) {
             pdfDocument.addPage()
         }
 

@@ -7,4 +7,3 @@ package com.craigburke.document.core
 class Border implements ColorAssignable {
     Integer size = 0
 }
-
