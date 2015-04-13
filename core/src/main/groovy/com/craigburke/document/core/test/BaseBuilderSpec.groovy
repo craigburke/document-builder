@@ -280,4 +280,27 @@ abstract class BaseBuilderSpec extends Specification {
 		notThrown(Exception)
 	}
 
+	def "table within table"() {
+		when:
+		builder.create {
+			document {
+				table {
+					row {
+						cell 'OUTER TABLE'
+						cell {
+							table {
+								row {
+									cell 'INNER TABLE'
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+
+		then:
+		notThrown(Exception)
+	}
+
 }

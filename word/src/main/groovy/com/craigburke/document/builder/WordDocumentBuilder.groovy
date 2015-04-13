@@ -327,7 +327,15 @@ class WordDocumentBuilder extends DocumentBuilder {
 									w.shd('w:val':'clear', 'w:color':'auto', 'w:fill':cell.backgroundColor.hex)
 								}
 							}
-							cell.children.each { addParagraph(builder, it) }
+							cell.children.each {
+								if (it instanceof TextBlock) {
+									addParagraph(builder, it)
+								}
+								else {
+									addTable(builder, it)
+									w.p()
+								}
+							}
 						}
 					}
 				}
