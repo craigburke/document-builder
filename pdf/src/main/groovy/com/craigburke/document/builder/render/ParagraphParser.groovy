@@ -4,6 +4,7 @@ import com.craigburke.document.builder.PdfFont
 import com.craigburke.document.core.Font
 import com.craigburke.document.core.LineBreak
 import com.craigburke.document.core.Text
+import com.craigburke.document.core.TextBlock
 import org.apache.pdfbox.pdmodel.font.PDFont
 
 /**
@@ -12,14 +13,14 @@ import org.apache.pdfbox.pdmodel.font.PDFont
  */
 class ParagraphParser {
 
-    static List<ParagraphLine> getLines(ParagraphElement paragraphElement, int maxLineWidth) {
+    static List<ParagraphLine> getLines(TextBlock paragraph, float maxLineWidth) {
         def lines = []
 
         def currentChunk = []
         def paragraphChunks = []
         paragraphChunks << currentChunk
 
-        paragraphElement.node.children.each { child ->
+        paragraph.children.each { child ->
             if (child.getClass() == LineBreak) {
                 currentChunk = []
                 paragraphChunks << currentChunk
@@ -29,14 +30,14 @@ class ParagraphParser {
             }
         }
 
-        paragraphChunks.each { lines += parseParagraphChunk(it, paragraphElement, maxLineWidth) }
+        paragraphChunks.each { lines += parseParagraphChunk(it, paragraph, maxLineWidth) }
         lines
     }
 
-    private static List<ParagraphLine> parseParagraphChunk(chunk, ParagraphElement paragraphElement, int maxLineWidth) {
+    private static List<ParagraphLine> parseParagraphChunk(chunk, TextBlock paragraph, float maxLineWidth) {
         def chunkLines = []
 
-        ParagraphLine currentLine = new ParagraphLine(paragraphElement, maxLineWidth)
+        ParagraphLine currentLine = new ParagraphLine(paragraph, maxLineWidth)
         chunkLines << currentLine
 
         PDFont pdfFont
@@ -60,7 +61,7 @@ class ParagraphParser {
                         currentLine.elements << new TextElement(pdfFont:pdfFont, text:text,
                                 node:node, width:elementWidth)
 
-                        currentLine = new ParagraphLine(paragraphElement, maxLineWidth)
+                        currentLine = new ParagraphLine(paragraph, maxLineWidth)
                         chunkLines << currentLine
                     }
                     else {
@@ -74,7 +75,7 @@ class ParagraphParser {
             }
             else {
                 if (currentLine.remainingWidth < node.width) {
-                    currentLine = new ParagraphLine(paragraphElement, maxLineWidth)
+                    currentLine = new ParagraphLine(paragraph, maxLineWidth)
                     chunkLines << currentLine
                 }
                 currentLine.contentWidth += node.width

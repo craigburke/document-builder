@@ -26,7 +26,7 @@ class TableRenderer {
         }
     }
 
-    int getTotalHeight() {
+    float getTotalHeight() {
         int height = table.margin.top + table.margin.bottom
 
         rowElements.each {
@@ -49,14 +49,14 @@ class TableRenderer {
     }
 
     private void renderBackgrounds(RowElement rowElement) {
-        float translatedStartY = translateY(rowElement.startY + rowElement.currentHeight + tableBorderOffset)
+        float translatedStartY = translateY(rowElement.startY + rowElement.parsedHeight + tableBorderOffset)
         PDPageContentStream contentStream = document.element.contentStream
         rowElement.cellElements.each { CellElement cellElement ->
             Cell cell = cellElement.node
             if (cell.backgroundColor) {
                 contentStream.setNonStrokingColor(*cell.backgroundColor.rgb)
                 float totalWidth = cell.width + table.border.size
-                float totalHeight = rowElement.currentHeight + table.border.size
+                float totalHeight = rowElement.parsedHeight + table.border.size
                 float startX = cellElement.startX - tableBorderOffset
                 contentStream.fillRect(startX, translatedStartY, totalWidth, totalHeight)
             }
@@ -69,7 +69,7 @@ class TableRenderer {
         }
 
         float translatedYTop = translateY(rowElement.startY - table.border.size)
-        float translatedYBottom = translateY(rowElement.startY + rowElement.currentHeight.floatValue())
+        float translatedYBottom = translateY(rowElement.startY + rowElement.parsedHeight)
         float rowStartX = rowElement.startX - tableBorderOffset
         float rowEndX = rowElement.startX + table.width.floatValue() + tableBorderOffset
 
@@ -80,7 +80,7 @@ class TableRenderer {
             contentStream.drawLine(rowStartX, translatedYTop, rowEndX, translatedYTop)
         }
 
-        if (rowElement.fullyRendered) {
+        if (rowElement.fullyParsed) {
             contentStream.drawLine(rowStartX, translatedYBottom, rowEndX, translatedYBottom)
         }
 
@@ -94,17 +94,6 @@ class TableRenderer {
                 cellEndX += table.border.size
             }
             contentStream.drawLine(cellEndX, translatedYTop, cellEndX, translatedYBottom)
-        }
-    }
-
-    private void renderContent(RowElement rowElement, RenderState renderState) {
-        rowElement.cellElements.each { CellElement cellElement ->
-            document.element.y = rowElement.startY + table.padding + table.border.size
-            cellElement.currentLines.each { ParagraphLine line ->
-                float startX = cellElement.startX + table.padding
-                ParagraphRenderer.renderLine(document, line, startX, renderState)
-            }
-            cellElement.markCurrentLinesRendered()
         }
     }
 
@@ -134,25 +123,25 @@ class TableRenderer {
            rowElement.startY += table.border.size
        }
 
-        while (!rowElement.fullyRendered) {
+        while (!rowElement.fullyParsed) {
             document.element.x = rowElement.startX + table.border.size
 
             float height = document.element.remainingPageHeight
-            rowElement.parseCellsUntilHeight(height)
+            rowElement.parseUntilHeight(height)
             renderBackgrounds(rowElement)
-            renderContent(rowElement, renderState)
+            rowElement.render(document, renderState)
             renderBorders(rowElement)
 
-            if (!rowElement.fullyRendered) {
+            if (!rowElement.fullyParsed) {
                 rowElement.startY = document.margin.top
-                if (rowElement.currentHeight) {
+                if (rowElement.parsedHeight) {
                     rowElement.spansMultiplePages = true
                 }
                 document.element.addPage()
             }
         }
 
-        document.element.y = rowElement.startY + rowElement.currentHeight + table.border.size
+        document.element.y = rowElement.startY + rowElement.parsedHeight + table.border.size
    }
 
 }

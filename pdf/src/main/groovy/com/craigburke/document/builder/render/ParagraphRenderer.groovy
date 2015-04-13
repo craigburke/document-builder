@@ -27,12 +27,12 @@ class ParagraphRenderer {
     private final int renderStartX
     private ParagraphElement paragraphElement
 
-    ParagraphRenderer(TextBlock paragraph, Document document, int renderStartX, int maxLineWidth) {
+    ParagraphRenderer(TextBlock paragraph, Document document, float renderStartX, float maxLineWidth) {
         this.paragraph = paragraph
         this.document = document
         this.renderStartX = renderStartX
         this.maxLineWidth = maxLineWidth
-        paragraphElement = ParagraphElementBuilder.buildParagraphElement(paragraph, maxLineWidth)
+        paragraphElement = new ParagraphElement(paragraph, renderStartX, maxLineWidth)
     }
 
     int getTotalHeight() {
@@ -42,9 +42,7 @@ class ParagraphRenderer {
     }
 
     void render(RenderState renderState = RenderState.PAGE) {
-        paragraphElement.lines.each { ParagraphLine line ->
-            ParagraphRenderer.renderLine(document, line, renderStartX, renderState)
-        }
+        paragraphElement.render(document, renderState)
     }
 
     static void renderLine(Document document, ParagraphLine line, float renderStartX, RenderState renderState) {
@@ -54,7 +52,7 @@ class ParagraphRenderer {
             pdfDocument.addPage()
         }
 
-        switch (line.paragraphElement.node.align) {
+        switch (line.paragraph.align) {
             case Align.RIGHT:
                 renderStartX += line.maxWidth - line.contentWidth
                 break

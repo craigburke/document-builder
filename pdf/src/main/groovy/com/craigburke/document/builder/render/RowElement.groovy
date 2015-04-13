@@ -1,14 +1,16 @@
 package com.craigburke.document.builder.render
 
 import com.craigburke.document.core.Cell
+import com.craigburke.document.core.Document
 import com.craigburke.document.core.Row
 import com.craigburke.document.core.Table
+import com.craigburke.document.core.builder.RenderState
 
 /**
  * Rendering element for the Row node
  * @author Craig Burke
  */
-class RowElement {
+class RowElement implements Renderable {
 
     float startY
     float startX
@@ -29,20 +31,24 @@ class RowElement {
         }
     }
 
-    void parseCellsUntilHeight(float height) {
+    void parseUntilHeight(float height) {
         cellElements*.parseUntilHeight(height)
+    }
+
+    boolean isFullyParsed() {
+        cellElements.every { it.fullyParsed }
     }
 
     float getTotalHeight() {
         cellElements.max { it.totalHeight }.totalHeight
     }
 
-    float getCurrentHeight() {
-        cellElements.max { it.currentHeight }.currentHeight
+    float getParsedHeight() {
+        cellElements.max { it.parsedHeight }.parsedHeight
     }
 
-    boolean isFullyRendered() {
-        cellElements.every { it.fullyRendered }
+    void render(Document document, RenderState renderState) {
+        cellElements*.render(document, renderState)
     }
 
     boolean isFirstRow() {
