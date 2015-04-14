@@ -147,20 +147,18 @@ class TableElement implements Renderable {
             rowElement.startY += table.border.size
         }
 
-        while (!rowElement.fullyParsed) {
-            document.element.x = rowElement.startX + table.border.size
+        document.element.x = rowElement.startX + table.border.size
 
-            float height = document.element.remainingPageHeight
-            rowElement.parseUntilHeight(height)
-            renderBackgrounds(rowElement)
-            rowElement.render(document, renderState)
-            renderBorders(rowElement)
+        float height = document.element.remainingPageHeight
+        rowElement.parseUntilHeight(height)
+        renderBackgrounds(rowElement)
+        rowElement.render(document, renderState)
+        renderBorders(rowElement)
 
-            if (!rowElement.fullyParsed) {
-                rowElement.startY = document.margin.top
-                if (rowElement.parsedHeight) {
-                    rowElement.spansMultiplePages = true
-                }
+        if (!rowElement.fullyParsed) {
+            rowElement.startY = document.margin.top
+            if (rowElement.parsedHeight) {
+                rowElement.spansMultiplePages = true
             }
         }
 

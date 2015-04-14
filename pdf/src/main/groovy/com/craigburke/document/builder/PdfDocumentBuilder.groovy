@@ -67,6 +67,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
         if (renderState == RenderState.PAGE) {
             pdfDocument.x = table.margin.left + document.margin.left
             pdfDocument.scrollDownPage(table.margin.top)
+
             TableElement tableElement = new TableElement(table, pdfDocument.x)
             while (!tableElement.fullyParsed) {
                 tableElement.parseUntilHeight(pdfDocument.remainingPageHeight)
@@ -75,6 +76,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
                     pdfDocument.addPage()
                 }
             }
+
             pdfDocument.scrollDownPage(table.margin.bottom)
         }
     }
