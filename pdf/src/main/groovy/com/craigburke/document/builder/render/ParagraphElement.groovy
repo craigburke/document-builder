@@ -25,11 +25,16 @@ class ParagraphElement implements Renderable {
     private int positionStart = 0
     private int positionEnd = 0
     private float startX
+    private boolean fullyParsed = false
 
     ParagraphElement(TextBlock paragraph, float startX, float maxWidth) {
         node = paragraph
         this.startX = startX
         lines = ParagraphParser.getLines(paragraph, maxWidth)
+    }
+
+    boolean getFullyParsed() {
+        fullyParsed
     }
 
     void parseUntilHeight(float height) {
@@ -62,7 +67,8 @@ class ParagraphElement implements Renderable {
 
     void render(Document document, RenderState renderState) {
         lines[positionStart..positionEnd].each { ParagraphLine line ->
-            renderLine(document, line, renderState)
+            document.element.x = startX
+            renderLine(document, line)
         }
         positionStart = positionEnd
     }
@@ -76,13 +82,9 @@ class ParagraphElement implements Renderable {
         node.margin.top + linesHeight + (fullyParsed ? node.margin.bottom : 0)
     }
 
-    private void renderLine(Document document, ParagraphLine line, RenderState renderState) {
+    private void renderLine(Document document, ParagraphLine line) {
         PdfDocument pdfDocument = document.element
         float renderStartX = startX
-
-        if (renderState == RenderState.PAGE && pdfDocument.remainingPageHeight < line.totalHeight) {
-            pdfDocument.addPage()
-        }
 
         switch (line.paragraph.align) {
             case Align.RIGHT:
@@ -96,14 +98,13 @@ class ParagraphElement implements Renderable {
         pdfDocument.y += line.contentHeight
 
         line.elements.each { element ->
-            int offset = 0
+            float offset = 0
 
             switch (element.getClass()) {
                 case TextElement:
                     offset = line.contentHeight - element.node.font.size
                     pdfDocument.y -= offset
                     renderTextElement(element, document)
-
                     pdfDocument.x += element.width
                     break
                 case ImageElement:

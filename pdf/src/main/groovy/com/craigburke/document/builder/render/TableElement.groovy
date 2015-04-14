@@ -16,6 +16,8 @@ class TableElement implements Renderable {
     Document document
     Table table
     List<RowElement> rowElements = []
+    private int positionStart = 0
+    private int positionEnd = 0
 
     TableElement(Table table, float startX) {
         this.table = table
@@ -25,11 +27,27 @@ class TableElement implements Renderable {
     }
 
     void parseUntilHeight(float height) {
-        rowElements*.parseUntilHeight(height)
+        if (!rowElements) {
+            return
+        }
+        boolean reachedEnd = false
+        float remainingHeight = height
+
+        while (!reachedEnd) {
+            RowElement rowElement = rowElements[positionEnd]
+            rowElement.parseUntilHeight(remainingHeight)
+            if (rowElement == rowElements.last() || !rowElement.fullyParsed) {
+                reachedEnd = true
+            }
+            else {
+                positionEnd++
+            }
+            remainingHeight -= rowElement.parsedHeight
+        }
     }
 
-    boolean isFullyParsed() {
-        rowElements.each { it.fullyParsed }
+    boolean getFullyParsed() {
+        (rowElements) ? rowElements.every { it.fullyParsed } : true
     }
 
     float getTotalHeight() {
@@ -46,7 +64,8 @@ class TableElement implements Renderable {
 
     void render(Document document, RenderState renderState) {
         this.document = document
-        rowElements.each { renderRow(it, renderState) }
+        rowElements[positionStart..positionEnd].each { renderRow(it, renderState) }
+        positionStart = positionEnd
     }
 
     float getTableBorderOffset() {
@@ -142,7 +161,6 @@ class TableElement implements Renderable {
                 if (rowElement.parsedHeight) {
                     rowElement.spansMultiplePages = true
                 }
-                document.element.addPage()
             }
         }
 

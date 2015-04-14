@@ -35,20 +35,23 @@ class RowElement implements Renderable {
         cellElements*.parseUntilHeight(height)
     }
 
-    boolean isFullyParsed() {
+    boolean getFullyParsed() {
         cellElements.every { it.fullyParsed }
     }
 
     float getTotalHeight() {
-        cellElements.max { it.totalHeight }.totalHeight
+        cellElements*.totalHeight.max()
     }
 
     float getParsedHeight() {
-        cellElements.max { it.parsedHeight }.parsedHeight
+        cellElements*.parsedHeight.max()
     }
 
     void render(Document document, RenderState renderState) {
-        cellElements*.render(document, renderState)
+        cellElements.each {
+            document.element.y = startY
+            it.render(document, renderState)
+        }
     }
 
     boolean isFirstRow() {

@@ -31,16 +31,16 @@ class CellElement implements Renderable {
         }
     }
 
-    boolean isFullyParsed() {
+    boolean getFullyParsed() {
         childElements.every { it.fullyParsed }
     }
 
     float getTotalHeight() {
-        childElements.max { it.totalHeight }.totalHeight
+        childElements*.totalHeight.max()
     }
 
     float getParsedHeight() {
-        childElements.max { it.parsedHeight }.parsedHeight
+        childElements*.parsedHeight.max()
     }
 
     void render(Document document, RenderState renderState) {

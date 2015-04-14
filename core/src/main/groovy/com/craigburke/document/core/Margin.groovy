@@ -1,9 +1,12 @@
 package com.craigburke.document.core
 
+import groovy.transform.AutoClone
+
 /**
  * Margin settings used for block nodes
  * @author Craig Burke
  */
+@AutoClone
 class Margin {
 
     Integer top

@@ -4,7 +4,8 @@ import com.craigburke.document.core.Heading
 import com.craigburke.document.core.Text
 
 /**
- * Created by craig on 3/25/15.
+ * Factory for heading nodes
+ * @author Craig Burke
  */
 class HeadingFactory extends AbstractFactory {
 

@@ -15,7 +15,6 @@ import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Table
 import com.craigburke.document.core.Image
 
-import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.common.PDMetadata
 
 /**
@@ -25,22 +24,21 @@ import org.apache.pdfbox.pdmodel.common.PDMetadata
 @InheritConstructors
 class PdfDocumentBuilder extends DocumentBuilder {
 
-	void initializeDocument(Document document, OutputStream out) {
-        PdfDocument pdfDocument = new PdfDocument(document)
-        document.element = pdfDocument
+    PdfDocument pdfDocument
 
+	void initializeDocument(Document document, OutputStream out) {
+        pdfDocument = new PdfDocument(document)
         pdfDocument.x = document.margin.left
         pdfDocument.y = document.margin.top
-
         document.element = pdfDocument
     }
 
     def addEmbeddedFont = { EmbeddedFont embeddedFont ->
-        PdfFont.addFont(document.element.pdDocument, embeddedFont)
+        PdfFont.addFont(pdfDocument.pdDocument, embeddedFont)
     }
 
     def addPageBreakToDocument = { PageBreak pageBreak, Document document ->
-        document.element.addPage()
+        pdfDocument.addPage()
     }
 
 	def onTextBlockComplete = { TextBlock paragraph ->
@@ -49,22 +47,35 @@ class PdfDocumentBuilder extends DocumentBuilder {
             int maxLineWidth = pageWidth - paragraph.margin.left - paragraph.margin.right
             int renderStartX = document.margin.left + paragraph.margin.left
 
-            document.element.scrollDownPage(paragraph.margin.top)
+            pdfDocument.x = renderStartX
+            pdfDocument.scrollDownPage(paragraph.margin.top)
 
             ParagraphElement paragraphElement = new ParagraphElement(paragraph, renderStartX, maxLineWidth)
-            paragraphElement.render(document, renderState)
 
-            document.element.scrollDownPage(paragraph.margin.bottom)
+            while (!paragraphElement.fullyParsed) {
+                paragraphElement.parseUntilHeight(pdfDocument.remainingPageHeight)
+                paragraphElement.render(document, renderState)
+                if (!paragraphElement.fullyParsed) {
+                    pdfDocument.addPage()
+                }
+            }
+            pdfDocument.scrollDownPage(paragraph.margin.bottom)
         }
     }
 
     def onTableComplete = { Table table ->
         if (renderState == RenderState.PAGE) {
-            document.element.x = table.margin.left + document.margin.left
-            document.element.scrollDownPage(table.margin.top)
-            TableElement tableElement = new TableElement(table, document.element.x as float)
-            tableElement.render(document, renderState)
-            document.element.scrollDownPage(table.margin.bottom)
+            pdfDocument.x = table.margin.left + document.margin.left
+            pdfDocument.scrollDownPage(table.margin.top)
+            TableElement tableElement = new TableElement(table, pdfDocument.x)
+            while (!tableElement.fullyParsed) {
+                tableElement.parseUntilHeight(pdfDocument.remainingPageHeight)
+                tableElement.render(document, renderState)
+                if (!tableElement.fullyParsed) {
+                    pdfDocument.addPage()
+                }
+            }
+            pdfDocument.scrollDownPage(table.margin.bottom)
         }
     }
 
@@ -72,17 +83,17 @@ class PdfDocumentBuilder extends DocumentBuilder {
         addHeaderFooter()
 		addMetadata()
 
-		document.element.contentStream?.close()
-		document.element.pdDocument.save(out)
-		document.element.pdDocument.close()
+		pdfDocument.contentStream?.close()
+        pdfDocument.pdDocument.save(out)
+        pdfDocument.pdDocument.close()
 	}
 
     private void addHeaderFooter() {
-        int pageCount = document.element.pages.size()
+        int pageCount = pdfDocument.pages.size()
         def options = new HeaderFooterOptions(pageCount:pageCount, dateGenerated:new Date())
 
         (1..pageCount).each { int pageNumber ->
-            document.element.pageNumber = pageNumber
+            pdfDocument.pageNumber = pageNumber
             options.pageNumber = pageNumber
 
             if (document.header) {
@@ -112,10 +123,10 @@ class PdfDocumentBuilder extends DocumentBuilder {
         }
 
         if (renderState == RenderState.HEADER) {
-            document.element.y = headerFooter.margin.top
+            pdfDocument.y = headerFooter.margin.top
         }
         else {
-            document.element.y = document.element.pageBottomY + document.margin.bottom - renderer.totalHeight
+            pdfDocument.y = pdfDocument.pageBottomY + document.margin.bottom - renderer.totalHeight
         }
 
         renderer.render(document, renderState)
@@ -143,10 +154,10 @@ class PdfDocumentBuilder extends DocumentBuilder {
 			}
 		}
 
-		def catalog = document.element.pdDocument.documentCatalog
+		def catalog = pdfDocument.pdDocument.documentCatalog
         InputStream inputStream = new ByteArrayInputStream(xmpOut.toByteArray())
 
-		PDMetadata metadata = new PDMetadata(document.element.pdDocument as PDDocument, inputStream, false)
+		PDMetadata metadata = new PDMetadata(pdfDocument.pdDocument, inputStream, false)
 		catalog.metadata = metadata
 	}
 
