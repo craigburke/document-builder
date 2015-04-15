@@ -116,24 +116,39 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
     private void renderHeaderFooter(headerFooter) {
         float startX = document.margin.left + headerFooter.margin.left
-
+        float startY
+        
+        if (renderState == RenderState.HEADER) {
+            startY = headerFooter.margin.top
+        }
+        else {
+            startY = pdfDocument.pageBottomY + document.margin.bottom - getElementHeight(headerFooter)
+        }
+        
         def renderer
         if (headerFooter instanceof TextBlock) {
-            renderer = new ParagraphElement(headerFooter, pdfDocument, startX, 0, document.width)
+            renderer = new ParagraphElement(headerFooter, pdfDocument, startX, startY, document.width)
         }
         else {
-            renderer = new TableElement(headerFooter as Table, pdfDocument, startX, 0)
+            renderer = new TableElement(headerFooter as Table, pdfDocument, startX, startY)
         }
+        
         renderer.parseUntilHeight(document.height)
-
-        if (renderState == RenderState.HEADER) {
-            renderer.startY = headerFooter.margin.top
+        renderer.render()
+    }
+    
+    private float getElementHeight(element) {
+        float width = document.width - document.margin.top - document.margin.bottom
+        
+        if (element instanceof TextBlock) {
+            new ParagraphElement(element, pdfDocument, 0, 0, width).totalHeight
+        }
+        else if (element instanceof Table) {
+            new TableElement(element, pdfDocument, 0, 0).totalHeight
         }
         else {
-            renderer.startY = pdfDocument.pageBottomY + document.margin.bottom - renderer.totalHeight
+            0
         }
-
-        renderer.render()
     }
 
 	private void addMetadata() {
