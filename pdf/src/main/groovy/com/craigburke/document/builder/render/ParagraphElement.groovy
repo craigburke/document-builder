@@ -80,7 +80,7 @@ class ParagraphElement implements Renderable {
     }
 
     float getParsedHeight() {
-        float linesHeight = lines[positionStart..positionEnd].sum { it.totalHeight }
+        float linesHeight = lines[positionStart..positionEnd].sum { it.totalHeight } ?: 0
         node.margin.top + linesHeight + (fullyParsed ? node.margin.bottom : 0)
     }
 

@@ -38,11 +38,11 @@ class RowElement implements Renderable {
     }
 
     float getTotalHeight() {
-        cellElements.sum { it.totalHeight }
+        cellElements.sum { it.totalHeight } as float ?: 0
     }
 
     float getParsedHeight() {
-        cellElements.sum { it.parsedHeight }
+        cellElements.sum { it.parsedHeight } as float ?: 0
     }
 
     void render() {

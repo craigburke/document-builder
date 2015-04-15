@@ -37,11 +37,11 @@ class CellElement implements Renderable {
     }
 
     float getTotalHeight() {
-        childElements*.totalHeight.max()
+        childElements*.totalHeight.max() ?: 0
     }
 
     float getParsedHeight() {
-        childElements*.parsedHeight.max()
+        childElements*.parsedHeight.max() ?: 0
     }
 
     void render() {

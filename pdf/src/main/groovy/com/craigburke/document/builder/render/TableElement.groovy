@@ -66,11 +66,11 @@ class TableElement implements Renderable {
     }
 
     float getTotalHeight() {
-        rowElements.max { it.totalHeight }.totalHeight
+        rowElements.max { it.totalHeight }.totalHeight ?: 0
     }
 
     float getParsedHeight() {
-        rowElements.max { it.parsedHeight }.parsedHeight
+        rowElements.max { it.parsedHeight }.parsedHeight ?: 0
     }
 
     void render() {
