@@ -19,7 +19,7 @@ import java.awt.image.BufferedImage
  */
 class ParagraphElement implements Renderable {
     TextBlock node
-    
+
     List<ParagraphLine> lines
     private int positionStart = 0
     private int positionEnd = 0
@@ -96,7 +96,7 @@ class ParagraphElement implements Renderable {
         }
 
         pdfDocument.x = renderStartX
-        pdfDocument.y = startY + line.contentHeight
+        pdfDocument.y += line.contentHeight
 
         line.elements.each { element ->
             float offset = 0
@@ -115,7 +115,6 @@ class ParagraphElement implements Renderable {
                     pdfDocument.x += element.node.width
                     break
             }
-
             pdfDocument.y += offset
         }
         pdfDocument.y += line.lineSpacing

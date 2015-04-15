@@ -45,6 +45,8 @@ class CellElement implements Renderable {
     }
 
     void render() {
+        pdfDocument.x = startX
+        pdfDocument.y = startY
         childElements*.render()
     }
 

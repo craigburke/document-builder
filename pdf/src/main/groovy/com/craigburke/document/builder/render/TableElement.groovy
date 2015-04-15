@@ -13,23 +13,24 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
 class TableElement implements Renderable {
 
     private final float startX
-    private final float startY 
-    
+    private final float startY
+
     Table table
     List<RowElement> rowElements = []
-    private int positionStart = 0
-    private int positionEnd = 0
+    private int rowStart = 0
+    private int rowEnd = 0
 
     TableElement(Table table, PdfDocument pdfDocument, float startX, float startY) {
         this.startX = startX
         this.startY = startY
         this.pdfDocument = pdfDocument
-        
+
         this.table = table
         float rowStartY = startY
         table.children.each { Row row ->
             RowElement rowElement = new RowElement(row, pdfDocument, startX, rowStartY)
             rowStartY += rowElement.totalHeight
+            rowStartY = pdfDocument.translateAbsoluteY(rowStartY)
             rowElements << rowElement
         }
     }
@@ -38,18 +39,24 @@ class TableElement implements Renderable {
         if (!rowElements) {
             return
         }
+        rowStart = rowEnd
         boolean reachedEnd = false
         float remainingHeight = height
 
         while (!reachedEnd) {
-            RowElement rowElement = rowElements[positionEnd]
+            RowElement rowElement = rowElements[rowEnd]
             rowElement.parseUntilHeight(remainingHeight)
-            if (rowElement == rowElements.last() || !rowElement.fullyParsed) {
+
+            if (rowElement == rowElements.last()) {
                 reachedEnd = true
             }
-            else {
-                positionEnd++
+            if (!rowElement.fullyParsed) {
+                reachedEnd = true
             }
+            else if (rowEnd != rowElements.size() - 1) {
+                rowEnd++
+            }
+
             remainingHeight -= rowElement.parsedHeight
         }
     }
@@ -67,9 +74,7 @@ class TableElement implements Renderable {
     }
 
     void render() {
-        rowElements[positionStart..positionEnd].each { renderRow(it) }
-        positionEnd = Math.min(positionEnd + 1, rowElements.size() - 1)
-        positionStart = positionEnd
+        rowElements[rowStart..rowEnd].each { renderRow(it) }
     }
 
     float getTableBorderOffset() {
@@ -148,11 +153,6 @@ class TableElement implements Renderable {
         if (rowElement.firstRow) {
             pdfDocument.y += table.border.size
         }
-
-        pdfDocument.x = rowElement.startX + table.border.size
-        float height = pdfDocument.remainingPageHeight
-        
-        rowElement.parseUntilHeight(height)
         renderBackgrounds(rowElement)
         rowElement.render()
         renderBorders(rowElement)

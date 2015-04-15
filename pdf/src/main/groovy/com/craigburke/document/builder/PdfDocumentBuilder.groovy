@@ -50,7 +50,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
             pdfDocument.x = renderStartX
             pdfDocument.scrollDownPage(paragraph.margin.top)
 
-            ParagraphElement paragraphElement = new ParagraphElement(paragraph, pdfDocument, renderStartX, pdfDocument.y, maxLineWidth)
+            ParagraphElement paragraphElement =
+                    new ParagraphElement(paragraph, pdfDocument, renderStartX, pdfDocument.y, maxLineWidth)
 
             while (!paragraphElement.fullyParsed) {
                 paragraphElement.parseUntilHeight(pdfDocument.remainingPageHeight)
@@ -115,25 +116,24 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
     private void renderHeaderFooter(headerFooter) {
         float startX = document.margin.left + headerFooter.margin.left
-        float startY
-        
+
         def renderer
-        if (renderState == RenderState.HEADER) {
-            startY = headerFooter.margin.top
-        }
-        else {
-            startY = pdfDocument.pageBottomY + document.margin.bottom - renderer.totalHeight
-        }
-
         if (headerFooter instanceof TextBlock) {
-            renderer = new ParagraphElement(headerFooter, pdfDocument, startX, startY, document.width)
+            renderer = new ParagraphElement(headerFooter, pdfDocument, startX, 0, document.width)
         }
         else {
-            renderer = new TableElement(headerFooter as Table, pdfDocument, startX, startY)
+            renderer = new TableElement(headerFooter as Table, pdfDocument, startX, 0)
+        }
+        renderer.parseUntilHeight(document.height)
+
+        if (renderState == RenderState.HEADER) {
+            renderer.startY = headerFooter.margin.top
+        }
+        else {
+            renderer.startY = pdfDocument.pageBottomY + document.margin.bottom - renderer.totalHeight
         }
 
-        renderer.parseUntilHeight(document.height)
-        renderer.render(renderState)
+        renderer.render()
     }
 
 	private void addMetadata() {
