@@ -1,10 +1,9 @@
 package com.craigburke.document.builder.render
 
+import com.craigburke.document.builder.PdfDocument
 import com.craigburke.document.core.Cell
-import com.craigburke.document.core.Document
 import com.craigburke.document.core.Row
 import com.craigburke.document.core.Table
-import com.craigburke.document.core.builder.RenderState
 
 /**
  * Rendering element for the Row node
@@ -12,21 +11,20 @@ import com.craigburke.document.core.builder.RenderState
  */
 class RowElement implements Renderable {
 
-    float startY
-    float startX
+    Row row
     boolean spansMultiplePages = false
-
-    Row node
     List<CellElement> cellElements = []
 
-    RowElement(Row row, float startX) {
-        this.node = row
+    RowElement(Row row, PdfDocument pdfDocument, float startX, float startY) {
+        this.row = row
         this.startX = startX
+        this.startY = startY
+        this.pdfDocument = pdfDocument
 
         Table table = row.parent
-        int cellX = this.startX + table.border.size
+        float cellX = startX + table.border.size
         row.children.each { Cell cell ->
-            cellElements << new CellElement(cell, cellX)
+            cellElements << new CellElement(cell, pdfDocument, cellX, startY)
             cellX += cell.width + table.border.size
         }
     }
@@ -40,22 +38,19 @@ class RowElement implements Renderable {
     }
 
     float getTotalHeight() {
-        cellElements*.totalHeight.max()
+        cellElements.sum {it.totalHeight }
     }
 
     float getParsedHeight() {
-        cellElements*.parsedHeight.max()
+        cellElements.sum { it.parsedHeight }
     }
 
-    void render(Document document, RenderState renderState) {
-        cellElements.each {
-            document.element.y = startY
-            it.render(document, renderState)
-        }
+    void render() {
+        cellElements*.render()
     }
 
     boolean isFirstRow() {
-        (node == node.parent.children.first())
+        (row == row.parent.children.first())
     }
 
 }

@@ -33,10 +33,4 @@ class CellFactory extends AbstractFactory {
 		cell
 	}
 
-	void onNodeCompleted(FactoryBuilderSupport builder, row, cell) {
-		if (builder.onTextBlockComplete && cell.children) {
-			builder.onTextBlockComplete(cell.children[0])
-		}
-   	}
-
 }

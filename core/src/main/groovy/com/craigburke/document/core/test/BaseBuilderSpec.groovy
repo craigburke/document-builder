@@ -165,8 +165,8 @@ abstract class BaseBuilderSpec extends Specification {
             document {
                 table {
                     row {
-                        cell('Cell1')
-                        cell('Cell2')
+                        cell 'Cell1'
+                        cell 'Cell2'
                         cell {
                             text 'Cell3'
                         }

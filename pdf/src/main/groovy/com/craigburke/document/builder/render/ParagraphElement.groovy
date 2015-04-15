@@ -2,11 +2,9 @@ package com.craigburke.document.builder.render
 
 import com.craigburke.document.builder.PdfDocument
 import com.craigburke.document.core.Align
-import com.craigburke.document.core.Document
 import com.craigburke.document.core.ImageType
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.TextBlock
-import com.craigburke.document.core.builder.RenderState
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg
 import org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMap
@@ -21,20 +19,23 @@ import java.awt.image.BufferedImage
  */
 class ParagraphElement implements Renderable {
     TextBlock node
+    
     List<ParagraphLine> lines
     private int positionStart = 0
     private int positionEnd = 0
     private float startX
     private boolean fullyParsed = false
 
-    ParagraphElement(TextBlock paragraph, float startX, float maxWidth) {
+    ParagraphElement(TextBlock paragraph, PdfDocument pdfDocument, float startX, float startY, float maxWidth) {
         node = paragraph
+        this.pdfDocument = pdfDocument
         this.startX = startX
+        this.startY = startY
         lines = ParagraphParser.getLines(paragraph, maxWidth)
     }
 
     boolean getFullyParsed() {
-        fullyParsed
+        this.fullyParsed
     }
 
     void parseUntilHeight(float height) {
@@ -51,7 +52,7 @@ class ParagraphElement implements Renderable {
             parsedHeight += line.totalHeight
 
             if (parsedHeight > height) {
-                positionEnd = (positionEnd == 1) ? 1 : positionEnd--
+                positionEnd--
                 reachedEnd = true
                 fullyParsed = false
             }
@@ -65,11 +66,12 @@ class ParagraphElement implements Renderable {
         }
     }
 
-    void render(Document document, RenderState renderState) {
+    void render() {
         lines[positionStart..positionEnd].each { ParagraphLine line ->
-            document.element.x = startX
-            renderLine(document, line)
+            pdfDocument.x = startX
+            renderLine(line)
         }
+        positionEnd = Math.min(positionEnd + 1, lines.size() - 1)
         positionStart = positionEnd
     }
 
@@ -82,8 +84,7 @@ class ParagraphElement implements Renderable {
         node.margin.top + linesHeight + (fullyParsed ? node.margin.bottom : 0)
     }
 
-    private void renderLine(Document document, ParagraphLine line) {
-        PdfDocument pdfDocument = document.element
+    private void renderLine(ParagraphLine line) {
         float renderStartX = startX
 
         switch (line.paragraph.align) {
@@ -95,7 +96,7 @@ class ParagraphElement implements Renderable {
         }
 
         pdfDocument.x = renderStartX
-        pdfDocument.y += line.contentHeight
+        pdfDocument.y = startY + line.contentHeight
 
         line.elements.each { element ->
             float offset = 0
@@ -104,13 +105,13 @@ class ParagraphElement implements Renderable {
                 case TextElement:
                     offset = line.contentHeight - element.node.font.size
                     pdfDocument.y -= offset
-                    renderTextElement(element, document)
+                    renderTextElement(element)
                     pdfDocument.x += element.width
                     break
                 case ImageElement:
                     offset = line.contentHeight - element.node.height
                     pdfDocument.y -= offset
-                    renderImageElement(element, document)
+                    renderImageElement(element)
                     pdfDocument.x += element.node.width
                     break
             }
@@ -120,11 +121,10 @@ class ParagraphElement implements Renderable {
         pdfDocument.y += line.lineSpacing
     }
 
-    private static void renderTextElement(TextElement element, Document document) {
-        PdfDocument pdfDocument = document.element
+    private void renderTextElement(TextElement element) {
         Text text = element.node
 
-        PDPageContentStream contentStream = document.element.contentStream
+        PDPageContentStream contentStream = pdfDocument.contentStream
 
         contentStream.beginText()
         contentStream.moveTextPositionByAmount(pdfDocument.x, pdfDocument.translatedY)
@@ -137,9 +137,7 @@ class ParagraphElement implements Renderable {
         contentStream.endText()
     }
 
-    private static void renderImageElement(ImageElement element, Document document) {
-        PdfDocument pdfDocument = document.element
-
+    private void renderImageElement(ImageElement element) {
         InputStream inputStream = new ByteArrayInputStream(element.node.data)
         BufferedImage bufferedImage = ImageIO.read(inputStream)
 
