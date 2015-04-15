@@ -13,10 +13,9 @@ class CellElement implements Renderable {
     Cell cell
     List<Renderable> childElements = []
 
-    CellElement(Cell cell, PdfDocument pdfDocument, float startX, float startY) {
+    CellElement(Cell cell, PdfDocument pdfDocument, float startX) {
         this.cell = cell
         this.startX = startX
-        this.startY = startY
         this.pdfDocument = pdfDocument
 
         Table table = cell.parent.parent
@@ -24,10 +23,10 @@ class CellElement implements Renderable {
 
         cell.children.each { child ->
             if (child instanceof TextBlock) {
-                childElements << new ParagraphElement(child, pdfDocument, startX, startY, renderWidth)
+                childElements << new ParagraphElement(child, pdfDocument, startX, renderWidth)
             }
             else if (child instanceof Table) {
-                childElements << new TableElement(child, pdfDocument, startX, startY)
+                childElements << new TableElement(child, pdfDocument, startX)
             }
         }
     }
@@ -37,16 +36,15 @@ class CellElement implements Renderable {
     }
 
     float getTotalHeight() {
-        childElements*.totalHeight.max() ?: 0
+        (childElements*.totalHeight.sum() ?: 0) as float
     }
 
     float getParsedHeight() {
-        childElements*.parsedHeight.max() ?: 0
+        (childElements*.parsedHeight.sum() ?: 0) as float
     }
 
     void render() {
         pdfDocument.x = startX
-        pdfDocument.y = startY
         childElements*.render()
     }
 

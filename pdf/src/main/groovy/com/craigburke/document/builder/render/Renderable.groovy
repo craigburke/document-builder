@@ -7,8 +7,6 @@ import com.craigburke.document.builder.PdfDocument
  */
 trait Renderable {
     float startX
-    float startY
-    
     PdfDocument pdfDocument
     abstract void parseUntilHeight(float height)
     abstract boolean getFullyParsed()

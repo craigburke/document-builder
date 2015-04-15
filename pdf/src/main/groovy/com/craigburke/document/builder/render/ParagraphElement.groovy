@@ -26,11 +26,10 @@ class ParagraphElement implements Renderable {
     private float startX
     private boolean fullyParsed = false
 
-    ParagraphElement(TextBlock paragraph, PdfDocument pdfDocument, float startX, float startY, float maxWidth) {
+    ParagraphElement(TextBlock paragraph, PdfDocument pdfDocument, float startX, float maxWidth) {
         node = paragraph
         this.pdfDocument = pdfDocument
         this.startX = startX
-        this.startY = startY
         lines = ParagraphParser.getLines(paragraph, maxWidth)
     }
 
@@ -71,7 +70,6 @@ class ParagraphElement implements Renderable {
             pdfDocument.x = startX
             renderLine(line)
         }
-        positionEnd = Math.min(positionEnd + 1, lines.size() - 1)
         positionStart = positionEnd
     }
 
@@ -99,23 +97,16 @@ class ParagraphElement implements Renderable {
         pdfDocument.y += line.contentHeight
 
         line.elements.each { element ->
-            float offset = 0
-
             switch (element.getClass()) {
                 case TextElement:
-                    offset = line.contentHeight - element.node.font.size
-                    pdfDocument.y -= offset
                     renderTextElement(element)
                     pdfDocument.x += element.width
                     break
                 case ImageElement:
-                    offset = line.contentHeight - element.node.height
-                    pdfDocument.y -= offset
                     renderImageElement(element)
                     pdfDocument.x += element.node.width
                     break
             }
-            pdfDocument.y += offset
         }
         pdfDocument.y += line.lineSpacing
     }
