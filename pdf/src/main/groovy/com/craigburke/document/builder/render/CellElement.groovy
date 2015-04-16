@@ -30,19 +30,21 @@ class CellElement implements Renderable {
             }
         }
     }
-
+    
+    private float getPadding() {
+        cell.parent.parent.padding
+    }
+    
     boolean getFullyParsed() {
         childElements.every { it.fullyParsed }
     }
 
     float getTotalHeight() {
-        float padding = cell.parent.parent.padding
         float contentHeight = (childElements*.totalHeight.sum() ?: 0f) as float
-        contentHeight + padding * 2
+        contentHeight + (padding * 2)
     }
 
     float getParsedHeight() {
-        float padding = cell.parent.parent.padding
         float contentHeight = (childElements*.parsedHeight.sum() ?: 0f) as float
         contentHeight + padding + (fullyParsed ? padding : 0f)
     }
@@ -50,11 +52,12 @@ class CellElement implements Renderable {
     void renderElement(float startY) {
         pdfDocument.x = startX
         float childY = startY + cell.parent.parent.padding
-        childElements[0].render(childY)
+        childElements*.render(childY)
     }
-
+    
     void parseUntilHeight(float height) {
-        childElements*.parseUntilHeight(height)
+        float totalHeight = height - (padding * 2)
+        childElements*.parseUntilHeight(totalHeight)
     }
 }
 

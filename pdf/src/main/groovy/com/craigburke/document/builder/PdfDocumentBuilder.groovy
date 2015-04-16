@@ -56,9 +56,11 @@ class PdfDocumentBuilder extends DocumentBuilder {
             while (!paragraphElement.fullyParsed) {
                 paragraphElement.parseUntilHeight(pdfDocument.remainingPageHeight)
                 paragraphElement.render(pdfDocument.y)
-                pdfDocument.scrollDownPage(paragraphElement.parsedHeight)
                 if (!paragraphElement.fullyParsed) {
                     pdfDocument.addPage()
+                }
+                else {
+                    pdfDocument.scrollDownPage(paragraphElement.totalHeight)
                 }
             }
             pdfDocument.scrollDownPage(paragraph.margin.bottom)
@@ -74,9 +76,11 @@ class PdfDocumentBuilder extends DocumentBuilder {
             while (!tableElement.fullyParsed) {
                 tableElement.parseUntilHeight(pdfDocument.remainingPageHeight)
                 tableElement.render(pdfDocument.y)
-                pdfDocument.scrollDownPage(tableElement.parsedHeight)
                 if (!tableElement.fullyParsed) {
                     pdfDocument.addPage()
+                }
+                else {
+                    pdfDocument.scrollDownPage(tableElement.totalHeight)
                 }
             }
 
