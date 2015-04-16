@@ -1,27 +1,27 @@
 package com.craigburke.document.builder.render
 
 import com.craigburke.document.builder.PdfDocument
-import com.craigburke.document.core.Cell
+import com.craigburke.document.core.Column
 import com.craigburke.document.core.Table
 import com.craigburke.document.core.TextBlock
 
 /**
- * Rendering element for the Cell node
+ * Rendering element for the Column node
  * @author Craig Burke
  */
-class CellElement implements Renderable {
-    Cell cell
+class ColumnElement implements Renderable {
+    Column column
     List<Renderable> childElements = []
 
-    CellElement(Cell cell, PdfDocument pdfDocument, float startX) {
-        this.cell = cell
+    ColumnElement(Column column, PdfDocument pdfDocument, float startX) {
+        this.column = column
         this.startX = startX
         this.pdfDocument = pdfDocument
 
-        Table table = cell.parent.parent
-        int renderWidth = cell.width - (table.padding * 2)
+        Table table = column.parent.parent
+        int renderWidth = column.width - (table.padding * 2)
         float childStartX = startX + table.padding
-        cell.children.each { child ->
+        column.children.each { child ->
             if (child instanceof TextBlock) {
                 childElements << new ParagraphElement(child, pdfDocument, childStartX, renderWidth)
             }
@@ -32,7 +32,7 @@ class CellElement implements Renderable {
     }
 
     private float getPadding() {
-        cell.parent.parent.padding
+        column.parent.parent.padding
     }
 
     boolean getFullyParsed() {
@@ -51,7 +51,7 @@ class CellElement implements Renderable {
 
     void renderElement(float startY) {
         pdfDocument.x = startX
-        float childY = startY + cell.parent.parent.padding
+        float childY = startY + column.parent.parent.padding
         childElements*.render(childY)
     }
 

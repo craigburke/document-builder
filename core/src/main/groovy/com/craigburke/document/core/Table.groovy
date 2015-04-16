@@ -21,9 +21,9 @@ class Table extends BlockNode implements BackgroundAssignable {
 
         def columnWidths = []
         int totalColumnWidth = 0
-        def cells = this.children.first()?.children
+        def columns = this.children.first()?.children
 
-        cells?.each {
+        columns?.each {
             columnWidths << it.width
             totalColumnWidth += it.width ?: 0
         }
@@ -36,8 +36,8 @@ class Table extends BlockNode implements BackgroundAssignable {
             columnWidths = columnWidths.collect { it != null ? it : calculatedColumnWidth }
 
             children.each { row ->
-                row.children.eachWithIndex { cell, index ->
-                    cell.width = columnWidths[index]
+                row.children.eachWithIndex { column, index ->
+                    column.width = columnWidths[index]
                 }
             }
         }
@@ -46,12 +46,12 @@ class Table extends BlockNode implements BackgroundAssignable {
 
         if (totalDeclaredWidth != width) {
             int diff = (width - totalDeclaredWidth)
-            cells?.last().width += diff
+            columns?.last().width += diff
         }
 
         children.each { row ->
-            row.children.each { cell ->
-                cell.children.findAll { it instanceof Table }.each { it.normalizeColumnWidths() }
+            row.children.each { column ->
+                column.children.findAll { it instanceof Table }.each { it.normalizeColumnWidths() }
             }
         }
     }
@@ -60,7 +60,7 @@ class Table extends BlockNode implements BackgroundAssignable {
         if (parent instanceof Document) {
             parent.width - parent.margin.left - parent.margin.right
         }
-        else if (parent instanceof Cell) {
+        else if (parent instanceof Column) {
             Table outerTable = parent.parent.parent
             parent.width - (outerTable.padding * 2)
         }

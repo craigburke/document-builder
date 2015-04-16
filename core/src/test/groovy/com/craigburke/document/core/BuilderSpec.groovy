@@ -57,7 +57,7 @@ class BuilderSpec extends Specification {
                 }
                 table(border: [size: 2.px]) {
                     row {
-                        cell 'Bar'
+                        column 'Bar'
                     }
                 }
             }
@@ -105,9 +105,9 @@ class BuilderSpec extends Specification {
             document {
                 table {
                     row {
-                        cell('Cell1')
-                        cell('Cell2')
-                        cell('Cell3')
+                        column('Column1')
+                        column('Column2')
+                        column('Column3')
                     }
 
                 }
@@ -181,13 +181,13 @@ class BuilderSpec extends Specification {
                     externalProperty = 'TEST'
 
                     row {
-                        cell 'CELL1-1'
-                        cell 'CELL1-2'
+                        column 'Column1-1'
+                        column 'Column1-2'
                     }
                     row {
-                        cell 'CELL2-1'
-                        cell 'CELL2-2'
-                        cell 'CELL2-3'
+                        column 'Column2-1'
+                        column 'Column2-2'
+                        column 'Column2-3'
                     }
 
                 }
@@ -283,8 +283,8 @@ class BuilderSpec extends Specification {
             document {
                 table {
                     row {
-                        cell('FOO')
-                        cell {
+                        column('FOO')
+                        column {
                             text 'BAR'
                         }
                     }
@@ -297,11 +297,11 @@ class BuilderSpec extends Specification {
 
         Row row = table.children[0]
 
-        Cell cell1 = row.children[0]
-        Cell cell2 = row.children[1]
+        Column column1 = row.children[0]
+        Column column2 = row.children[1]
 
-        TextBlock paragraph1 = cell1.children[0]
-        TextBlock paragraph2 = cell2.children[0]
+        TextBlock paragraph1 = column1.children[0]
+        TextBlock paragraph2 = column2.children[0]
 
         Text text1 = paragraph1.children[0]
         Text text2 = paragraph2.children[0]
@@ -312,17 +312,17 @@ class BuilderSpec extends Specification {
         and:
         table.children == [row]
         row.parent == table
-        row.children == [cell1, cell2]
+        row.children == [column1, column2]
 
         and:
-        cell1.parent == row
-        cell1.children == [paragraph1]
-        paragraph1.parent == cell1
+        column1.parent == row
+        column1.children == [paragraph1]
+        paragraph1.parent == column1
 
         and:
-        cell2.parent == row
-        cell2.children == [paragraph2]
-        paragraph2.parent == cell2
+        column2.parent == row
+        column2.children == [paragraph2]
+        paragraph2.parent == column2
 
         and:
         text1.value == 'FOO'
@@ -341,25 +341,25 @@ class BuilderSpec extends Specification {
             document {
                 table(width: 250, padding: 0, border: [size: 0]) {
                     row {
-                        cell('FOOBAR', width: 100)
-                        cell('BLAH')
+                        column('FOOBAR', width: 100)
+                        column('BLAH')
                     }
                 }
             }
         }
 
         Table table = result.document.children[0]
-        Cell cell1 = table.children[0].children[0]
-        Cell cell2 = table.children[0].children[1]
+        Column column1 = table.children[0].children[0]
+        Column column2 = table.children[0].children[1]
 
         then:
         table.width == 250
 
         and:
-        cell1.width == 100
+        column1.width == 100
 
         and:
-        cell2.width == 150
+        column2.width == 150
     }
 
     def "override or inherit font settings"() {
@@ -378,13 +378,13 @@ class BuilderSpec extends Specification {
 
                 table(font: [family: 'Courier', color: '#111111']) {
                     row {
-                        cell('Override')
+                        column('Override')
                     }
                 }
 
                 table {
                     row {
-                        cell('Default font')
+                        column('Default font')
                     }
                 }
 
@@ -422,7 +422,7 @@ class BuilderSpec extends Specification {
             document {
                 table {
                     row {
-                        cell {
+                        column {
                             image(data: imageData, width: 500.px, height: 431.px)
                             lineBreak()
                             text 'A cheeseburger'
@@ -446,22 +446,22 @@ class BuilderSpec extends Specification {
             document {
                 table(backgroundColor: backgroundColors[0]) {
                     row {
-                        cell '1.1'
-                        cell '1.2'
+                        column '1.1'
+                        column '1.2'
                     }
                 }
 
                 table {
                     row(backgroundColor: backgroundColors[1]) {
-                        cell '2.1'
-                        cell '2.2'
+                        column '2.1'
+                        column '2.2'
                     }
                 }
 
                 table {
                     row {
-                        cell '3-1', backgroundColor: backgroundColors[2]
-                        cell '3-2'
+                        column '3-1', backgroundColor: backgroundColors[2]
+                        column '3-2'
                     }
                 }
             }
@@ -474,15 +474,15 @@ class BuilderSpec extends Specification {
         then:
         table1.backgroundColor.hex == backgroundColors[0] - '#'
         table1.children[0].backgroundColor.hex == backgroundColors[0] - '#'
-        table1.children[0].children.each { Cell cell ->
-            assert cell.backgroundColor.hex == backgroundColors[0] - '#'
+        table1.children[0].children.each { Column column ->
+            assert column.backgroundColor.hex == backgroundColors[0] - '#'
         }
 
         and:
         table2.backgroundColor == null
         table2.children[0].backgroundColor.hex == backgroundColors[1] - '#'
-        table2.children[0].children.each { Cell cell ->
-            assert cell.backgroundColor.hex == backgroundColors[1] - '#'
+        table2.children[0].children.each { Column column ->
+            assert column.backgroundColor.hex == backgroundColors[1] - '#'
         }
 
         and:
@@ -536,11 +536,11 @@ class BuilderSpec extends Specification {
             document {
                 table {
                     row {
-                        cell 'OUTER TABLE'
-                        cell {
+                        column 'OUTER TABLE'
+                        column {
                             table {
                                 row {
-                                    cell 'INNER TABLE'
+                                    column 'INNER TABLE'
                                 }
                             }
                         }
@@ -565,14 +565,14 @@ class BuilderSpec extends Specification {
             document {
                 table(width: 450) {
                     row {
-                        cell(width: 200) {
+                        column(width: 200) {
                             table(width: 400) {
                                 row {
-                                    cell 'INNER TABLE'
+                                    column 'INNER TABLE'
                                 }
                             }
                         }
-                        cell(width: 250)
+                        column(width: 250)
                     }
                 }
             }

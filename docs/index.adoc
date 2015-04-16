@@ -215,17 +215,17 @@ builder.create {
     document {
         table {  // <1>
             row {
-                cell "Cell1" 
-                cell {
-                    text "Cell2" // <2> 
+                column "Column1"
+                column {
+                    text "Column2" // <2>
                 }
             }
         }
         
         table(width: 6.inches, padding: 20.px, border: [size: 3.px, color: '#FF0000']) { // <3>
             row {
-                cell 'Cell1', width: 2.inches
-                cell 'Cell2', align: 'right' // <4>
+                column 'Column1', width: 2.inches
+                column 'Column2', align: 'right' // <4>
             }
         }
         
@@ -233,9 +233,9 @@ builder.create {
 }
 ----
 <1> Table with default padding, width and border. If not specified width is 100% of the available area.
-<2> The cell contains a single paragraph so the same elements can be added here (text, images or line breaks).
+<2> The column contains a single paragraph so the same elements can be added here (text, images or line breaks).
 <3> Table with custom width padding and border
-<4> The width of the second cell is calculated based on the table width and the previous cell width
+<4> The width of the second column is calculated based on the table width and the previous column width
 
 [.thumb]
 .result of table.groovy
@@ -287,8 +287,8 @@ builder.create {
         footer: { info ->
             table(border: [size: 0]) {
                 row {
-                    cell "Date Generated: ${info.dateGenerated.format('yyyy-MM-dd hh:mm a')}" // <5>
-                    cell "Page ${info.pageNumber} of ${info.pageCount}", align: 'right' // <6>
+                    column "Date Generated: ${info.dateGenerated.format('yyyy-MM-dd hh:mm a')}" // <5>
+                    cecolumnll "Page ${info.pageNumber} of ${info.pageCount}", align: 'right' // <6>
                 }
             }
         }

@@ -19,7 +19,7 @@ class LineBreakFactory extends AbstractFactory {
 			paragraph = builder.current
 		}
 		else {
-			paragraph = builder.getCellParagraph(builder.current)
+			paragraph = builder.getColumnParagraph(builder.current)
 		}
 		lineBreak.parent = paragraph
 		paragraph.children << lineBreak

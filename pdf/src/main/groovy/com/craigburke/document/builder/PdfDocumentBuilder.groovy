@@ -205,10 +205,10 @@ class PdfDocumentBuilder extends DocumentBuilder {
             resolveStrategy = Closure.DELEGATE_FIRST
 
             tableNode.children.each {
-                def cells = it.children
+                def columns = it.children
                 row {
-                    cells.each {
-                        cell(width:"${it.width ?: 0}")
+                    columns.each {
+                        column(width:"${it.width ?: 0}")
                     }
                 }
             }

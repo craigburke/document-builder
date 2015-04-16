@@ -18,7 +18,7 @@ class TextFactory extends AbstractFactory {
             paragraph = builder.current
         }
         else {
-            paragraph = builder.getCellParagraph(builder.current)
+            paragraph = builder.getColumnParagraph(builder.current)
         }
         List elements = paragraph.addText(value.toString())
          elements.each { node ->

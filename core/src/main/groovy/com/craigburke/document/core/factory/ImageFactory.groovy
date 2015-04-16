@@ -37,7 +37,7 @@ class ImageFactory extends AbstractFactory {
             paragraph = builder.current
         }
         else {
-            paragraph = builder.getCellParagraph(builder.current)
+            paragraph = builder.getColumnParagraph(builder.current)
         }
         image.parent = paragraph
         paragraph.children << image

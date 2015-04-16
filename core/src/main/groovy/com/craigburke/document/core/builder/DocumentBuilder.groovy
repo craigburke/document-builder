@@ -3,7 +3,7 @@ package com.craigburke.document.core.builder
 import com.craigburke.document.core.BackgroundAssignable
 import com.craigburke.document.core.BaseNode
 import com.craigburke.document.core.BlockNode
-import com.craigburke.document.core.Cell
+import com.craigburke.document.core.Column
 import com.craigburke.document.core.EmbeddedFont
 import com.craigburke.document.core.Heading
 import com.craigburke.document.core.Linkable
@@ -21,7 +21,7 @@ import com.craigburke.document.core.factory.ImageFactory
 import com.craigburke.document.core.factory.TextFactory
 import com.craigburke.document.core.factory.TableFactory
 import com.craigburke.document.core.factory.RowFactory
-import com.craigburke.document.core.factory.CellFactory
+import com.craigburke.document.core.factory.ColumnFactory
 
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Font
@@ -124,14 +124,14 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
 		keys
 	}
 
-	TextBlock getCellParagraph(Cell cell) {
-		if (cell.children && cell.children[0] instanceof TextBlock) {
-			cell.children[0]
+	TextBlock getColumnParagraph(Column column) {
+		if (column.children && column.children[0] instanceof TextBlock) {
+			column.children[0]
 		}
 		else {
-			TextBlock paragraph = new TextBlock(font:cell.font.clone(), parent:cell, align:cell.align)
+			TextBlock paragraph = new TextBlock(font:column.font.clone(), parent:column, align:column.align)
 			setNodeProperties(paragraph, [margin:[top:0, left:0, bottom:0, right:0]], 'paragraph')
-			cell.children << paragraph
+			column.children << paragraph
 			paragraph
 		}
 	}
@@ -167,7 +167,7 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
 		registerFactory('text', new TextFactory())
 		registerFactory('table', new TableFactory())
 		registerFactory('row', new RowFactory())
-		registerFactory('cell', new CellFactory())
+		registerFactory('column', new ColumnFactory())
 		registerFactory('heading1', new HeadingFactory())
 		registerFactory('heading2', new HeadingFactory())
 		registerFactory('heading3', new HeadingFactory())

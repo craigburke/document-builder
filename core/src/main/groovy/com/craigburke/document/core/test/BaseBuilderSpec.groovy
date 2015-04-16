@@ -91,7 +91,7 @@ abstract class BaseBuilderSpec extends Specification {
             document {
                 table {
                     row {
-                        cell {
+						column {
                             text 'FOOBAR'
                         }
                     }
@@ -111,8 +111,8 @@ abstract class BaseBuilderSpec extends Specification {
             document {
                 table(width:403.px, border:[size:1.px]) {
                     row {
-                        cell('Cell 1', width:200.px)
-                        cell('Cell 2', width:200.px)
+						column('Column 1', width:200.px)
+						column('Column 2', width:200.px)
                     }
                 }
 		    }
@@ -159,16 +159,16 @@ abstract class BaseBuilderSpec extends Specification {
 		paragraphs[2].text == 'Bar'
 	}
 
-	def "create a table with multiple cells"() {
+	def "create a table with multiple columns"() {
 		when:
 		builder.create {
             document {
                 table {
                     row {
-                        cell 'Cell1'
-                        cell 'Cell2'
-                        cell {
-                            text 'Cell3'
+						column 'Column1'
+						column 'Column2'
+						column {
+                            text 'Column3'
                         }
                     }
 
@@ -187,13 +187,13 @@ abstract class BaseBuilderSpec extends Specification {
                 table {
                     50.times { i ->
                         row {
-                            cell {
+							column {
                                 text 'TEST ' * (i + 1)
                             }
-                            cell {
+                            column {
                                 text 'FOO ' * (i + 1)
                             }
-                            cell {
+							column {
                                 text 'BAR ' * (i + 1)
                             }
                         }
@@ -259,7 +259,7 @@ abstract class BaseBuilderSpec extends Specification {
 	def "table header"() {
 		when:
 		builder.create {
-			document ( header: { table { row { cell 'HEADER' } } } ) {
+			document ( header: { table { row { column 'HEADER' } } } ) {
 				paragraph 'Content'
 			}
 		}
@@ -271,7 +271,7 @@ abstract class BaseBuilderSpec extends Specification {
 	def "table footer"() {
 		when:
 		builder.create {
-			document ( footer: { table { row { cell 'FOOTER' } } } ) {
+			document ( footer: { table { row { column 'FOOTER' } } } ) {
 				paragraph 'Content'
 			}
 		}
@@ -286,11 +286,11 @@ abstract class BaseBuilderSpec extends Specification {
 			document {
 				table {
 					row {
-						cell 'OUTER TABLE'
-						cell {
+						column 'OUTER TABLE'
+						column {
 							table {
 								row {
-									cell 'INNER TABLE'
+									column 'INNER TABLE'
 								}
 							}
 						}

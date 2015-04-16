@@ -2,7 +2,7 @@ package com.craigburke.document.builder
 
 import static com.craigburke.document.core.UnitUtil.twipToPoint
 
-import com.craigburke.document.core.Cell
+import com.craigburke.document.core.Column
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Font
 import com.craigburke.document.core.Image
@@ -45,15 +45,15 @@ class WordDocumentLoader {
             tableItem.rows.each { rowItem ->
                 Row row = new Row(element:rowItem, parent:table)
                 table.children << row
-                rowItem.tableCells.each { cellItem ->
-                    Cell cell = new Cell(element:cellItem, parent:row)
-                    int padding = cellItem.CTTc.tcPr.tcMar.left.w
-                    int width = cellItem.CTTc.tcPr.tcW.w
-                    cell.width = twipToPoint(width + (padding * 2))
+                rowItem.tableCells.each { columnItem ->
+                    Column column = new Column(element:columnItem, parent:row)
+                    int padding = columnItem.CTTc.tcPr.tcMar.left.w
+                    int width = columnItem.CTTc.tcPr.tcW.w
+                    column.width = twipToPoint(width + (padding * 2))
 
-                    cell.children = getParagraphs(cellItem.paragraphs)
+                    column.children = getParagraphs(columnItem.paragraphs)
 
-                    row.children << cell
+                    row.children << column
                 }
             }
 

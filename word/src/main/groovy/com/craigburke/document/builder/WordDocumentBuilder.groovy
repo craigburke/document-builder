@@ -8,7 +8,7 @@ import static com.craigburke.document.core.UnitUtil.pointToHalfPoint
 import com.craigburke.document.core.HeaderFooterOptions
 import com.craigburke.document.core.builder.RenderState
 import com.craigburke.document.core.BlockNode
-import com.craigburke.document.core.Cell
+import com.craigburke.document.core.Column
 import com.craigburke.document.core.Row
 import com.craigburke.document.core.Font
 import com.craigburke.document.core.Image
@@ -312,22 +312,22 @@ class WordDocumentBuilder extends DocumentBuilder {
 
 			table.children.each { Row row ->
 				w.tr {
-					row.children.each { Cell cell ->
+					row.children.each { Column column ->
 						w.tc {
 							w.tcPr {
 								w.vAlign('w:val':'center')
-								w.tcW('w:w':pointToTwip(cell.width - (table.padding * 2)))
+								w.tcW('w:w':pointToTwip(column.width - (table.padding * 2)))
 								w.tcMar {
 									w.top('w:w':pointToTwip(table.padding))
 									w.bottom('w:w':pointToTwip(table.padding))
 									w.left('w:w':pointToTwip(table.padding))
 									w.right('w:w':pointToTwip(table.padding))
 								}
-								if (cell.backgroundColor) {
-									w.shd('w:val':'clear', 'w:color':'auto', 'w:fill':cell.backgroundColor.hex)
+								if (column.backgroundColor) {
+									w.shd('w:val':'clear', 'w:color':'auto', 'w:fill':column.backgroundColor.hex)
 								}
 							}
-							cell.children.each {
+							column.children.each {
 								if (it instanceof TextBlock) {
 									addParagraph(builder, it)
 								}

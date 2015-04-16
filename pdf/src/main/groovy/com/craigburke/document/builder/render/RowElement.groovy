@@ -1,7 +1,7 @@
 package com.craigburke.document.builder.render
 
 import com.craigburke.document.builder.PdfDocument
-import com.craigburke.document.core.Cell
+import com.craigburke.document.core.Column
 import com.craigburke.document.core.Row
 import com.craigburke.document.core.Table
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
@@ -14,7 +14,7 @@ class RowElement implements Renderable {
 
     Row row
     boolean spansMultiplePages = false
-    List<CellElement> cellElements = []
+    List<ColumnElement> columnElements = []
 
     RowElement(Row row, PdfDocument pdfDocument, float startX) {
         this.row = row
@@ -22,33 +22,33 @@ class RowElement implements Renderable {
         this.pdfDocument = pdfDocument
 
         Table table = row.parent
-        float cellX = startX + table.border.size
-        row.children.each { Cell cell ->
-            cellElements << new CellElement(cell, pdfDocument, cellX)
-            cellX += cell.width + table.border.size
+        float columnX = startX + table.border.size
+        row.children.each { Column column ->
+            columnElements << new ColumnElement(column, pdfDocument, columnX)
+            columnX += column.width + table.border.size
         }
     }
 
     void parseUntilHeight(float height) {
-        cellElements*.parseUntilHeight(height)
+        columnElements*.parseUntilHeight(height)
     }
 
     boolean getFullyParsed() {
-        cellElements.every { it.fullyParsed }
+        columnElements.every { it.fullyParsed }
     }
 
     float getTotalHeight() {
-        cellElements*.totalHeight.max() ?: 0
+        columnElements*.totalHeight.max() ?: 0
     }
 
     float getParsedHeight() {
-        cellElements*.parsedHeight.max() ?: 0
+        columnElements*.parsedHeight.max() ?: 0
     }
 
     void renderElement(float startY) {
         renderBackgrounds(startY)
         renderBorders(startY)
-        cellElements*.render(startY)
+        columnElements*.render(startY)
         if (!fullyParsed) {
             if (parsedHeight) {
                 spansMultiplePages = true
@@ -67,13 +67,13 @@ class RowElement implements Renderable {
     private void renderBackgrounds(float startY) {
         float translatedStartY = pdfDocument.translateY(startY + parsedHeight + tableBorderOffset)
         PDPageContentStream contentStream = pdfDocument.contentStream
-        cellElements.each { CellElement cellElement ->
-            Cell cell = cellElement.cell
-            if (cell.backgroundColor) {
-                contentStream.setNonStrokingColor(*cell.backgroundColor.rgb)
-                float totalWidth = cell.width + table.border.size
+        columnElements.each { ColumnElement columnElement ->
+            Column column = columnElement.column
+            if (column.backgroundColor) {
+                contentStream.setNonStrokingColor(*column.backgroundColor.rgb)
+                float totalWidth = column.width + table.border.size
                 float totalHeight = parsedHeight + table.border.size
-                float startX = cellElement.startX - tableBorderOffset
+                float startX = columnElement.startX - tableBorderOffset
                 contentStream.fillRect(startX, translatedStartY, totalWidth, totalHeight)
             }
         }
@@ -100,16 +100,16 @@ class RowElement implements Renderable {
             contentStream.drawLine(rowStartX, translatedYBottom, rowEndX, translatedYBottom)
         }
 
-        cellElements.eachWithIndex { cellElement, i ->
+        columnElements.eachWithIndex { columnElement, i ->
             if (i == 0) {
-                float cellStartX = cellElement.startX - table.border.size
-                contentStream.drawLine(cellStartX, translatedYTop, cellStartX, translatedYBottom)
+                float columnStartX = columnElement.startX - table.border.size
+                contentStream.drawLine(columnStartX, translatedYTop, columnStartX, translatedYBottom)
             }
-            float cellEndX = cellElement.startX + cellElement.cell.width
-            if (i == cellElements.size() - 1) {
-                cellEndX += table.border.size
+            float columnEndX = columnElement.startX + columnElement.column.width
+            if (i == columnElements.size() - 1) {
+                columnEndX += table.border.size
             }
-            contentStream.drawLine(cellEndX, translatedYTop, cellEndX, translatedYBottom)
+            contentStream.drawLine(columnEndX, translatedYTop, columnEndX, translatedYBottom)
         }
     }
 
