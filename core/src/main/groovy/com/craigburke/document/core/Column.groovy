@@ -7,4 +7,5 @@ package com.craigburke.document.core
 class Column extends BaseNode implements Stylable, Alignable, BackgroundAssignable {
 	List children = []
 	Integer width
+	Integer colspan = 1
 }

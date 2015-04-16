@@ -590,4 +590,31 @@ class BuilderSpec extends Specification {
         and:
         innerTable.width == 180
     }
+
+    def "widths are set correctly with table that uses colspans"() {
+        when:
+        Document result = builder.create {
+            document {
+                table(width: 450, columns: [200, 100, 150]) {
+                    row {
+                        column(colspan:2)
+                        column()
+                    }
+                }
+            }
+        }.document
+
+        Table table = result.children[0]
+        Row row = table.children[0]
+
+        then:
+        table.width == 450
+
+        and:
+        row.children[0].width == 300
+
+        and:
+        row.children[1].width == 150
+    }
+
 }

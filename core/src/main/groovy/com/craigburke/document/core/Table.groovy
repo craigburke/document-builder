@@ -41,8 +41,12 @@ class Table extends BlockNode implements BackgroundAssignable {
         }
 
         children.each { row ->
+            int columnWidthIndex = 0
             row.children.eachWithIndex { column, index ->
-                column.width = columnWidths[index]
+                int endIndex = columnWidthIndex + column.colspan - 1
+                int missingBorderWidth = (column.colspan - 1) * border.size
+                column.width = columnWidths[columnWidthIndex..endIndex].sum() + missingBorderWidth
+                columnWidthIndex += column.colspan
                 column.children.findAll { it instanceof Table }.each { it.normalizeColumnWidths() }
             }
         }

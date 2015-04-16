@@ -326,6 +326,9 @@ class WordDocumentBuilder extends DocumentBuilder {
 								if (column.backgroundColor) {
 									w.shd('w:val':'clear', 'w:color':'auto', 'w:fill':column.backgroundColor.hex)
 								}
+								if (column.colspan > 1) {
+									w.gridSpan('w:val':column.colspan)
+								}
 							}
 							column.children.each {
 								if (it instanceof TextBlock) {
