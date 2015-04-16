@@ -20,13 +20,13 @@ class CellElement implements Renderable {
 
         Table table = cell.parent.parent
         int renderWidth = cell.width - (table.padding * 2)
-
+        float childStartX = startX + table.padding
         cell.children.each { child ->
             if (child instanceof TextBlock) {
-                childElements << new ParagraphElement(child, pdfDocument, startX, renderWidth)
+                childElements << new ParagraphElement(child, pdfDocument, childStartX, renderWidth)
             }
             else if (child instanceof Table) {
-                childElements << new TableElement(child, pdfDocument, startX)
+                childElements << new TableElement(child, pdfDocument, childStartX)
             }
         }
     }
@@ -36,16 +36,21 @@ class CellElement implements Renderable {
     }
 
     float getTotalHeight() {
-        (childElements*.totalHeight.sum() ?: 0) as float
+        float padding = cell.parent.parent.padding
+        float contentHeight = (childElements*.totalHeight.sum() ?: 0f) as float
+        contentHeight + padding * 2
     }
 
     float getParsedHeight() {
-        (childElements*.parsedHeight.sum() ?: 0) as float
+        float padding = cell.parent.parent.padding
+        float contentHeight = (childElements*.parsedHeight.sum() ?: 0f) as float
+        contentHeight + padding + (fullyParsed ? padding : 0f)
     }
 
-    void render() {
+    void renderElement(float startY) {
         pdfDocument.x = startX
-        childElements*.render()
+        float childY = startY + cell.parent.parent.padding
+        childElements[0].render(childY)
     }
 
     void parseUntilHeight(float height) {

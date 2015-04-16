@@ -20,11 +20,11 @@ class ParagraphLine {
         this.maxWidth = maxWidth
     }
 
-    int getRemainingWidth() {
+    float getRemainingWidth() {
         maxWidth - contentWidth
     }
 
-    int getContentHeight() {
+    float getContentHeight() {
         elements.collect {
             if (it instanceof TextElement) { it.node.font.size }
             else if (it instanceof ImageElement ) { it.node.height }
@@ -32,11 +32,11 @@ class ParagraphLine {
         }.max() ?: 0
     }
 
-    int getTotalHeight() {
+    float getTotalHeight() {
         contentHeight + lineSpacing
     }
 
-    int getLineSpacing() {
+    float getLineSpacing() {
         if (paragraph.lineSpacing) {
             paragraph.lineSpacing
         }

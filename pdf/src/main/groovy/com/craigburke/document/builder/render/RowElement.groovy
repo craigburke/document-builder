@@ -15,8 +15,7 @@ class RowElement implements Renderable {
     Row row
     boolean spansMultiplePages = false
     List<CellElement> cellElements = []
-    private float startY
-    
+
     RowElement(Row row, PdfDocument pdfDocument, float startX) {
         this.row = row
         this.startX = startX
@@ -46,24 +45,17 @@ class RowElement implements Renderable {
         cellElements*.parsedHeight.max() ?: 0
     }
 
-    void render() {
-        if (firstRow) {
-            pdfDocument.y += table.border.size
-        }
-        startY = pdfDocument.y
-        renderBackgrounds()
-        renderBorders()
-        cellElements.each { 
-            pdfDocument.y = startY
-            it.render()
-        }
+    void renderElement(float startY) {
+        renderBackgrounds(startY)
+        renderBorders(startY)
+        cellElements*.render(startY)
         if (!fullyParsed) {
             if (parsedHeight) {
                 spansMultiplePages = true
             }
         }
     }
-    
+
     private Table getTable() {
         row.parent
     }
@@ -72,7 +64,7 @@ class RowElement implements Renderable {
         table.border.size.floatValue() / 2f
     }
 
-    private void renderBackgrounds() {
+    private void renderBackgrounds(float startY) {
         float translatedStartY = pdfDocument.translateY(startY + parsedHeight + tableBorderOffset)
         PDPageContentStream contentStream = pdfDocument.contentStream
         cellElements.each { CellElement cellElement ->
@@ -87,7 +79,7 @@ class RowElement implements Renderable {
         }
     }
 
-    private void renderBorders() {
+    private void renderBorders(float startY) {
         if (!table.border.size) {
             return
         }
@@ -137,10 +129,6 @@ class RowElement implements Renderable {
         def borderColor = table.border.color.rgb
         contentStream.setStrokingColor(*borderColor)
         contentStream.setLineWidth(table.border.size)
-    }
-    
-    boolean isFirstRow() {
-        (row == row.parent.children.first())
     }
 
 }

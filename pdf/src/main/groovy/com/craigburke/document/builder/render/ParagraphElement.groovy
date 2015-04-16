@@ -42,7 +42,7 @@ class ParagraphElement implements Renderable {
             fullyParsed = true
             return
         }
-
+        positionStart = positionEnd
         boolean reachedEnd = false
         float parsedHeight = 0
 
@@ -65,16 +65,15 @@ class ParagraphElement implements Renderable {
         }
     }
 
-    void render() {
+    void renderElement(float startY) {
         lines[positionStart..positionEnd].each { ParagraphLine line ->
             pdfDocument.x = startX
             renderLine(line)
         }
-        positionStart = positionEnd
     }
 
     float getTotalHeight() {
-        node.margin.top + lines.sum { it.contentHeight + it.lineSpacing } + node.margin.bottom
+        node.margin.top + lines.sum { it.totalHeight } + node.margin.bottom
     }
 
     float getParsedHeight() {

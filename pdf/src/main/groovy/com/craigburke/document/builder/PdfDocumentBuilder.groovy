@@ -55,7 +55,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
             while (!paragraphElement.fullyParsed) {
                 paragraphElement.parseUntilHeight(pdfDocument.remainingPageHeight)
-                paragraphElement.render()
+                paragraphElement.render(pdfDocument.y)
+                pdfDocument.scrollDownPage(paragraphElement.parsedHeight)
                 if (!paragraphElement.fullyParsed) {
                     pdfDocument.addPage()
                 }
@@ -72,7 +73,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
             TableElement tableElement = new TableElement(table, pdfDocument, pdfDocument.x)
             while (!tableElement.fullyParsed) {
                 tableElement.parseUntilHeight(pdfDocument.remainingPageHeight)
-                tableElement.render()
+                tableElement.render(pdfDocument.y)
+                pdfDocument.scrollDownPage(tableElement.parsedHeight)
                 if (!tableElement.fullyParsed) {
                     pdfDocument.addPage()
                 }
@@ -116,14 +118,15 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
     private void renderHeaderFooter(headerFooter) {
         float startX = document.margin.left + headerFooter.margin.left
-        
+        float startY
+
         if (renderState == RenderState.HEADER) {
-            pdfDocument.y = headerFooter.margin.top
+            startY = headerFooter.margin.top
         }
         else {
-            pdfDocument.y = pdfDocument.pageBottomY + document.margin.bottom - getElementHeight(headerFooter)
+            startY = pdfDocument.pageBottomY + document.margin.bottom - getElementHeight(headerFooter)
         }
-        
+
         def renderer
         if (headerFooter instanceof TextBlock) {
             renderer = new ParagraphElement(headerFooter, pdfDocument, startX, document.width)
@@ -131,14 +134,14 @@ class PdfDocumentBuilder extends DocumentBuilder {
         else {
             renderer = new TableElement(headerFooter as Table, pdfDocument, startX)
         }
-        
+
         renderer.parseUntilHeight(document.height)
-        renderer.render()
+        renderer.render(startY)
     }
-    
+
     private float getElementHeight(element) {
         float width = document.width - document.margin.top - document.margin.bottom
-        
+
         if (element instanceof TextBlock) {
             new ParagraphElement(element, pdfDocument, 0, width).totalHeight
         }

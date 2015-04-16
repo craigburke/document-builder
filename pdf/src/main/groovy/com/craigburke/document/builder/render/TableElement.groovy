@@ -61,9 +61,13 @@ class TableElement implements Renderable {
     float getParsedHeight() {
         rowElements.max { it.parsedHeight }.parsedHeight ?: 0
     }
-    
-    void render() {
-        rowElements[rowStart..rowEnd]*.render()
+
+    void renderElement(float startY) {
+        float rowStartY = startY + table.border.size
+        rowElements[rowStart..rowEnd].each {
+            it.render(rowStartY)
+            rowStartY += it.parsedHeight + table.border.size
+        }
     }
 
 }

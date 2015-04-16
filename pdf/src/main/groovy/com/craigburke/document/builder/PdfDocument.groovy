@@ -63,9 +63,9 @@ class PdfDocument {
         currentPage.mediaBox.height - y
     }
 
-    void scrollDownPage(int amount) {
+    void scrollDownPage(float amount) {
         if (remainingPageHeight < amount) {
-            int amountDiff = amount - remainingPageHeight
+            float amountDiff = amount - remainingPageHeight
             addPage()
             y += amountDiff
         }
