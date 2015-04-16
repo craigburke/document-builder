@@ -30,11 +30,11 @@ class CellElement implements Renderable {
             }
         }
     }
-    
+
     private float getPadding() {
         cell.parent.parent.padding
     }
-    
+
     boolean getFullyParsed() {
         childElements.every { it.fullyParsed }
     }
@@ -54,7 +54,7 @@ class CellElement implements Renderable {
         float childY = startY + cell.parent.parent.padding
         childElements*.render(childY)
     }
-    
+
     void parseUntilHeight(float height) {
         float totalHeight = height - (padding * 2)
         childElements*.parseUntilHeight(totalHeight)
