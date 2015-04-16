@@ -39,7 +39,7 @@ class RowElement implements Renderable {
     private float getPadding() {
         table.padding
     }
-    
+
     float getTotalHeight() {
         float totalHeight = columnElements*.totalHeight.max()
         float totalBorder = row.parent.border.size * (firstRow ? 2 : 1)
@@ -79,7 +79,7 @@ class RowElement implements Renderable {
         float backgroundStartY = startY + parsedHeight + (firstRow ? 0 : tableBorderOffset)
         float translatedStartY = pdfDocument.translateY(backgroundStartY)
         PDPageContentStream contentStream = pdfDocument.contentStream
-       
+
         columnElements.each { ColumnElement columnElement ->
             Column column = columnElement.column
             if (column.backgroundColor) {
@@ -142,7 +142,7 @@ class RowElement implements Renderable {
         contentStream.setStrokingColor(*borderColor)
         contentStream.setLineWidth(table.border.size)
     }
-    
+
     boolean isFirstRow() {
         (row == row.parent.children.first())
     }
