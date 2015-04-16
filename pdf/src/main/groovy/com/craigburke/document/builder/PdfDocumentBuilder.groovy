@@ -199,7 +199,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
     private void addTableToMetadata(builder, Table tableNode) {
 
-        builder.table(columns:tableNode.columns, width:tableNode.width, borderSize:tableNode.border.size) {
+        builder.table(columns:tableNode.columnCount, width:tableNode.width, borderSize:tableNode.border.size) {
 
             delegate = builder
             resolveStrategy = Closure.DELEGATE_FIRST

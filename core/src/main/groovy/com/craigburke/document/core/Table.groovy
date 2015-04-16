@@ -10,47 +10,39 @@ class Table extends BlockNode implements BackgroundAssignable {
 
     Integer padding = 10
 	Integer width
+    List<Integer> columns = []
 
-    int getColumns() {
-        (children) ? children.max { it.children.size() }.children.size() : 0
+    int getColumnCount() {
+        if (columns) {
+            columns.size()
+        }
+        else {
+            (children) ? children.max { it.children.size() }.children.size() : 0
+        }
     }
 
     void normalizeColumnWidths() {
-        this.width = Math.min(this.width ?: maxWidth, maxWidth)
-        int totalBorderWidth = (columns + 1) * border.size
-
-        def columnWidths = []
-        int totalColumnWidth = 0
-        def columns = this.children.first()?.children
-
-        columns?.each {
-            columnWidths << it.width
-            totalColumnWidth += it.width ?: 0
+        width = Math.min(width ?: maxWidth, maxWidth)
+        if (!columns) {
+            columnCount.times { columns << 1 }
         }
+        int relativeTotal = columns.sum()
+        int totalBorderWidth = (columnCount + 1) * border.size
+        int totalCellWidth = width - totalBorderWidth
 
-        int unspecifiedColumnCount = columnWidths.count { !it }
-
-        if (unspecifiedColumnCount) {
-            int remainingWidth = width - totalColumnWidth - totalBorderWidth
-            int calculatedColumnWidth = Math.round(remainingWidth / unspecifiedColumnCount)
-            columnWidths = columnWidths.collect { it != null ? it : calculatedColumnWidth }
-
-            children.each { row ->
-                row.children.eachWithIndex { column, index ->
-                    column.width = columnWidths[index]
-                }
+        List<Integer> columnWidths = []
+        columns.eachWithIndex { column, index ->
+            if (index == columns.size() - 1) {
+                columnWidths << totalCellWidth - ((columnWidths.sum() ?: 0) as int)
+            }
+            else {
+                columnWidths << (Math.ceil((columns[index] / relativeTotal) * totalCellWidth) as int)
             }
         }
 
-        int totalDeclaredWidth = columnWidths.sum() + totalBorderWidth
-
-        if (totalDeclaredWidth != width) {
-            int diff = (width - totalDeclaredWidth)
-            columns?.last().width += diff
-        }
-
         children.each { row ->
-            row.children.each { column ->
+            row.children.eachWithIndex { column, index ->
+                column.width = columnWidths[index]
                 column.children.findAll { it instanceof Table }.each { it.normalizeColumnWidths() }
             }
         }

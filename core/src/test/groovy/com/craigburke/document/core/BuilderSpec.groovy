@@ -198,7 +198,7 @@ class BuilderSpec extends Specification {
         Table table = result.document.children[0]
 
         then:
-        table.columns == 3
+        table.columnCount == 3
     }
 
     def "create a simple paragraph"() {
@@ -341,8 +341,8 @@ class BuilderSpec extends Specification {
             document {
                 table(width: 250, padding: 0, border: [size: 0]) {
                     row {
-                        column('FOOBAR', width: 100)
-                        column('BLAH')
+                        column 'FOOBAR'
+                        column 'BLAH'
                     }
                 }
             }
@@ -356,10 +356,10 @@ class BuilderSpec extends Specification {
         table.width == 250
 
         and:
-        column1.width == 100
+        column1.width == 125
 
         and:
-        column2.width == 150
+        column2.width == 125
     }
 
     def "override or inherit font settings"() {
@@ -563,16 +563,16 @@ class BuilderSpec extends Specification {
         when:
         Document result = builder.create {
             document {
-                table(width: 450) {
+                table(width: 450, columns: [200, 250]) {
                     row {
-                        column(width: 200) {
-                            table(width: 400) {
+                        column {
+                            table(width: 400, padding: 0) {
                                 row {
                                     column 'INNER TABLE'
                                 }
                             }
                         }
-                        column(width: 250)
+                        column()
                     }
                 }
             }
