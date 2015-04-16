@@ -13,7 +13,6 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
 class RowElement implements Renderable {
 
     Row row
-    boolean spansMultiplePages = false
     List<ColumnElement> columnElements = []
 
     RowElement(Row row, PdfDocument pdfDocument, float startX) {
@@ -29,31 +28,43 @@ class RowElement implements Renderable {
         }
     }
 
-    void parseUntilHeight(float height) {
-        columnElements*.parseUntilHeight(height)
+    void parse(float height) {
+        columnElements*.parse(height)
     }
 
     boolean getFullyParsed() {
         columnElements.every { it.fullyParsed }
     }
 
+    private float getPadding() {
+        table.padding
+    }
+    
     float getTotalHeight() {
-        columnElements*.totalHeight.max() ?: 0
+        float totalHeight = columnElements*.totalHeight.max()
+        float totalBorder = row.parent.border.size * (firstRow ? 2 : 1)
+        totalHeight + (padding * 2) + totalBorder
     }
 
     float getParsedHeight() {
-        columnElements*.parsedHeight.max() ?: 0
+        float parsedHeight = columnElements*.parsedHeight.max()
+        if (firstRow) {
+            parsedHeight += table.border.size
+        }
+        if (onFirstPage) {
+            parsedHeight += padding
+        }
+        if (fullyParsed) {
+            parsedHeight += padding + table.border.size
+        }
+
+        parsedHeight
     }
 
     void renderElement(float startY) {
         renderBackgrounds(startY)
         renderBorders(startY)
         columnElements*.render(startY)
-        if (!fullyParsed) {
-            if (parsedHeight) {
-                spansMultiplePages = true
-            }
-        }
     }
 
     private Table getTable() {
@@ -65,16 +76,16 @@ class RowElement implements Renderable {
     }
 
     private void renderBackgrounds(float startY) {
-        float translatedStartY = pdfDocument.translateY(startY + parsedHeight + tableBorderOffset)
+        float backgroundStartY = startY + parsedHeight + (firstRow ? 0 : tableBorderOffset)
+        float translatedStartY = pdfDocument.translateY(backgroundStartY)
         PDPageContentStream contentStream = pdfDocument.contentStream
+       
         columnElements.each { ColumnElement columnElement ->
             Column column = columnElement.column
             if (column.backgroundColor) {
                 contentStream.setNonStrokingColor(*column.backgroundColor.rgb)
-                float totalWidth = column.width + table.border.size
-                float totalHeight = parsedHeight + table.border.size
                 float startX = columnElement.startX - tableBorderOffset
-                contentStream.fillRect(startX, translatedStartY, totalWidth, totalHeight)
+                contentStream.fillRect(startX, translatedStartY, column.width, parsedHeight)
             }
         }
     }
@@ -84,7 +95,7 @@ class RowElement implements Renderable {
             return
         }
 
-        float translatedYTop = pdfDocument.translateY(startY - table.border.size)
+        float translatedYTop = pdfDocument.translateY(startY - tableBorderOffset)
         float translatedYBottom = pdfDocument.translateY(startY + parsedHeight)
         float rowStartX = startX - tableBorderOffset
         float rowEndX = startX + table.width.floatValue() + tableBorderOffset
@@ -92,7 +103,7 @@ class RowElement implements Renderable {
         PDPageContentStream contentStream = pdfDocument.contentStream
         setBorderOptions(contentStream)
 
-        if (shouldRenderTopBorder()) {
+        if (shouldRenderTopBorder(startY)) {
             contentStream.drawLine(rowStartX, translatedYTop, rowEndX, translatedYTop)
         }
 
@@ -113,11 +124,12 @@ class RowElement implements Renderable {
         }
     }
 
-    private boolean shouldRenderTopBorder() {
-        if (row == table.children.first()) {
+    private boolean shouldRenderTopBorder(float startY) {
+        float pageTop = pdfDocument.document.margin.top + table.border.size
+        if (row == table.children.first() && onFirstPage) {
             true
         }
-        else if (pdfDocument.y == pdfDocument.document.margin.top && !spansMultiplePages) {
+        else if (startY == pageTop && onFirstPage) {
             true
         }
         else {
@@ -129,6 +141,10 @@ class RowElement implements Renderable {
         def borderColor = table.border.color.rgb
         contentStream.setStrokingColor(*borderColor)
         contentStream.setLineWidth(table.border.size)
+    }
+    
+    boolean isFirstRow() {
+        (row == row.parent.children.first())
     }
 
 }

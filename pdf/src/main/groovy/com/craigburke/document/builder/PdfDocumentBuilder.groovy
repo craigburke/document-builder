@@ -48,13 +48,12 @@ class PdfDocumentBuilder extends DocumentBuilder {
             int renderStartX = document.margin.left + paragraph.margin.left
 
             pdfDocument.x = renderStartX
-            pdfDocument.scrollDownPage(paragraph.margin.top)
 
             ParagraphElement paragraphElement =
                     new ParagraphElement(paragraph, pdfDocument, renderStartX, maxLineWidth)
 
             while (!paragraphElement.fullyParsed) {
-                paragraphElement.parseUntilHeight(pdfDocument.remainingPageHeight)
+                paragraphElement.parse(pdfDocument.remainingPageHeight)
                 paragraphElement.render(pdfDocument.y)
                 if (paragraphElement.fullyParsed) {
                     pdfDocument.scrollDownPage(paragraphElement.totalHeight)
@@ -63,18 +62,16 @@ class PdfDocumentBuilder extends DocumentBuilder {
                     pdfDocument.addPage()
                 }
             }
-            pdfDocument.scrollDownPage(paragraph.margin.bottom)
         }
     }
 
     def onTableComplete = { Table table ->
         if (renderState == RenderState.PAGE) {
             pdfDocument.x = table.margin.left + document.margin.left
-            pdfDocument.scrollDownPage(table.margin.top)
 
             TableElement tableElement = new TableElement(table, pdfDocument, pdfDocument.x)
             while (!tableElement.fullyParsed) {
-                tableElement.parseUntilHeight(pdfDocument.remainingPageHeight)
+                tableElement.parse(pdfDocument.remainingPageHeight)
                 tableElement.render(pdfDocument.y)
                 if (tableElement.fullyParsed) {
                     pdfDocument.scrollDownPage(tableElement.totalHeight)
@@ -83,8 +80,6 @@ class PdfDocumentBuilder extends DocumentBuilder {
                     pdfDocument.addPage()
                 }
             }
-
-            pdfDocument.scrollDownPage(table.margin.bottom)
         }
     }
 
@@ -139,7 +134,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
             renderer = new TableElement(headerFooter as Table, pdfDocument, startX)
         }
 
-        renderer.parseUntilHeight(document.height)
+        renderer.parse(document.height)
         renderer.render(startY)
     }
 

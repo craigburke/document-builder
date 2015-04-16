@@ -40,24 +40,23 @@ class ColumnElement implements Renderable {
     }
 
     float getTotalHeight() {
-        float contentHeight = (childElements*.totalHeight.sum() ?: 0f) as float
-        contentHeight + (padding * 2)
+        (childElements*.totalHeight.sum() ?: 0f) as float
     }
 
     float getParsedHeight() {
-        float contentHeight = (childElements*.parsedHeight.sum() ?: 0f) as float
-        contentHeight + padding + (fullyParsed ? padding : 0f)
+        (childElements*.parsedHeight.sum() as float) ?: 0f
     }
 
     void renderElement(float startY) {
-        pdfDocument.x = startX
-        float childY = startY + column.parent.parent.padding
+        float childY = startY
+        if (onFirstPage) {
+            childY += padding
+        }
         childElements*.render(childY)
     }
 
-    void parseUntilHeight(float height) {
-        float totalHeight = height - (padding * 2)
-        childElements*.parseUntilHeight(totalHeight)
+    void parse(float height) {
+        childElements*.parse(height)
     }
 }
 

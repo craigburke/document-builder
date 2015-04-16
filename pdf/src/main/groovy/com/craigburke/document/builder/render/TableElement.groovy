@@ -24,7 +24,7 @@ class TableElement implements Renderable {
         }
     }
 
-    void parseUntilHeight(float height) {
+    void parse(float height) {
         if (!rowElements) {
             return
         }
@@ -34,7 +34,7 @@ class TableElement implements Renderable {
 
         while (!reachedEnd) {
             RowElement rowElement = rowElements[rowEnd]
-            rowElement.parseUntilHeight(remainingHeight)
+            rowElement.parse(remainingHeight)
 
             if (rowElement == rowElements.last()) {
                 reachedEnd = true
@@ -59,14 +59,14 @@ class TableElement implements Renderable {
     }
 
     float getParsedHeight() {
-        rowElements*.parsedHeight.sum() as float ?: 0
+        table.margin.top + (rowElements*.parsedHeight.sum() as float ?: 0) + (fullyParsed ? table.margin.bottom : 0)
     }
 
     void renderElement(float startY) {
-        float rowStartY = startY + table.border.size
+        float rowStartY = startY
         rowElements[rowStart..rowEnd].each {
             it.render(rowStartY)
-            rowStartY += it.parsedHeight + table.border.size
+            rowStartY += it.parsedHeight
         }
     }
 

@@ -24,6 +24,7 @@ class ParagraphElement implements Renderable {
     private int positionStart = 0
     private int positionEnd = 0
     private float startX
+    private boolean fullyRendered = false
     private boolean fullyParsed = false
 
     ParagraphElement(TextBlock paragraph, PdfDocument pdfDocument, float startX, float maxWidth) {
@@ -37,13 +38,14 @@ class ParagraphElement implements Renderable {
         this.fullyParsed
     }
 
-    void parseUntilHeight(float height) {
+    void parse(float height) {
         if (!lines) {
             fullyParsed = true
             return
         }
-        positionStart = positionEnd
         boolean reachedEnd = false
+        positionStart = positionEnd
+
         float parsedHeight = 0
 
         while (!reachedEnd) {
@@ -51,7 +53,6 @@ class ParagraphElement implements Renderable {
             parsedHeight += line.totalHeight
 
             if (parsedHeight > height) {
-                positionEnd--
                 reachedEnd = true
                 fullyParsed = false
             }
@@ -66,10 +67,19 @@ class ParagraphElement implements Renderable {
     }
 
     void renderElement(float startY) {
+        if (fullyRendered) {
+            return
+        }
+
+        if (onFirstPage) {
+            pdfDocument.y += node.margin.top
+        }
+
         lines[positionStart..positionEnd].each { ParagraphLine line ->
             pdfDocument.x = startX
             renderLine(line)
         }
+        fullyRendered = fullyParsed
     }
 
     float getTotalHeight() {
@@ -78,7 +88,7 @@ class ParagraphElement implements Renderable {
 
     float getParsedHeight() {
         float linesHeight = lines[positionStart..positionEnd].sum { it.totalHeight } ?: 0
-        node.margin.top + linesHeight + (fullyParsed ? node.margin.bottom : 0)
+        (onFirstPage ? node.margin.top : 0) + linesHeight + (fullyParsed ? node.margin.bottom : 0)
     }
 
     private void renderLine(ParagraphLine line) {
