@@ -7,7 +7,6 @@ import com.craigburke.document.builder.PdfDocument
  */
 trait Renderable {
     float startX
-    int renderCount = 0
     PdfDocument pdfDocument
     
     abstract void parse(float maxHeight)
@@ -15,9 +14,12 @@ trait Renderable {
     abstract float getTotalHeight()
     abstract float getParsedHeight()
     abstract void renderElement(float startY)
-
+    int renderCount = 0
+    
     void render(float startY) {
-        renderCount = renderCount + 1
+        if (!parsedHeight) {
+            return
+        }
         float currentX = pdfDocument.x
         float currentY = pdfDocument.y        
         pdfDocument.y = startY
@@ -25,10 +27,11 @@ trait Renderable {
         renderElement(startY)
         pdfDocument.x = currentX
         pdfDocument.y = currentY
+        renderCount = renderCount + 1
     }
-    
+
     boolean getOnFirstPage() {
-        renderCount <= 1
+        (renderCount <= 1)
     }
     
 }

@@ -38,66 +38,52 @@ class ParagraphElementSpec extends Specification {
         paragraphElement.lines.size() == 3
 
         and:
-        paragraphElement.positionStart == 0
+        paragraphElement.parsedStart == 0
 
         and:
-        paragraphElement.positionEnd == 2
+        paragraphElement.parsedLinesCount == 3
     }
 
     def "Can parse a single line"() {
         when:
         paragraphElement.with {
             parse(20)
-            render(0)
         }
 
         then:
-        paragraphElement.positionStart == 0
+        paragraphElement.parsedStart == 0
 
         and:
-        paragraphElement.positionEnd == 0
+        paragraphElement.parsedLinesCount == 1
 
         when:
         paragraphElement.with {
-            parse(20)
             render(0)
+            parse(20)
         }
 
         then:
-        paragraphElement.positionStart == 1
+        paragraphElement.parsedStart == 1
 
         and:
-        paragraphElement.positionEnd == 1
+        paragraphElement.parsedLinesCount == 1
 
         when:
         paragraphElement.with {
-            parse(20)
             render(0)
         }
 
         then:
-        paragraphElement.positionStart == 2
+        paragraphElement.parsedStart == 1
 
         and:
-        paragraphElement.positionEnd == 2
+        paragraphElement.parsedLinesCount == 1
 
         and:
         paragraphElement.fullyParsed == true
 
-        when:
-        paragraphElement.with {
-            render(0)
-            parse(20)
-        }
-
-        then:
-        paragraphElement.positionStart == 2
-
         and:
-        paragraphElement.positionEnd == 2
-
-        and:
-        paragraphElement.fullyParsed == true
+        paragraphElement.fullyRendered == true
     }
 
 }

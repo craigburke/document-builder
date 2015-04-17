@@ -12,7 +12,8 @@ class TableElement implements Renderable {
     Table table
     List<RowElement> rowElements = []
     private int rowStart = 0
-    private int rowEnd = 0
+    private int rowsParsedCount = 0
+    private boolean parsedAndRendered = false
 
     TableElement(Table table, PdfDocument pdfDocument, float startX) {
         this.startX = startX
@@ -28,26 +29,33 @@ class TableElement implements Renderable {
         if (!rowElements) {
             return
         }
-        rowStart = rowEnd
+        if (parsedAndRendered) {
+            rowStart += rowsParsedCount
+            parsedAndRendered = false
+        }
+        rowsParsedCount = 0
+
         boolean reachedEnd = false
         float remainingHeight = height
 
         while (!reachedEnd) {
-            RowElement rowElement = rowElements[rowEnd]
+            RowElement rowElement = rowElements[rowStart + rowsParsedCount]
             rowElement.parse(remainingHeight)
+
+            if (rowElement.fullyParsed) {
+                rowsParsedCount++
+            }
+            else {
+                reachedEnd = true
+            }
 
             if (rowElement == rowElements.last()) {
                 reachedEnd = true
             }
-            if (!rowElement.fullyParsed) {
-                reachedEnd = true
-            }
-            else if (rowEnd != rowElements.size() - 1) {
-                rowEnd++
-            }
 
             remainingHeight -= rowElement.parsedHeight
         }
+        parsedAndRendered = false
     }
 
     boolean getFullyParsed() {
@@ -62,12 +70,17 @@ class TableElement implements Renderable {
         table.margin.top + (rowElements*.parsedHeight.sum() as float ?: 0) + (fullyParsed ? table.margin.bottom : 0)
     }
 
+    int getRowEnd() {
+        rowStart + rowsParsedCount - 1
+    }
+
     void renderElement(float startY) {
         float rowStartY = startY
         rowElements[rowStart..rowEnd].each {
             it.render(rowStartY)
             rowStartY += it.parsedHeight
         }
+        parsedAndRendered = true
     }
 
 }

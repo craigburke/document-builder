@@ -14,6 +14,7 @@ class RowElement implements Renderable {
 
     Row row
     List<ColumnElement> columnElements = []
+    private boolean topBorderRendered = false
 
     RowElement(Row row, PdfDocument pdfDocument, float startX) {
         this.row = row
@@ -51,7 +52,7 @@ class RowElement implements Renderable {
         if (firstRow) {
             parsedHeight += table.border.size
         }
-        if (onFirstPage) {
+        if (renderCount <= 1) {
             parsedHeight += padding
         }
         if (fullyParsed) {
@@ -65,6 +66,7 @@ class RowElement implements Renderable {
         renderBackgrounds(startY)
         renderBorders(startY)
         columnElements*.render(startY)
+        renderCount++
     }
 
     private Table getTable() {
@@ -76,12 +78,12 @@ class RowElement implements Renderable {
     }
 
     private void renderBackgrounds(float startY) {
-        float backgroundStartY = startY + parsedHeight
+        float backgroundStartY = startY + parsedHeight - tableBorderOffset
         if (!firstRow) {
             backgroundStartY += tableBorderOffset
         }
         if (!fullyParsed) {
-            backgroundStartY -= tableBorderOffset
+            backgroundStartY -= table.border.size
         }
 
         float translatedStartY = pdfDocument.translateY(backgroundStartY)
@@ -114,8 +116,9 @@ class RowElement implements Renderable {
         PDPageContentStream contentStream = pdfDocument.contentStream
         setBorderOptions(contentStream)
 
-        if (shouldRenderTopBorder(startY)) {
+        if (!topBorderRendered) {
             contentStream.drawLine(rowStartX, translatedYTop, rowEndX, translatedYTop)
+            topBorderRendered = true
         }
 
         if (fullyParsed) {
@@ -132,19 +135,6 @@ class RowElement implements Renderable {
                 columnEndX += table.border.size
             }
             contentStream.drawLine(columnEndX, translatedYTop, columnEndX, translatedYBottom)
-        }
-    }
-
-    private boolean shouldRenderTopBorder(float startY) {
-        float pageTop = pdfDocument.document.margin.top + table.border.size
-        if (row == table.children.first() && onFirstPage) {
-            true
-        }
-        else if (startY == pageTop && onFirstPage) {
-            true
-        }
-        else {
-            false
         }
     }
 

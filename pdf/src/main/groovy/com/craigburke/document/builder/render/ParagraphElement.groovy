@@ -21,8 +21,9 @@ class ParagraphElement implements Renderable {
     TextBlock node
 
     List<ParagraphLine> lines
-    private int positionStart = 0
-    private int positionEnd = 0
+    private int parsedStart = 0
+    private int parsedLinesCount = 0
+
     private float startX
     private boolean parsedAndRendered = false
     private boolean fullyRendered = false
@@ -46,35 +47,37 @@ class ParagraphElement implements Renderable {
         }
 
         if (parsedAndRendered) {
-            positionEnd = Math.min(positionEnd + 1, lines.size() - 1)
-            positionStart = positionEnd
+            parsedStart += parsedLinesCount
+            parsedAndRendered = false
         }
-        else {
-            positionEnd = positionStart
-        }
+        parsedLinesCount = 0
 
         boolean reachedEnd = false
         float parsedHeight = 0
 
         while (!reachedEnd) {
-            ParagraphLine line = lines[positionEnd]
+            ParagraphLine line = lines[parsedStart + parsedLinesCount]
             parsedHeight += line.totalHeight
 
             if (parsedHeight > height) {
-                positionEnd--
                 reachedEnd = true
                 fullyParsed = false
             }
-            else if (line == lines.last()) {
+            else {
+                parsedLinesCount++
+            }
+
+            if (line == lines.last()) {
                 reachedEnd = true
                 fullyParsed = true
             }
 
-            if (!reachedEnd) {
-                positionEnd++
-            }
         }
         parsedAndRendered = false
+    }
+
+    int getParsedEnd() {
+        parsedStart + parsedLinesCount - 1
     }
 
     void renderElement(float startY) {
@@ -86,7 +89,7 @@ class ParagraphElement implements Renderable {
             pdfDocument.y += node.margin.top
         }
 
-        lines[positionStart..positionEnd].each { ParagraphLine line ->
+        lines[parsedStart..parsedEnd].each { ParagraphLine line ->
             pdfDocument.x = startX
             renderLine(line)
         }
@@ -99,7 +102,10 @@ class ParagraphElement implements Renderable {
     }
 
     float getParsedHeight() {
-        float linesHeight = lines[positionStart..positionEnd].sum { it.totalHeight } ?: 0
+        if (parsedLinesCount == 0) {
+            return 0
+        }
+        float linesHeight = lines[parsedStart..parsedEnd].sum { it.totalHeight } ?: 0
         (onFirstPage ? node.margin.top : 0) + linesHeight + (fullyParsed ? node.margin.bottom : 0)
     }
 

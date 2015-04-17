@@ -48,15 +48,21 @@ class ColumnElement implements Renderable {
     }
 
     void renderElement(float startY) {
+        if (!parsedHeight) {
+            return
+        }
+
         float childY = startY
         if (onFirstPage) {
             childY += padding
         }
         childElements*.render(childY)
+        renderCount++
     }
 
     void parse(float height) {
         childElements*.parse(height)
     }
+
 }
 
