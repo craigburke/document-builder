@@ -76,7 +76,14 @@ class RowElement implements Renderable {
     }
 
     private void renderBackgrounds(float startY) {
-        float backgroundStartY = startY + parsedHeight + (firstRow ? 0 : tableBorderOffset)
+        float backgroundStartY = startY + parsedHeight
+        if (!firstRow) {
+            backgroundStartY += tableBorderOffset
+        } 
+        if (!fullyParsed) {
+            backgroundStartY -= tableBorderOffset
+        }
+        
         float translatedStartY = pdfDocument.translateY(backgroundStartY)
         PDPageContentStream contentStream = pdfDocument.contentStream
 
@@ -87,7 +94,9 @@ class RowElement implements Renderable {
                 contentStream.setNonStrokingColor(*column.backgroundColor.rgb)
                 float startX = columnElement.startX - tableBorderOffset
                 float width = column.width + (isLastColumn ? table.border.size : 0)
-                contentStream.fillRect(startX, translatedStartY, width, parsedHeight)
+                float height = parsedHeight - (fullyParsed ? 0 : tableBorderOffset)
+                height += ((fullyParsed && !onFirstPage) ? table.border.size : 0)
+                contentStream.fillRect(startX, translatedStartY, width, height)
             }
         }
     }
