@@ -83,9 +83,11 @@ class RowElement implements Renderable {
         columnElements.each { ColumnElement columnElement ->
             Column column = columnElement.column
             if (column.backgroundColor) {
+                boolean isLastColumn = (column == column.parent.children.last())
                 contentStream.setNonStrokingColor(*column.backgroundColor.rgb)
                 float startX = columnElement.startX - tableBorderOffset
-                contentStream.fillRect(startX, translatedStartY, column.width, parsedHeight)
+                float width = column.width + (isLastColumn ? table.border.size : 0)
+                contentStream.fillRect(startX, translatedStartY, width, parsedHeight)
             }
         }
     }
