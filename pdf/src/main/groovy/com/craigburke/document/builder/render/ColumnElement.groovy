@@ -44,7 +44,7 @@ class ColumnElement implements Renderable {
     }
 
     float getParsedHeight() {
-        (childElements*.parsedHeight.sum() as float) ?: 0f
+        (childElements*.parsedHeight.sum() ?: 0f) as float
     }
 
     void renderElement(float startY) {

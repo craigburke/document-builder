@@ -24,6 +24,7 @@ class ParagraphElement implements Renderable {
     private int positionStart = 0
     private int positionEnd = 0
     private float startX
+    private boolean parsedAndRendered = false
     private boolean fullyRendered = false
     private boolean fullyParsed = false
 
@@ -37,15 +38,22 @@ class ParagraphElement implements Renderable {
     boolean getFullyParsed() {
         this.fullyParsed
     }
-
+    
     void parse(float height) {
-        if (!lines) {
+        if (!lines || fullyRendered) {
             fullyParsed = true
             return
         }
+        
+        if (parsedAndRendered) {
+            positionEnd = Math.min(positionEnd + 1, lines.size() - 1)
+            positionStart = positionEnd
+        }
+        else {
+            positionEnd = positionStart
+        }
+        
         boolean reachedEnd = false
-        positionStart = positionEnd
-
         float parsedHeight = 0
 
         while (!reachedEnd) {
@@ -53,6 +61,7 @@ class ParagraphElement implements Renderable {
             parsedHeight += line.totalHeight
 
             if (parsedHeight > height) {
+                positionEnd--
                 reachedEnd = true
                 fullyParsed = false
             }
@@ -60,10 +69,12 @@ class ParagraphElement implements Renderable {
                 reachedEnd = true
                 fullyParsed = true
             }
-            else {
+            
+            if (!reachedEnd) {
                 positionEnd++
             }
         }
+        parsedAndRendered = false
     }
 
     void renderElement(float startY) {
@@ -80,6 +91,7 @@ class ParagraphElement implements Renderable {
             renderLine(line)
         }
         fullyRendered = fullyParsed
+        parsedAndRendered = true
     }
 
     float getTotalHeight() {

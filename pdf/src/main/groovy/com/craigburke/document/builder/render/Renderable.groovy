@@ -9,6 +9,7 @@ trait Renderable {
     float startX
     int renderCount = 0
     PdfDocument pdfDocument
+    
     abstract void parse(float maxHeight)
     abstract boolean getFullyParsed()
     abstract float getTotalHeight()
