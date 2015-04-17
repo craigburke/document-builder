@@ -30,7 +30,6 @@ class ParagraphElementSpec extends Specification {
         paragraphElement = new ParagraphElement(paragraph, pdfDocument, 0, 200)
     }
 
-
     def "Can parse all lines"() {
         when:
         paragraphElement.parse(100)
@@ -47,8 +46,10 @@ class ParagraphElementSpec extends Specification {
 
     def "Can parse a single line"() {
         when:
-        paragraphElement.parse(20)
-        paragraphElement.render(0)
+        paragraphElement.with {
+            parse(20)
+            render(0)
+        }
 
         then:
         paragraphElement.positionStart == 0
@@ -57,8 +58,10 @@ class ParagraphElementSpec extends Specification {
         paragraphElement.positionEnd == 0
 
         when:
-        paragraphElement.parse(20)
-        paragraphElement.render(0)
+        paragraphElement.with {
+            parse(20)
+            render(0)
+        }
 
         then:
         paragraphElement.positionStart == 1
@@ -67,23 +70,34 @@ class ParagraphElementSpec extends Specification {
         paragraphElement.positionEnd == 1
 
         when:
-        paragraphElement.parse(20)
-        paragraphElement.render(0)
+        paragraphElement.with {
+            parse(20)
+            render(0)
+        }
 
         then:
         paragraphElement.positionStart == 2
+
+        and:
         paragraphElement.positionEnd == 2
+
+        and:
         paragraphElement.fullyParsed == true
 
         when:
-        paragraphElement.render(0)
-        paragraphElement.parse(20)
+        paragraphElement.with {
+            render(0)
+            parse(20)
+        }
 
         then:
         paragraphElement.positionStart == 2
+
+        and:
         paragraphElement.positionEnd == 2
+
+        and:
         paragraphElement.fullyParsed == true
     }
-
 
 }

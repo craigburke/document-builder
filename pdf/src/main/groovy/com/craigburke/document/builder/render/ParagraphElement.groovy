@@ -38,13 +38,13 @@ class ParagraphElement implements Renderable {
     boolean getFullyParsed() {
         this.fullyParsed
     }
-    
+
     void parse(float height) {
         if (!lines || fullyRendered) {
             fullyParsed = true
             return
         }
-        
+
         if (parsedAndRendered) {
             positionEnd = Math.min(positionEnd + 1, lines.size() - 1)
             positionStart = positionEnd
@@ -52,7 +52,7 @@ class ParagraphElement implements Renderable {
         else {
             positionEnd = positionStart
         }
-        
+
         boolean reachedEnd = false
         float parsedHeight = 0
 
@@ -69,7 +69,7 @@ class ParagraphElement implements Renderable {
                 reachedEnd = true
                 fullyParsed = true
             }
-            
+
             if (!reachedEnd) {
                 positionEnd++
             }

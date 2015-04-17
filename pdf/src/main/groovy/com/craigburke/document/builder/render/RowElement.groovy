@@ -79,11 +79,11 @@ class RowElement implements Renderable {
         float backgroundStartY = startY + parsedHeight
         if (!firstRow) {
             backgroundStartY += tableBorderOffset
-        } 
+        }
         if (!fullyParsed) {
             backgroundStartY -= tableBorderOffset
         }
-        
+
         float translatedStartY = pdfDocument.translateY(backgroundStartY)
         PDPageContentStream contentStream = pdfDocument.contentStream
 
