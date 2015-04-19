@@ -52,11 +52,8 @@ class RowElement implements Renderable {
         if (firstRow) {
             parsedHeight += table.border.size
         }
-        if (renderCount <= 1) {
-            parsedHeight += padding
-        }
         if (fullyParsed) {
-            parsedHeight += padding + table.border.size
+            parsedHeight += table.border.size
         }
 
         parsedHeight

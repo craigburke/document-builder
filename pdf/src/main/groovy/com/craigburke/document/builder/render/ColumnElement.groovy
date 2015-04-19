@@ -44,7 +44,14 @@ class ColumnElement implements Renderable {
     }
 
     float getParsedHeight() {
-        (childElements*.parsedHeight.sum() ?: 0f) as float
+        float parsedHeight = (childElements*.parsedHeight.sum() ?: 0f) as float
+        if (onFirstPage) {
+            parsedHeight += padding
+        }
+        if (fullyParsed) {
+            parsedHeight += padding
+        }
+        parsedHeight
     }
 
     void renderElement(float startY) {
@@ -57,7 +64,6 @@ class ColumnElement implements Renderable {
             childY += padding
         }
         childElements*.render(childY)
-        renderCount++
     }
 
     void parse(float height) {
