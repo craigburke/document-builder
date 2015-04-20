@@ -52,6 +52,22 @@ class Table extends BlockNode implements BackgroundAssignable {
         }
     }
 
+    void updateRowspanColumns() {
+        def updatedColumns = []
+
+        children.eachWithIndex { row, rowIndex ->
+            row.children.eachWithIndex { column, columnIndex ->
+                if (column.rowspan > 1 && !updatedColumns.contains(column)) {
+                    int rowspanEnd = Math.min(children.size() - 1, rowIndex + column.rowspan - 1)
+                    (rowIndex + 1..rowspanEnd).each {
+                        children[it].children.addAll(columnIndex, [column])
+                    }
+                    updatedColumns << column
+                }
+            }
+        }
+    }
+
     private int getMaxWidth() {
         if (parent instanceof Document) {
             parent.width - parent.margin.left - parent.margin.right

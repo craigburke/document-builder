@@ -617,4 +617,47 @@ class BuilderSpec extends Specification {
         row.children[1].width == 150
     }
 
+    def "columns are repeated when rowspan is specified"() {
+        when:
+        Document result = builder.create {
+            document {
+                table {
+                    row {
+                        column(rowspan:3)
+                        column()
+                        column()
+                    }
+                    row {
+                        column()
+                        column()
+                    }
+                    row {
+                        column()
+                        column()
+                    }
+                    row {
+                        column()
+                        column()
+                        column()
+                    }
+                }
+            }
+        }.document
+
+        Table table = result.children[0]
+        Row row1 = table.children[0]
+        Row row2 = table.children[1]
+        Row row3 = table.children[2]
+        Row row4 = table.children[3]
+
+        then:
+        row1.children[0] == row2.children[0]
+
+        and:
+        row1.children[0] == row3.children[0]
+
+        and:
+        row1.children[0] != row4.children[0]
+    }
+
 }

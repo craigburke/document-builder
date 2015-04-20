@@ -32,6 +32,7 @@ class TableFactory extends AbstractFactory {
 		if (parent instanceof Document || builder.renderState != RenderState.PAGE) {
 			table.normalizeColumnWidths()
 		}
+		table.updateRowspanColumns()
 		if (parent instanceof Document && builder.onTableComplete) {
 			builder.onTableComplete(table)
 		}

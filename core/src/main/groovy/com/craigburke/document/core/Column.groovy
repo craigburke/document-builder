@@ -8,4 +8,6 @@ class Column extends BaseNode implements Stylable, Alignable, BackgroundAssignab
 	List children = []
 	Integer width
 	Integer colspan = 1
+	Integer rowspan = 1
+	int currentRow = 0
 }
