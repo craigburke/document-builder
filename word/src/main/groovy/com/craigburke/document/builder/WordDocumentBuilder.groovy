@@ -313,36 +313,61 @@ class WordDocumentBuilder extends DocumentBuilder {
 			table.children.each { Row row ->
 				w.tr {
 					row.children.each { Column column ->
-						w.tc {
-							w.tcPr {
-								w.vAlign('w:val':'center')
-								w.tcW('w:w':pointToTwip(column.width - (table.padding * 2)))
-								w.tcMar {
-									w.top('w:w':pointToTwip(table.padding))
-									w.bottom('w:w':pointToTwip(table.padding))
-									w.left('w:w':pointToTwip(table.padding))
-									w.right('w:w':pointToTwip(table.padding))
-								}
-								if (column.backgroundColor) {
-									w.shd('w:val':'clear', 'w:color':'auto', 'w:fill':column.backgroundColor.hex)
-								}
-								if (column.colspan > 1) {
-									w.gridSpan('w:val':column.colspan)
-								}
-							}
-							column.children.each {
-								if (it instanceof TextBlock) {
-									addParagraph(builder, it)
-								}
-								else {
-									addTable(builder, it)
-									w.p()
-								}
-							}
+						column.currentRow++
+						if (column.currentRow == 1) {
+							addColumn(builder, column)
+						}
+						else {
+							addMergeColumn(builder)
 						}
 					}
 				}
 			}
+		}
+	}
+
+	void addColumn(builder, Column column) {
+		Table table = column.parent.parent
+
+		builder.w.tc {
+			w.tcPr {
+				w.vAlign('w:val':'center')
+				w.tcW('w:w':pointToTwip(column.width - (table.padding * 2)))
+				w.tcMar {
+					w.top('w:w':pointToTwip(table.padding))
+					w.bottom('w:w':pointToTwip(table.padding))
+					w.left('w:w':pointToTwip(table.padding))
+					w.right('w:w':pointToTwip(table.padding))
+				}
+				if (column.backgroundColor) {
+					w.shd('w:val':'clear', 'w:color':'auto', 'w:fill':column.backgroundColor.hex)
+				}
+				if (column.colspan > 1) {
+					w.gridSpan('w:val':column.colspan)
+				}
+				if (column.rowspan > 1) {
+					w.vMerge('w:val':'restart')
+				}
+			}
+			column.children.each {
+				if (it instanceof TextBlock) {
+					addParagraph(builder, it)
+				}
+				else {
+					addTable(builder, it)
+					w.p()
+				}
+			}
+		}
+
+	}
+
+	void addMergeColumn(builder) {
+		builder.w.tc {
+			w.tcPr {
+				w.vMerge()
+			}
+			w.p()
 		}
 	}
 

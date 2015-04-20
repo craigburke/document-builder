@@ -651,12 +651,18 @@ class BuilderSpec extends Specification {
         Row row4 = table.children[3]
 
         then:
+        row1.children.size() == 3
+
+        and:
+        row2.children.size() == 3
         row1.children[0] == row2.children[0]
 
         and:
+        row3.children.size() == 3
         row1.children[0] == row3.children[0]
 
         and:
+        row4.children.size() == 3
         row1.children[0] != row4.children[0]
     }
 
