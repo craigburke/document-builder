@@ -74,7 +74,7 @@ class RowElement implements Renderable {
     }
 
     private void renderBackgrounds(float startY) {
-        float backgroundStartY = startY + parsedHeight - tableBorderOffset
+        float backgroundStartY = startY + parsedHeight
         if (!firstRow) {
             backgroundStartY += tableBorderOffset
         }
@@ -107,7 +107,7 @@ class RowElement implements Renderable {
         float translatedYTop = pdfDocument.translateY(startY - tableBorderOffset)
         float translatedYBottom = pdfDocument.translateY(startY + parsedHeight)
         float rowStartX = startX - tableBorderOffset
-        float rowEndX = startX + table.width.floatValue() + tableBorderOffset
+        float rowEndX = startX + table.width.floatValue()
 
         PDPageContentStream contentStream = pdfDocument.contentStream
         setBorderOptions(contentStream)
@@ -117,18 +117,17 @@ class RowElement implements Renderable {
         }
 
         columnElements.eachWithIndex { columnElement, i ->
-            float columnStartX = columnElement.startX
-
             if (i == 0) {
-                columnStartX -= table.border.size
-                contentStream.drawLine(columnStartX, translatedYTop, columnStartX, translatedYBottom)
+                float firstLineStartX = columnElement.startX - table.border.size
+                contentStream.drawLine(firstLineStartX, translatedYTop, firstLineStartX, translatedYBottom)
             }
-            float columnEndX = columnElement.startX + columnElement.column.width + table.border.size
+            float columnStartX = columnElement.startX - table.border.size
+            float columnEndX = columnElement.startX + columnElement.column.width + tableBorderOffset
+
             contentStream.drawLine(columnEndX, translatedYTop, columnEndX, translatedYBottom)
 
             if (fullyParsed && columnElement.onLastRow) {
-                float lineStartX = columnStartX - tableBorderOffset
-                contentStream.drawLine(lineStartX, translatedYBottom, columnEndX, translatedYBottom)
+                contentStream.drawLine(columnStartX, translatedYBottom, columnEndX, translatedYBottom)
             }
         }
     }

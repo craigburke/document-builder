@@ -29,7 +29,7 @@ class ParagraphLine {
             if (it instanceof TextElement) { it.node.font.size }
             else if (it instanceof ImageElement ) { it.node.height }
             else { 0 }
-        }.max() ?: 0
+        }.max() ?: paragraph.font.size
     }
 
     float getTotalHeight() {
