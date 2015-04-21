@@ -70,5 +70,9 @@ class CellElement implements Renderable {
         childElements*.parse(height)
     }
 
+    boolean isOnLastRow() {
+        column.rowspan == column.currentRow
+    }
+
 }
 

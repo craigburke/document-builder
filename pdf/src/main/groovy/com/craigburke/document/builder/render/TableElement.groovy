@@ -79,6 +79,7 @@ class TableElement implements Renderable {
         rowElements[rowStart..rowEnd].each {
             it.render(rowStartY)
             rowStartY += it.parsedHeight
+            it.columnElements.each { it.column.currentRow++ }
         }
         parsedAndRendered = true
     }

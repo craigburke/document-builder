@@ -116,17 +116,20 @@ class RowElement implements Renderable {
             contentStream.drawLine(rowStartX, translatedYTop, rowEndX, translatedYTop)
         }
 
-        if (fullyParsed) {
-            contentStream.drawLine(rowStartX, translatedYBottom, rowEndX, translatedYBottom)
-        }
-
         columnElements.eachWithIndex { columnElement, i ->
+            float columnStartX = columnElement.startX
+
             if (i == 0) {
-                float columnStartX = columnElement.startX - table.border.size
+                columnStartX -= table.border.size
                 contentStream.drawLine(columnStartX, translatedYTop, columnStartX, translatedYBottom)
             }
             float columnEndX = columnElement.startX + columnElement.column.width + table.border.size
             contentStream.drawLine(columnEndX, translatedYTop, columnEndX, translatedYBottom)
+
+            if (fullyParsed && columnElement.onLastRow) {
+                float lineStartX = columnStartX - tableBorderOffset
+                contentStream.drawLine(lineStartX, translatedYBottom, columnEndX, translatedYBottom)
+            }
         }
     }
 
