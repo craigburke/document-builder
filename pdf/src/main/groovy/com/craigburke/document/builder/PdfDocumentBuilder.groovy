@@ -123,7 +123,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
             startY = 0
         }
         else {
-            startY = pdfDocument.pageBottomY + document.margin.bottom - getElementHeight(headerFooter) - headerFooter.margin.bottom
+            float pageBottom = pdfDocument.pageBottomY + document.margin.bottom
+            startY = pageBottom - getElementHeight(headerFooter) - headerFooter.margin.bottom
         }
 
         def renderer

@@ -412,7 +412,7 @@ class BuilderSpec extends Specification {
         when:
         Document result = builder.create {
             document {
-                table(backgroundColor: backgroundColors[0]) {
+                table(background: backgroundColors[0]) {
                     row {
                         cell '1.1'
                         cell '1.2'
@@ -420,7 +420,7 @@ class BuilderSpec extends Specification {
                 }
 
                 table {
-                    row(backgroundColor: backgroundColors[1]) {
+                    row(background: backgroundColors[1]) {
                         cell '2.1'
                         cell '2.2'
                     }
@@ -428,7 +428,7 @@ class BuilderSpec extends Specification {
 
                 table {
                     row {
-                        cell '3-1', backgroundColor: backgroundColors[2]
+                        cell '3-1', background: backgroundColors[2]
                         cell '3-2'
                     }
                 }
@@ -440,24 +440,24 @@ class BuilderSpec extends Specification {
         Table table3 = result.children[2]
 
         then:
-        table1.backgroundColor.hex == backgroundColors[0] - '#'
-        table1.children[0].backgroundColor.hex == backgroundColors[0] - '#'
+        table1.background.hex == backgroundColors[0] - '#'
+        table1.children[0].background.hex == backgroundColors[0] - '#'
         table1.children[0].children.each { Cell column ->
-            assert column.backgroundColor.hex == backgroundColors[0] - '#'
+            assert column.background.hex == backgroundColors[0] - '#'
         }
 
         and:
-        table2.backgroundColor == null
-        table2.children[0].backgroundColor.hex == backgroundColors[1] - '#'
+        table2.background == null
+        table2.children[0].background.hex == backgroundColors[1] - '#'
         table2.children[0].children.each { Cell column ->
-            assert column.backgroundColor.hex == backgroundColors[1] - '#'
+            assert column.background.hex == backgroundColors[1] - '#'
         }
 
         and:
-        table3.backgroundColor == null
-        table3.children[0].backgroundColor == null
-        table3.children[0].children[0].backgroundColor.hex == backgroundColors[2] - '#'
-        table3.children[0].children[1].backgroundColor == null
+        table3.background == null
+        table3.children[0].background == null
+        table3.children[0].children[0].background.hex == backgroundColors[2] - '#'
+        table3.children[0].children[1].background == null
     }
 
     def "set link on linkable nodes"() {

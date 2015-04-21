@@ -1,12 +1,12 @@
 package com.craigburke.document.core
 
 trait BackgroundAssignable {
-    Color backgroundColor
+    Color background
     
-    void setBackgroundColor(String value) {
+    void setBackground(String value) {
         if (value) {
-            backgroundColor = backgroundColor ?: new Color()
-            backgroundColor.color = value
+            background = background ?: new Color()
+            background.color = value
         }
     }
 }

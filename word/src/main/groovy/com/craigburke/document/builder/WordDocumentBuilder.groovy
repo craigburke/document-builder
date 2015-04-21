@@ -339,8 +339,8 @@ class WordDocumentBuilder extends DocumentBuilder {
 					w.left('w:w':pointToTwip(table.padding))
 					w.right('w:w':pointToTwip(table.padding))
 				}
-				if (column.backgroundColor) {
-					w.shd('w:val':'clear', 'w:color':'auto', 'w:fill':column.backgroundColor.hex)
+				if (column.background) {
+					w.shd('w:val':'clear', 'w:color':'auto', 'w:fill':column.background.hex)
 				}
 				if (column.colspan > 1) {
 					w.gridSpan('w:val':column.colspan)

@@ -12,16 +12,17 @@ import com.craigburke.document.core.Cell
 class CellFactory extends AbstractFactory {
 
 	boolean isLeaf() { false }
-    boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
+
+	boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
 
 	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
-		Cell column = new Cell(attributes)
+		Cell cell = new Cell(attributes)
 		Row row = builder.current
-		column.parent = row
-		builder.setNodeProperties(column, attributes, 'column')
+		cell.parent = row
+		builder.setNodeProperties(cell, attributes, 'cell')
 
 		if (value) {
-			TextBlock paragraph = builder.getColumnParagraph(column)
+			TextBlock paragraph = builder.getColumnParagraph(cell)
 			List elements = paragraph.addText(value.toString())
 			elements.each { node ->
 				if (node instanceof Text) {
@@ -30,7 +31,7 @@ class CellFactory extends AbstractFactory {
 			}
 		}
 
-		column
+		cell
 	}
 
 }
