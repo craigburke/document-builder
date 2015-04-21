@@ -9,5 +9,5 @@ class Column extends BaseNode implements Stylable, Alignable, BackgroundAssignab
 	Integer width
 	Integer colspan = 1
 	Integer rowspan = 1
-	int currentRow = 0
+	int currentRow = 1
 }
