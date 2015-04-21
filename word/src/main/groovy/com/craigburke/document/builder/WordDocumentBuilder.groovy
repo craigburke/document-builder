@@ -8,7 +8,7 @@ import static com.craigburke.document.core.UnitUtil.pointToHalfPoint
 import com.craigburke.document.core.HeaderFooterOptions
 import com.craigburke.document.core.builder.RenderState
 import com.craigburke.document.core.BlockNode
-import com.craigburke.document.core.Column
+import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Row
 import com.craigburke.document.core.Font
 import com.craigburke.document.core.Image
@@ -312,7 +312,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 
 			table.children.each { Row row ->
 				w.tr {
-					row.children.each { Column column ->
+					row.children.each { Cell column ->
 						if (column.currentRow == 1) {
 							addColumn(builder, column)
 						}
@@ -326,7 +326,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 		}
 	}
 
-	void addColumn(builder, Column column) {
+	void addColumn(builder, Cell column) {
 		Table table = column.parent.parent
 
 		builder.w.tc {

@@ -74,7 +74,7 @@ class Table extends BlockNode implements BackgroundAssignable {
         if (parent instanceof Document) {
             parent.width - parent.margin.left - parent.margin.right
         }
-        else if (parent instanceof Column) {
+        else if (parent instanceof Cell) {
             Table outerTable = parent.parent.parent
             parent.width - (outerTable.padding * 2)
         }

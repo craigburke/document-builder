@@ -1,6 +1,6 @@
 package com.craigburke.document.builder
 
-import com.craigburke.document.core.Column
+import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Font
 import com.craigburke.document.core.TextBlock
@@ -15,7 +15,7 @@ import org.apache.pdfbox.util.TextPosition
  */
 class PdfContentExtractor extends PDFTextStripper {
 
-        private tablePosition = [row:0, column:0]
+        private tablePosition = [row:0, cell:0]
         private int currentChildNumber = 0
         private Document document
         private TextPosition lastPosition
@@ -59,8 +59,8 @@ class PdfContentExtractor extends PDFTextStripper {
         private processTable(TextPosition text, Font font ) {
             def textNode
 
-            Column column = currentChild.children[tablePosition.row].children[tablePosition.column]
-            TextBlock paragraph = column.children[0]
+            Cell cell = currentChild.children[tablePosition.row].children[tablePosition.cell]
+            TextBlock paragraph = cell.children[0]
             paragraph.font = paragraph.font ?: font.clone()
 
             if (!paragraph.children || isNewSection(text)) {
@@ -114,7 +114,7 @@ class PdfContentExtractor extends PDFTextStripper {
             if (!lastPosition || (lastPosition.y != current.y && current.character != ' ')) {
                 currentChildNumber++
                 tablePosition.row = 0
-                tablePosition.column = 0
+                tablePosition.cell = 0
             }
         }
 

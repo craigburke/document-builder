@@ -1,7 +1,7 @@
 package com.craigburke.document.builder.render
 
 import com.craigburke.document.builder.PdfDocument
-import com.craigburke.document.core.Column
+import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Row
 import com.craigburke.document.core.Table
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
@@ -13,7 +13,7 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
 class RowElement implements Renderable {
 
     Row row
-    List<ColumnElement> columnElements = []
+    List<CellElement> columnElements = []
 
     RowElement(Row row, PdfDocument pdfDocument, float startX) {
         this.row = row
@@ -22,8 +22,8 @@ class RowElement implements Renderable {
 
         Table table = row.parent
         float columnX = startX + table.border.size
-        row.children.each { Column column ->
-            columnElements << new ColumnElement(column, pdfDocument, columnX)
+        row.children.each { Cell column ->
+            columnElements << new CellElement(column, pdfDocument, columnX)
             columnX += column.width + table.border.size
         }
     }
@@ -85,8 +85,8 @@ class RowElement implements Renderable {
         float translatedStartY = pdfDocument.translateY(backgroundStartY)
         PDPageContentStream contentStream = pdfDocument.contentStream
 
-        columnElements.each { ColumnElement columnElement ->
-            Column column = columnElement.column
+        columnElements.each { CellElement columnElement ->
+            Cell column = columnElement.column
             if (column.backgroundColor) {
                 boolean isLastColumn = (column == column.parent.children.last())
                 contentStream.setNonStrokingColor(*column.backgroundColor.rgb)

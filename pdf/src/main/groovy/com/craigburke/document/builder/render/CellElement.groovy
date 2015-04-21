@@ -1,7 +1,7 @@
 package com.craigburke.document.builder.render
 
 import com.craigburke.document.builder.PdfDocument
-import com.craigburke.document.core.Column
+import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Table
 import com.craigburke.document.core.TextBlock
 
@@ -9,11 +9,11 @@ import com.craigburke.document.core.TextBlock
  * Rendering element for the Column node
  * @author Craig Burke
  */
-class ColumnElement implements Renderable {
-    Column column
+class CellElement implements Renderable {
+    Cell column
     List<Renderable> childElements = []
 
-    ColumnElement(Column column, PdfDocument pdfDocument, float startX) {
+    CellElement(Cell column, PdfDocument pdfDocument, float startX) {
         this.column = column
         this.startX = startX
         this.pdfDocument = pdfDocument

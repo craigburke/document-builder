@@ -23,11 +23,11 @@ class TableSpec extends Specification {
             document {
                 table {
                     row {
-                        column 'OUTER TABLE'
-                        column {
+                        cell 'OUTER TABLE'
+                        cell {
                             table {
                                 row {
-                                    column 'INNER TABLE'
+                                    cell 'INNER TABLE'
                                 }
                             }
                         }
@@ -52,14 +52,14 @@ class TableSpec extends Specification {
             document {
                 table(width: 450, border:[size:0], columns:[200, 250]) {
                     row {
-                        column {
+                        cell {
                             table(width: 400, padding: 0) {
                                 row {
-                                    column 'INNER TABLE'
+                                    cell 'INNER TABLE'
                                 }
                             }
                         }
-                        column()
+                        cell()
                     }
                 }
             }
@@ -84,8 +84,8 @@ class TableSpec extends Specification {
             document {
                 table(width: 450, border:[size:0], columns: [200, 100, 150]) {
                     row {
-                        column(colspan:2)
-                        column()
+                        cell(colspan:2)
+                        cell()
                     }
                 }
             }
@@ -110,22 +110,22 @@ class TableSpec extends Specification {
             document {
                 table {
                     row {
-                        column(rowspan:3)
-                        column()
-                        column()
+                        cell(rowspan:3)
+                        cell()
+                        cell()
                     }
                     row {
-                        column()
-                        column()
+                        cell()
+                        cell()
                     }
                     row {
-                        column()
-                        column()
+                        cell()
+                        cell()
                     }
                     row {
-                        column()
-                        column()
-                        column()
+                        cell()
+                        cell()
+                        cell()
                     }
                 }
             }
@@ -159,20 +159,20 @@ class TableSpec extends Specification {
             document {
                 table(width: 400.px, columns: [100.px, 300.px], padding: 0, border: [size: 0]) {
                     row {
-                        column(rowspan:3) {
+                        cell(rowspan:3) {
                             text 'COL1-1'
                         }
-                        column('COL1-2')
+                        cell('COL1-2')
                     }
                     row {
-                        column('COL2-1')
+                        cell('COL2-1')
                     }
                     row {
-                        column('COL3-1')
+                        cell('COL3-1')
                     }
                     row {
-                        column('COL4-1')
-                        column('COL4-2')
+                        cell('COL4-1')
+                        cell('COL4-2')
                     }
                 }
             }

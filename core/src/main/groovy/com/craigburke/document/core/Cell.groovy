@@ -1,10 +1,10 @@
 package com.craigburke.document.core
 
 /**
- * An individual column for the Table node
+ * An individual cell for the Table node
  * @author Craig Burke
  */
-class Column extends BaseNode implements Stylable, Alignable, BackgroundAssignable {
+class Cell extends BaseNode implements Stylable, Alignable, BackgroundAssignable {
 	List children = []
 	Integer width
 	Integer colspan = 1

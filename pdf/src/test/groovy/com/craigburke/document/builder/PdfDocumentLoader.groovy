@@ -1,6 +1,6 @@
 package com.craigburke.document.builder
 
-import com.craigburke.document.core.Column
+import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Image
 import com.craigburke.document.core.TextBlock
@@ -58,10 +58,10 @@ class PdfDocumentLoader {
         def table = new Table(parent:document, width:new BigDecimal(tableNode.'@width'))
         tableNode.row.each { rowNode ->
             Row row = new Row()
-            rowNode.column.each { columnNode ->
-                def column = new Column(width:new BigDecimal(columnNode.'@width'))
-                column.children << new TextBlock()
-                row.children << column
+            rowNode.cell.each { cellNode ->
+                def cell = new Cell(width:new BigDecimal(cellNode.'@width'))
+                cell.children << new TextBlock()
+                row.children << cell
             }
             table.children << row
         }

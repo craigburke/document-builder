@@ -2,7 +2,7 @@ package com.craigburke.document.builder
 
 import static com.craigburke.document.core.UnitUtil.twipToPoint
 
-import com.craigburke.document.core.Column
+import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Font
 import com.craigburke.document.core.Image
@@ -46,7 +46,7 @@ class WordDocumentLoader {
                 Row row = new Row(element:rowItem, parent:table)
                 table.children << row
                 rowItem.tableCells.each { columnItem ->
-                    Column column = new Column(element:columnItem, parent:row)
+                    Cell column = new Cell(element:columnItem, parent:row)
                     int padding = columnItem.CTTc.tcPr.tcMar.left.w
                     int width = columnItem.CTTc.tcPr.tcW.w
                     column.width = twipToPoint(width + (padding * 2))
