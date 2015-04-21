@@ -5,5 +5,5 @@ package com.craigburke.document.core
  * @author Craig Burke
  */
 class Border implements ColorAssignable {
-    Integer size = 0
+    Integer size = 1
 }

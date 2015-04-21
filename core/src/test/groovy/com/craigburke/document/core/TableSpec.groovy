@@ -50,7 +50,7 @@ class TableSpec extends Specification {
         when:
         Document result = builder.create {
             document {
-                table(width: 450, columns: [200, 250]) {
+                table(width: 450, border:[size:0], columns:[200, 250]) {
                     row {
                         column {
                             table(width: 400, padding: 0) {
@@ -82,7 +82,7 @@ class TableSpec extends Specification {
         when:
         Document result = builder.create {
             document {
-                table(width: 450, columns: [200, 100, 150]) {
+                table(width: 450, border:[size:0], columns: [200, 100, 150]) {
                     row {
                         column(colspan:2)
                         column()
