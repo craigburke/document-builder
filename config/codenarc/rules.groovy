@@ -116,7 +116,7 @@ ruleset {
 
     // rulesets/dry.xml
     DuplicateListLiteral
-    DuplicateMapLiteral
+    'DuplicateMapLiteral' doNotApplyToFilesMatching: '.*Spec.groovy'
     'DuplicateNumberLiteral' enabled: false
     'DuplicateStringLiteral' enabled: false
 

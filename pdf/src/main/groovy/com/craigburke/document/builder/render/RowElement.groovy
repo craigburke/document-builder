@@ -14,7 +14,6 @@ class RowElement implements Renderable {
 
     Row row
     List<ColumnElement> columnElements = []
-    private boolean topBorderRendered = false
 
     RowElement(Row row, PdfDocument pdfDocument, float startX) {
         this.row = row
@@ -113,9 +112,8 @@ class RowElement implements Renderable {
         PDPageContentStream contentStream = pdfDocument.contentStream
         setBorderOptions(contentStream)
 
-        if (!topBorderRendered) {
+        if (firstRow || isTopOfPage(startY)) {
             contentStream.drawLine(rowStartX, translatedYTop, rowEndX, translatedYTop)
-            topBorderRendered = true
         }
 
         if (fullyParsed) {
@@ -127,10 +125,7 @@ class RowElement implements Renderable {
                 float columnStartX = columnElement.startX - table.border.size
                 contentStream.drawLine(columnStartX, translatedYTop, columnStartX, translatedYBottom)
             }
-            float columnEndX = columnElement.startX + columnElement.column.width
-            if (i == columnElements.size() - 1) {
-                columnEndX += table.border.size
-            }
+            float columnEndX = columnElement.startX + columnElement.column.width + table.border.size
             contentStream.drawLine(columnEndX, translatedYTop, columnEndX, translatedYBottom)
         }
     }
@@ -139,6 +134,10 @@ class RowElement implements Renderable {
         def borderColor = table.border.color.rgb
         contentStream.setStrokingColor(*borderColor)
         contentStream.setLineWidth(table.border.size)
+    }
+
+    boolean isTopOfPage(float y) {
+        (y == pdfDocument.document.margin.top)
     }
 
     boolean isFirstRow() {

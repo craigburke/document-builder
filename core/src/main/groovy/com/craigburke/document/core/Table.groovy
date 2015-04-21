@@ -22,6 +22,8 @@ class Table extends BlockNode implements BackgroundAssignable {
     }
 
     void normalizeColumnWidths() {
+        updateRowspanColumns()
+
         width = Math.min(width ?: maxWidth, maxWidth)
         if (!columns) {
             columnCount.times { columns << 1 }
