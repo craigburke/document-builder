@@ -120,7 +120,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
         float startY
 
         if (renderState == RenderState.HEADER) {
-            startY = headerFooter.margin.top
+            startY = 0
         }
         else {
             startY = pdfDocument.pageBottomY + document.margin.bottom - getElementHeight(headerFooter)
