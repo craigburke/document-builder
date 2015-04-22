@@ -46,7 +46,7 @@ class ParagraphParser {
             if (node.getClass() == Text) {
                 Font font = node.font
                 pdfFont = PdfFont.getFont(font)
-                String remainingText = node.value
+                String remainingText = cleanText(node.value as String)
 
                 while (remainingText) {
                     BigDecimal textWidth = pdfFont.getStringWidth(remainingText)  / 1000 * font.size
@@ -84,6 +84,10 @@ class ParagraphParser {
         }
 
         chunkLines
+    }
+
+    private static String cleanText(String text) {
+        text.replace('\r', ' ')
     }
 
     private static String getTextUntilBreak(String text, PDFont font, BigDecimal fontSize, BigDecimal width) {
