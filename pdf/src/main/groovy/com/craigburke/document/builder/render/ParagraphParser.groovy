@@ -46,15 +46,15 @@ class ParagraphParser {
             if (node.getClass() == Text) {
                 Font font = node.font
                 pdfFont = PdfFont.getFont(font)
-                String remainingText = cleanText(node.value as String)
+                String remainingText = node.value
 
                 while (remainingText) {
                     BigDecimal textWidth = pdfFont.getStringWidth(remainingText)  / 1000 * font.size
 
                     if (currentLine.contentWidth + textWidth > maxLineWidth) {
                         String text = getTextUntilBreak(remainingText, pdfFont, font.size, currentLine.remainingWidth)
-
-                        remainingText = (remainingText - text).trim()
+                        int nextPosition = text.size()
+                        remainingText = remainingText[nextPosition..-1]
                         int elementWidth = pdfFont.getStringWidth(text)  / 1000 * font.size
                         currentLine.contentWidth += elementWidth
 
@@ -84,10 +84,6 @@ class ParagraphParser {
         }
 
         chunkLines
-    }
-
-    private static String cleanText(String text) {
-        text.replace('\r', ' ')
     }
 
     private static String getTextUntilBreak(String text, PDFont font, BigDecimal fontSize, BigDecimal width) {
