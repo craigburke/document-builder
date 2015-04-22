@@ -62,8 +62,8 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
 		def nodeProperties = []
 
 		templateKeys.each { String key ->
-			if (document.template && document.template.containsKey(key)) {
-				nodeProperties << document.template[key]
+			if (document.template && document.templateMap.containsKey(key)) {
+				nodeProperties << document.templateMap[key]
 			}
 		}
 		nodeProperties << attributes

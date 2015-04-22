@@ -13,9 +13,30 @@ class Document extends BlockNode {
     final int width = inchToPoint(8.5)
     final int height = inchToPoint(11)
 
-    Map template
+    def template
     def header
     def footer
+
+    private Map templateMap
+
+    Map getTemplateMap() {
+        if (templateMap == null) {
+            loadTemplateMap()
+        }
+        templateMap
+    }
+
+    private void loadTemplateMap() {
+        templateMap = [:]
+        if (template && template instanceof Closure) {
+            def templateDelegate = new Expando()
+            templateDelegate.metaClass.methodMissing = { name, args ->
+                templateMap[name] = args[0]
+            }
+            template.delegate = templateDelegate
+            template()
+        }
+    }
 
     List children = []
     List<EmbeddedFont> embeddedFonts = []
