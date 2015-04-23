@@ -54,7 +54,7 @@ class ParagraphParser {
                     if (currentLine.contentWidth + textWidth > maxLineWidth) {
                         String text = getTextUntilBreak(remainingText, pdfFont, font.size, currentLine.remainingWidth)
                         int nextPosition = text.size()
-                        remainingText = remainingText[nextPosition..-1]
+                        remainingText = remainingText[nextPosition..-1].trim()
                         int elementWidth = pdfFont.getStringWidth(text)  / 1000 * font.size
                         currentLine.contentWidth += elementWidth
 
