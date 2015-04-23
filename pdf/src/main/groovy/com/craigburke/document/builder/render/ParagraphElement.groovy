@@ -64,14 +64,12 @@ class ParagraphElement implements Renderable {
                 fullyParsed = false
             }
             else {
+                if (line == lines.last()) {
+                    reachedEnd = true
+                    fullyParsed = true
+                }
                 parsedLinesCount++
             }
-
-            if (line == lines.last()) {
-                reachedEnd = true
-                fullyParsed = true
-            }
-
         }
         parsedAndRendered = false
     }

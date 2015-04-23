@@ -71,10 +71,12 @@ class ParagraphElementSpec extends Specification {
         when:
         paragraphElement.with {
             render(0)
+            parse(20)
+            render(0)
         }
 
         then:
-        paragraphElement.parsedStart == 1
+        paragraphElement.parsedStart == 2
 
         and:
         paragraphElement.parsedLinesCount == 1
