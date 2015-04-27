@@ -1,15 +1,11 @@
 package com.craigburke.document.builder
 
 import com.craigburke.document.builder.render.ParagraphRenderer
-import com.craigburke.document.builder.render.TableRenderer
 import com.craigburke.document.core.BaseNode
-import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Font
 import com.craigburke.document.core.LineBreak
 import com.craigburke.document.core.Margin
-import com.craigburke.document.core.Row
-import com.craigburke.document.core.Table
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.TextBlock
 import spock.lang.Specification

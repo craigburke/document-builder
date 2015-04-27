@@ -11,8 +11,10 @@ import com.craigburke.document.core.Table
 class TableRenderer implements Renderable {
     Table table
     List<RowRenderer> rowRenderers = []
-    private int rowStart = 0
-    private int rowsParsedCount = 0
+
+    private int parseStart = 0
+    private int parseEnd = 0
+
     private boolean parsedAndRendered = false
 
     TableRenderer(Table table, PdfDocument pdfDocument, float startX) {
@@ -25,35 +27,51 @@ class TableRenderer implements Renderable {
         }
     }
 
+    int getParseStart() {
+        this.parseStart
+    }
+
+    int getParseEnd() {
+        this.parseEnd
+    }
+
     void parse(float height) {
         if (!rowRenderers) {
             return
         }
+
         if (parsedAndRendered) {
-            rowStart += rowsParsedCount
-            parsedAndRendered = false
+            parseStart = parseEnd
         }
-        rowsParsedCount = 0
+        else {
+            parseEnd = parseStart
+        }
+        parsedAndRendered = false
+        if (rowRenderers[parseEnd].fullyParsed) {
+            parseEnd++
+        }
 
         boolean reachedEnd = false
-        float remainingHeight = height - table.border.size
+        float remainingHeight = height - (onFirstPage ? table.border.size : 0)
 
         while (!reachedEnd) {
-            RowRenderer rowElement = rowRenderers[rowEnd]
-            rowElement.parse(remainingHeight)
-            if (rowElement.fullyParsed) {
-                rowsParsedCount++
-            }
-
-            remainingHeight -= rowElement.parsedHeight
+            RowRenderer currentRenderer = rowRenderers[parseEnd]
+            currentRenderer.parse(remainingHeight)
+            remainingHeight -= currentRenderer.parsedHeight
 
             if (remainingHeight < 0) {
+                parseEnd = Math.max(0, parseEnd - 1)
                 reachedEnd = true
             }
-            else {
-                if (remainingHeight == 0 || rowElement == rowRenderers.last()) {
-                    reachedEnd = true
-                }
+            else if (remainingHeight == 0) {
+                reachedEnd = true
+            }
+            else if (currentRenderer == rowRenderers.last()) {
+                reachedEnd = true
+            }
+
+            if (!reachedEnd && currentRenderer.fullyParsed) {
+                parseEnd++
             }
         }
         parsedAndRendered = false
@@ -68,16 +86,12 @@ class TableRenderer implements Renderable {
     }
 
     float getParsedHeight() {
-        (rowRenderers[rowStart..rowEnd]*.parsedHeight.sum() as float ?: 0f) + (onFirstPage ? table.border.size : 0)
-    }
-
-    int getRowEnd() {
-        rowStart + (rowsParsedCount == 0 ? 0 : rowsParsedCount - 1)
+        (rowRenderers[parseStart..parseEnd]*.parsedHeight.sum() as float ?: 0f) + (onFirstPage ? table.border.size : 0)
     }
 
     void renderElement(float startY) {
         float rowStartY = startY
-        rowRenderers[rowStart..rowEnd].each {
+        rowRenderers[parseStart..parseEnd].each {
             it.render(rowStartY)
             rowStartY += it.parsedHeight
             it.cellRenderers.each { it.cell.currentRow++ }

@@ -28,11 +28,11 @@ class ParagraphRendererSpec extends RendererTestBase {
         paragraphElement.lines.size() == 3
 
         and:
-        paragraphElement.parsedStart == 0
+        paragraphElement.parseStart == 0
 
         and:
-        paragraphElement.parsedLinesCount == 3
-        
+        paragraphElement.parseEnd == 2
+
         and:
         paragraphElement.fullyParsed
     }
@@ -44,10 +44,10 @@ class ParagraphRendererSpec extends RendererTestBase {
         }
 
         then:
-        paragraphElement.parsedStart == 0
+        paragraphElement.parseStart == 0
 
         and:
-        paragraphElement.parsedLinesCount == 1
+        paragraphElement.parseEnd == 0
 
         when:
         paragraphElement.with {
@@ -56,10 +56,10 @@ class ParagraphRendererSpec extends RendererTestBase {
         }
 
         then:
-        paragraphElement.parsedStart == 1
+        paragraphElement.parseStart == 1
 
         and:
-        paragraphElement.parsedLinesCount == 1
+        paragraphElement.parseEnd == 1
 
         when:
         paragraphElement.with {
@@ -69,10 +69,10 @@ class ParagraphRendererSpec extends RendererTestBase {
         }
 
         then:
-        paragraphElement.parsedStart == 2
+        paragraphElement.parseStart == 2
 
         and:
-        paragraphElement.parsedLinesCount == 1
+        paragraphElement.parseEnd == 2
 
         and:
         paragraphElement.fullyParsed
@@ -88,8 +88,8 @@ class ParagraphRendererSpec extends RendererTestBase {
             float parseHeight = defaultLineHeight * lineCount
             paragraphElement.parse(parseHeight)
 
-            assert paragraphElement.parsedStart == 0
-            assert paragraphElement.parsedLinesCount == lineCount
+            assert paragraphElement.parseStart == 0
+            assert paragraphElement.parseEnd == lineCount - 1
             assert paragraphElement.parsedHeight == parseHeight
         }
 

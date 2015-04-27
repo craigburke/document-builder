@@ -21,8 +21,9 @@ class ParagraphRenderer implements Renderable {
     TextBlock node
 
     List<ParagraphLine> lines
-    private int parsedStart = 0
-    private int parsedLinesCount = 0
+
+    private int parseStart = 0
+    private int parseEnd = 0
 
     private float startX
     private boolean parsedAndRendered = false
@@ -40,6 +41,14 @@ class ParagraphRenderer implements Renderable {
         this.fullyParsed
     }
 
+    int getParseStart() {
+        this.parseStart
+    }
+
+    int getParseEnd() {
+        this.parseEnd
+    }
+
     void parse(float height) {
         if (!lines || fullyRendered) {
             fullyParsed = true
@@ -47,35 +56,36 @@ class ParagraphRenderer implements Renderable {
         }
 
         if (parsedAndRendered) {
-            parsedStart += parsedLinesCount
-            parsedAndRendered = false
+            parseEnd++
+            parseStart = parseEnd
         }
-        parsedLinesCount = 0
+        else {
+            parseEnd = parseStart
+        }
 
         boolean reachedEnd = false
         float parsedHeight = 0
 
         while (!reachedEnd) {
-            ParagraphLine line = lines[parsedStart + parsedLinesCount]
+            ParagraphLine line = lines[parseEnd]
             parsedHeight += line.totalHeight
-            
+
             if (parsedHeight > height) {
+                parseEnd = Math.max(0f, parseEnd - 1)
                 reachedEnd = true
                 fullyParsed = false
             }
             else {
-                parsedLinesCount++
                 if (line == lines.last()) {
                     reachedEnd = true
                     fullyParsed = true
                 }
             }
+            if (!reachedEnd) {
+                parseEnd++
+            }
         }
         parsedAndRendered = false
-    }
-
-    int getParsedEnd() {
-        parsedStart + (parsedLinesCount == 0 ? 0 : parsedLinesCount - 1)
     }
 
     void renderElement(float startY) {
@@ -87,7 +97,7 @@ class ParagraphRenderer implements Renderable {
             pdfDocument.y += node.margin.top
         }
 
-        lines[parsedStart..parsedEnd].each { ParagraphLine line ->
+        lines[parseStart..parseEnd].each { ParagraphLine line ->
             pdfDocument.x = startX
             renderLine(line)
         }
@@ -100,11 +110,9 @@ class ParagraphRenderer implements Renderable {
     }
 
     float getParsedHeight() {
-        if (parsedLinesCount == 0) {
-            return 0
-        }
-        float linesHeight = lines[parsedStart..parsedEnd].sum { it.totalHeight } ?: 0
-        (onFirstPage ? node.margin.top : 0) + linesHeight + (fullyParsed ? node.margin.bottom : 0)
+        float linesHeight = lines[parseStart..parseEnd]*.totalHeight.sum() ?: 0
+        float parsedHeight = (onFirstPage ? node.margin.top : 0) + linesHeight + (fullyParsed ? node.margin.bottom : 0)
+        parsedHeight
     }
 
     private void renderLine(ParagraphLine line) {

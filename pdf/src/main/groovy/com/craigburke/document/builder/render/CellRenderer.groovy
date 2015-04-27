@@ -12,10 +12,8 @@ import com.craigburke.document.core.TextBlock
 class CellRenderer implements Renderable {
     Cell cell
     List<Renderable> childRenderers = []
-    RowRenderer rowElement
 
     CellRenderer(Cell cell, PdfDocument pdfDocument, float startX) {
-        this.rowElement = rowElement
         this.cell = cell
         this.startX = startX
         this.pdfDocument = pdfDocument
@@ -69,7 +67,10 @@ class CellRenderer implements Renderable {
     }
 
     void parse(float height) {
-        float parseHeight = height - (padding * 2)
+        if (height < 0) {
+            return
+        }
+        float parseHeight = height - padding
         childRenderers*.parse(parseHeight)
     }
 
