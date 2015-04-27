@@ -1,7 +1,7 @@
 package com.craigburke.document.builder
 
-import com.craigburke.document.builder.render.ParagraphElement
-import com.craigburke.document.builder.render.TableElement
+import com.craigburke.document.builder.render.ParagraphRenderer
+import com.craigburke.document.builder.render.TableRenderer
 import com.craigburke.document.core.EmbeddedFont
 import com.craigburke.document.core.HeaderFooterOptions
 import com.craigburke.document.core.PageBreak
@@ -49,8 +49,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
             pdfDocument.x = renderStartX
 
-            ParagraphElement paragraphElement =
-                    new ParagraphElement(paragraph, pdfDocument, renderStartX, maxLineWidth)
+            ParagraphRenderer paragraphElement =
+                    new ParagraphRenderer(paragraph, pdfDocument, renderStartX, maxLineWidth)
 
             while (!paragraphElement.fullyParsed) {
                 paragraphElement.parse(pdfDocument.remainingPageHeight)
@@ -69,7 +69,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
         if (renderState == RenderState.PAGE) {
             pdfDocument.x = table.margin.left + document.margin.left
 
-            TableElement tableElement = new TableElement(table, pdfDocument, pdfDocument.x)
+            TableRenderer tableElement = new TableRenderer(table, pdfDocument, pdfDocument.x)
             while (!tableElement.fullyParsed) {
                 tableElement.parse(pdfDocument.remainingPageHeight)
                 tableElement.render(pdfDocument.y)
@@ -129,10 +129,10 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
         def renderer
         if (headerFooter instanceof TextBlock) {
-            renderer = new ParagraphElement(headerFooter, pdfDocument, startX, document.width)
+            renderer = new ParagraphRenderer(headerFooter, pdfDocument, startX, document.width)
         }
         else {
-            renderer = new TableElement(headerFooter as Table, pdfDocument, startX)
+            renderer = new TableRenderer(headerFooter as Table, pdfDocument, startX)
         }
 
         renderer.parse(document.height)
@@ -143,10 +143,10 @@ class PdfDocumentBuilder extends DocumentBuilder {
         float width = document.width - document.margin.top - document.margin.bottom
 
         if (element instanceof TextBlock) {
-            new ParagraphElement(element, pdfDocument, 0, width).totalHeight
+            new ParagraphRenderer(element, pdfDocument, 0, width).totalHeight
         }
         else if (element instanceof Table) {
-            new TableElement(element, pdfDocument, 0).totalHeight
+            new TableRenderer(element, pdfDocument, 0).totalHeight
         }
         else {
             0

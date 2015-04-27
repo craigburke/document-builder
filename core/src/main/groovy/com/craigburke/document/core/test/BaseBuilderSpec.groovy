@@ -303,4 +303,31 @@ abstract class BaseBuilderSpec extends Specification {
 		notThrown(Exception)
 	}
 
+	def "table with rowspan"() {
+		when:
+		builder.create {
+			document {
+				table {
+					row {
+						cell 'FOO\nBAR', rowspan: 3
+						cell('COL1-2')
+					}
+					row {
+						cell('COL2-1')
+					}
+					row {
+						cell('COL3-1')
+					}
+					row {
+						cell('COL4-1')
+						cell('COL4-2')
+					}
+				}
+			}
+		}
+
+		then:
+		notThrown(Exception)
+	}
+
 }

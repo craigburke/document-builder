@@ -8,25 +8,25 @@ import com.craigburke.document.core.Table
  * Rendering element for a Table node
  * @author Craig Burke
  */
-class TableElement implements Renderable {
+class TableRenderer implements Renderable {
     Table table
-    List<RowElement> rowElements = []
+    List<RowRenderer> rowRenderers = []
     private int rowStart = 0
     private int rowsParsedCount = 0
     private boolean parsedAndRendered = false
 
-    TableElement(Table table, PdfDocument pdfDocument, float startX) {
+    TableRenderer(Table table, PdfDocument pdfDocument, float startX) {
         this.startX = startX
         this.pdfDocument = pdfDocument
 
         this.table = table
         table.children.each { Row row ->
-            rowElements << new RowElement(row, pdfDocument, startX)
+            rowRenderers << new RowRenderer(row, pdfDocument, startX)
         }
     }
 
     void parse(float height) {
-        if (!rowElements) {
+        if (!rowRenderers) {
             return
         }
         if (parsedAndRendered) {
@@ -36,50 +36,51 @@ class TableElement implements Renderable {
         rowsParsedCount = 0
 
         boolean reachedEnd = false
-        float remainingHeight = height
+        float remainingHeight = height - table.border.size
 
         while (!reachedEnd) {
-            RowElement rowElement = rowElements[rowStart + rowsParsedCount]
+            RowRenderer rowElement = rowRenderers[rowEnd]
             rowElement.parse(remainingHeight)
-
             if (rowElement.fullyParsed) {
                 rowsParsedCount++
             }
-            else {
-                reachedEnd = true
-            }
-
-            if (rowElement == rowElements.last()) {
-                reachedEnd = true
-            }
 
             remainingHeight -= rowElement.parsedHeight
+
+            if (remainingHeight < 0) {
+                reachedEnd = true
+            }
+            else {
+                if (remainingHeight == 0 || rowElement == rowRenderers.last()) {
+                    reachedEnd = true
+                }
+            }
         }
         parsedAndRendered = false
     }
 
     boolean getFullyParsed() {
-        (rowElements) ? rowElements.every { it.fullyParsed } : true
+        (rowRenderers) ? rowRenderers.every { it.fullyParsed } : true
     }
 
     float getTotalHeight() {
-        rowElements*.totalHeight.sum() as float ?: 0
+        (rowRenderers*.totalHeight.sum() as float ?: 0) + table.border.size
     }
 
     float getParsedHeight() {
-        table.margin.top + (rowElements*.parsedHeight.sum() as float ?: 0) + (fullyParsed ? table.margin.bottom : 0)
+        (rowRenderers[rowStart..rowEnd]*.parsedHeight.sum() as float ?: 0f) + (onFirstPage ? table.border.size : 0)
     }
 
     int getRowEnd() {
-        rowStart + rowsParsedCount - 1
+        rowStart + (rowsParsedCount == 0 ? 0 : rowsParsedCount - 1)
     }
 
     void renderElement(float startY) {
         float rowStartY = startY
-        rowElements[rowStart..rowEnd].each {
+        rowRenderers[rowStart..rowEnd].each {
             it.render(rowStartY)
             rowStartY += it.parsedHeight
-            it.columnElements.each { it.column.currentRow++ }
+            it.cellRenderers.each { it.cell.currentRow++ }
         }
         parsedAndRendered = true
     }

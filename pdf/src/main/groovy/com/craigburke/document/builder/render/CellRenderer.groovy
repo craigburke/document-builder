@@ -6,45 +6,47 @@ import com.craigburke.document.core.Table
 import com.craigburke.document.core.TextBlock
 
 /**
- * Rendering element for the Column node
+ * Rendering element for the cell node
  * @author Craig Burke
  */
-class CellElement implements Renderable {
-    Cell column
-    List<Renderable> childElements = []
+class CellRenderer implements Renderable {
+    Cell cell
+    List<Renderable> childRenderers = []
+    RowRenderer rowElement
 
-    CellElement(Cell column, PdfDocument pdfDocument, float startX) {
-        this.column = column
+    CellRenderer(Cell cell, PdfDocument pdfDocument, float startX) {
+        this.rowElement = rowElement
+        this.cell = cell
         this.startX = startX
         this.pdfDocument = pdfDocument
 
-        Table table = column.parent.parent
-        int renderWidth = column.width - (table.padding * 2)
+        Table table = cell.parent.parent
+        int renderWidth = cell.width - (table.padding * 2)
         float childStartX = startX + table.padding
-        column.children.each { child ->
+        cell.children.each { child ->
             if (child instanceof TextBlock) {
-                childElements << new ParagraphElement(child, pdfDocument, childStartX, renderWidth)
+                childRenderers << new ParagraphRenderer(child, pdfDocument, childStartX, renderWidth)
             }
             else if (child instanceof Table) {
-                childElements << new TableElement(child, pdfDocument, childStartX)
+                childRenderers << new TableRenderer(child, pdfDocument, childStartX)
             }
         }
     }
 
     private float getPadding() {
-        column.parent.parent.padding
+        cell.parent.parent.padding
     }
 
     boolean getFullyParsed() {
-        childElements.every { it.fullyParsed }
+        childRenderers.every { it.fullyParsed }
     }
 
     float getTotalHeight() {
-        (childElements*.totalHeight.sum() ?: 0f) as float
+        (childRenderers*.totalHeight.sum() ?: 0f) + (padding * 2)
     }
 
     float getParsedHeight() {
-        float parsedHeight = (childElements*.parsedHeight.sum() ?: 0f) as float
+        float parsedHeight = (childRenderers*.parsedHeight.sum() ?: 0f) as float
         if (onFirstPage) {
             parsedHeight += padding
         }
@@ -63,15 +65,16 @@ class CellElement implements Renderable {
         if (onFirstPage) {
             childY += padding
         }
-        childElements*.render(childY)
+        childRenderers*.render(childY)
     }
 
     void parse(float height) {
-        childElements*.parse(height)
+        float parseHeight = height - (padding * 2)
+        childRenderers*.parse(parseHeight)
     }
 
     boolean isOnLastRow() {
-        column.rowspan == column.currentRow
+        cell.rowspan == cell.currentRow
     }
 
 }

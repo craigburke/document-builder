@@ -358,6 +358,9 @@ class WordDocumentBuilder extends DocumentBuilder {
 					w.p()
 				}
 			}
+			if (!column.children) {
+				w.p()
+			}
 		}
 
 	}

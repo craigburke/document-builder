@@ -10,12 +10,12 @@ import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
  * Rendering element for the Row node
  * @author Craig Burke
  */
-class RowElement implements Renderable {
+class RowRenderer implements Renderable {
 
     Row row
-    List<CellElement> columnElements = []
+    List<CellRenderer> cellRenderers = []
 
-    RowElement(Row row, PdfDocument pdfDocument, float startX) {
+    RowRenderer(Row row, PdfDocument pdfDocument, float startX) {
         this.row = row
         this.startX = startX
         this.pdfDocument = pdfDocument
@@ -23,45 +23,38 @@ class RowElement implements Renderable {
         Table table = row.parent
         float columnX = startX + table.border.size
         row.children.each { Cell column ->
-            columnElements << new CellElement(column, pdfDocument, columnX)
+            cellRenderers << new CellRenderer(column, pdfDocument, columnX)
             columnX += column.width + table.border.size
         }
     }
 
     void parse(float height) {
-        columnElements*.parse(height)
+        cellRenderers*.parse(height)
     }
 
     boolean getFullyParsed() {
-        columnElements.every { it.fullyParsed }
-    }
-
-    private float getPadding() {
-        table.padding
+        (cellRenderers) ? cellRenderers.every { it.fullyParsed } : true
     }
 
     float getTotalHeight() {
-        float totalHeight = columnElements*.totalHeight.max()
-        float totalBorder = row.parent.border.size * (firstRow ? 2 : 1)
-        totalHeight + (padding * 2) + totalBorder
+        cellRenderers*.totalHeight.max() + table.border.size
     }
 
     float getParsedHeight() {
-        float parsedHeight = columnElements*.parsedHeight.max()
-        if (firstRow) {
-            parsedHeight += table.border.size
-        }
+        float parsedHeight = cellRenderers*.parsedHeight.max()
         if (fullyParsed) {
             parsedHeight += table.border.size
         }
-
         parsedHeight
     }
 
     void renderElement(float startY) {
         renderBackgrounds(startY)
         renderBorders(startY)
-        columnElements*.render(startY)
+        cellRenderers.each {
+            float cellStartY = startY
+            it.render(cellStartY)
+        }
         renderCount++
     }
 
@@ -85,8 +78,8 @@ class RowElement implements Renderable {
         float translatedStartY = pdfDocument.translateY(backgroundStartY)
         PDPageContentStream contentStream = pdfDocument.contentStream
 
-        columnElements.each { CellElement columnElement ->
-            Cell column = columnElement.column
+        cellRenderers.each { CellRenderer columnElement ->
+            Cell column = columnElement.cell
             if (column.background) {
                 boolean isLastColumn = (column == column.parent.children.last())
                 contentStream.setNonStrokingColor(*column.background.rgb)
@@ -116,13 +109,13 @@ class RowElement implements Renderable {
             contentStream.drawLine(rowStartX, translatedYTop, rowEndX, translatedYTop)
         }
 
-        columnElements.eachWithIndex { columnElement, i ->
+        cellRenderers.eachWithIndex { columnElement, i ->
             if (i == 0) {
                 float firstLineStartX = columnElement.startX - table.border.size
                 contentStream.drawLine(firstLineStartX, translatedYTop, firstLineStartX, translatedYBottom)
             }
             float columnStartX = columnElement.startX - table.border.size
-            float columnEndX = columnElement.startX + columnElement.column.width + tableBorderOffset
+            float columnEndX = columnElement.startX + columnElement.cell.width + tableBorderOffset
 
             contentStream.drawLine(columnEndX, translatedYTop, columnEndX, translatedYBottom)
 

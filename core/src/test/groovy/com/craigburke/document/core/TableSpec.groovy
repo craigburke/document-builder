@@ -157,7 +157,7 @@ class TableSpec extends Specification {
         when:
         Document result = builder.create {
             document {
-                table(width: 400.px, columns: [100.px, 300.px], padding: 0, border: [size: 0]) {
+                table(width:400, border:[size:0], columns:[1, 3]) {
                     row {
                         cell(rowspan:3) {
                             text 'COL1-1'

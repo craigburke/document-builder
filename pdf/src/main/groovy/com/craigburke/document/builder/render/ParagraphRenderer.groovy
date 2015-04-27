@@ -17,7 +17,7 @@ import java.awt.image.BufferedImage
  * Rendering element for a Paragraph node
  * @author Craig Burke
  */
-class ParagraphElement implements Renderable {
+class ParagraphRenderer implements Renderable {
     TextBlock node
 
     List<ParagraphLine> lines
@@ -29,7 +29,7 @@ class ParagraphElement implements Renderable {
     private boolean fullyRendered = false
     private boolean fullyParsed = false
 
-    ParagraphElement(TextBlock paragraph, PdfDocument pdfDocument, float startX, float maxWidth) {
+    ParagraphRenderer(TextBlock paragraph, PdfDocument pdfDocument, float startX, float maxWidth) {
         node = paragraph
         this.pdfDocument = pdfDocument
         this.startX = startX
@@ -58,24 +58,24 @@ class ParagraphElement implements Renderable {
         while (!reachedEnd) {
             ParagraphLine line = lines[parsedStart + parsedLinesCount]
             parsedHeight += line.totalHeight
-
+            
             if (parsedHeight > height) {
                 reachedEnd = true
                 fullyParsed = false
             }
             else {
+                parsedLinesCount++
                 if (line == lines.last()) {
                     reachedEnd = true
                     fullyParsed = true
                 }
-                parsedLinesCount++
             }
         }
         parsedAndRendered = false
     }
 
     int getParsedEnd() {
-        parsedStart + parsedLinesCount - 1
+        parsedStart + (parsedLinesCount == 0 ? 0 : parsedLinesCount - 1)
     }
 
     void renderElement(float startY) {

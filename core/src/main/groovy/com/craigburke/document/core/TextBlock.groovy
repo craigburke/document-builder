@@ -1,9 +1,12 @@
 package com.craigburke.document.core
 
+import groovy.transform.AutoClone
+
 /**
  * Block element that holds text and images
  * @author Craig Burke
  */
+@AutoClone
 class TextBlock extends BlockNode implements Linkable {
 	static Margin defaultMargin = new Margin(top:12, bottom:12, left:0, right:0)
 
