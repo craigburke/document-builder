@@ -316,11 +316,11 @@ the template setting.
 
 [source,groovy]
 ----
-Map customTemplate = [
-    document: [font: [family: 'Helvetica'],
-    paragraph: [font: [color: '#333333'], // <1>
-    'paragraph.myStyle': [font: [bold: true]] // <2>
-]
+def customTemplate = {
+    'document' font: [family: 'Helvetica', size: 13.pt], margin: [top: 1.5.inches] // <1>
+    'paragraph' font: [color: '#333333'] // <2>
+    'paragraph.myStyle' font: [bold: true] // <3>
+}
 
 builder.create {
     document(template: customTemplate) {
@@ -329,8 +329,9 @@ builder.create {
     }
 }
 ----
-<1> Defaults for all paragraphs
-<2> Specific style that applied when a paragraph has the style *myStyle*
+<1> Special units (like pt and inches) can be used within template closure
+<2> Sets a default for all paragraphs
+<3> Sets a specific style that is applied when a paragraph has the style *myStyle*
 
 === Page Breaks
 
