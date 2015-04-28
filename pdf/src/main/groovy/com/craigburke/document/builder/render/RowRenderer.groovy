@@ -29,11 +29,17 @@ class RowRenderer implements Renderable {
     }
 
     void parse(float height) {
-        cellRenderers*.parse(height)
+        currentRowCells.each {
+            float parseHeight = height + it.rowspanHeight
+            it.parse(parseHeight)
+        }
+        rowspanCells.each {
+            it.currentRowHeight = parsedHeight
+        }
     }
 
     boolean getFullyParsed() {
-        (cellRenderers) ? cellRenderers.every { it.fullyParsed } : true
+        (currentRowCells) ? currentRowCells.every { it.fullyParsed } : true
     }
 
     float getTotalHeight() {
@@ -41,7 +47,7 @@ class RowRenderer implements Renderable {
     }
 
     float getParsedHeight() {
-        float parsedHeight = cellRenderers*.parsedHeight.max()
+        float parsedHeight = currentRowCells*.parsedHeight.max() ?: 0
         if (fullyParsed) {
             parsedHeight += table.border.size
         }
@@ -51,11 +57,23 @@ class RowRenderer implements Renderable {
     void renderElement(float startY) {
         renderBackgrounds(startY)
         renderBorders(startY)
-        cellRenderers.each {
-            float cellStartY = startY
+        currentRowCells.each {
+            float cellStartY = startY - it.rowspanHeight
             it.render(cellStartY)
         }
+        rowspanCells.each {
+            it.updateRowspanHeight()
+            it.cell.rowspanPosition++
+        }
         renderCount++
+    }
+
+    private List<CellRenderer> getCurrentRowCells() {
+        cellRenderers.findAll { it.rowspanEnd }
+    }
+
+    private List<CellRenderer> getRowspanCells() {
+        cellRenderers.findAll { !it.rowspanEnd }
     }
 
     private Table getTable() {
@@ -119,7 +137,7 @@ class RowRenderer implements Renderable {
 
             contentStream.drawLine(columnEndX, translatedYTop, columnEndX, translatedYBottom)
 
-            if (fullyParsed && columnElement.onLastRow) {
+            if (fullyParsed && columnElement.rowspanEnd) {
                 contentStream.drawLine(columnStartX, translatedYBottom, columnEndX, translatedYBottom)
             }
         }

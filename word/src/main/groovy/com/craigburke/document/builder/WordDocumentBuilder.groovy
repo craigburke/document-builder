@@ -232,7 +232,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 
 	void addLineBreakRun(builder) {
 		builder.w.r {
-			w.cr()
+			w.br()
 		}
 	}
 
@@ -313,13 +313,13 @@ class WordDocumentBuilder extends DocumentBuilder {
 			table.children.each { Row row ->
 				w.tr {
 					row.children.each { Cell column ->
-						if (column.currentRow == 1) {
+						if (column.rowspanPosition == 1) {
 							addColumn(builder, column)
 						}
 						else {
 							addMergeColumn(builder)
 						}
-						column.currentRow++
+						column.rowspanPosition++
 					}
 				}
 			}

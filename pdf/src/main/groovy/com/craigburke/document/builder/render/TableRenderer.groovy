@@ -94,7 +94,7 @@ class TableRenderer implements Renderable {
         rowRenderers[parseStart..parseEnd].each {
             it.render(rowStartY)
             rowStartY += it.parsedHeight
-            it.cellRenderers.each { it.cell.currentRow++ }
+            it.cellRenderers.each { it.cell.rowspanPosition++ }
         }
         parsedAndRendered = true
     }

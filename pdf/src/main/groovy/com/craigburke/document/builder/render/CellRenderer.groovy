@@ -10,6 +10,10 @@ import com.craigburke.document.core.TextBlock
  * @author Craig Burke
  */
 class CellRenderer implements Renderable {
+
+    float currentRowHeight = 0
+    private float rowspanHeight = 0
+
     Cell cell
     List<Renderable> childRenderers = []
 
@@ -31,6 +35,10 @@ class CellRenderer implements Renderable {
         }
     }
 
+    float getRowspanHeight() {
+        rowspanHeight + currentRowHeight
+    }
+
     private float getPadding() {
         cell.parent.parent.padding
     }
@@ -44,6 +52,9 @@ class CellRenderer implements Renderable {
     }
 
     float getParsedHeight() {
+        if (!rowspanEnd) {
+            return 0
+        }
         float parsedHeight = (childRenderers*.parsedHeight.sum() ?: 0f) as float
         if (onFirstPage) {
             parsedHeight += padding
@@ -51,13 +62,20 @@ class CellRenderer implements Renderable {
         if (fullyParsed) {
             parsedHeight += padding
         }
-        parsedHeight
+        parsedHeight - rowspanHeight
+    }
+
+    void updateRowspanHeight() {
+        rowspanHeight += currentRowHeight
+        currentRowHeight = 0
     }
 
     void renderElement(float startY) {
         if (!parsedHeight) {
             return
         }
+        rowspanHeight += currentRowHeight
+        currentRowHeight = 0
 
         float childY = startY
         if (onFirstPage) {
@@ -74,8 +92,8 @@ class CellRenderer implements Renderable {
         childRenderers*.parse(parseHeight)
     }
 
-    boolean isOnLastRow() {
-        cell.rowspan == cell.currentRow
+    boolean isRowspanEnd() {
+        cell.rowspan == cell.rowspanPosition
     }
 
 }
