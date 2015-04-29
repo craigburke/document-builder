@@ -63,7 +63,9 @@ class RowRenderer implements Renderable {
         }
         rowspanCells.each {
             it.updateRowspanHeight()
-            it.cell.rowspanPosition++
+            if (fullyParsed) {
+                it.cell.rowspanPosition++
+            }
         }
         renderCount++
     }

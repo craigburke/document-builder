@@ -14,31 +14,38 @@ import spock.lang.Shared
  */
 class RowRendererSpec extends RendererTestBase {
 
-    @Shared RowRenderer rowRenderer
-    @Shared CellRenderer cellRenderer
+    @Shared List<RowRenderer> rowRenderers
 
     def setup() {
+        rowRenderers = []
         Document document = makeDocument()
         Table table = new Table(width: 800, padding: 0, border: [size: 0])
         table.parent = document
         document.children << table
 
+        2.times { addRow(table) }
+
+        PdfDocument pdfDocument = new PdfDocument(document)
+        table.children.each {
+            rowRenderers << new RowRenderer(it, pdfDocument, 0)
+        }
+    }
+
+    private void addRow(Table table) {
         Row row = new Row(parent: table)
         table.children << row
         Cell rowspanCell = new Cell(parent: row, width: 200, rowspan: 2)
-        2.times {
-            Cell normalCell = new Cell(parent:row, width: 100)
-            makeParagraph(5, rowspanCell)
-            makeParagraph(5, normalCell)
-            row.children << rowspanCell
-            row.children << normalCell
-        }
-        PdfDocument pdfDocument = new PdfDocument(document)
-        rowRenderer = new RowRenderer(row, pdfDocument, 0)
-        cellRenderer = rowRenderer.cellRenderers[0]
+        Cell normalCell = new Cell(parent: row, width: 100)
+        makeParagraph(5, rowspanCell)
+        makeParagraph(5, normalCell)
+        row.children << rowspanCell
+        row.children << normalCell
     }
 
     def "rowspan height is set correctly after multiple parses"() {
+        RowRenderer rowRenderer = rowRenderers[0]
+        CellRenderer cellRenderer = rowRenderer.cellRenderers[0]
+
         when:
         float parseHeight = defaultLineHeight * 3f
         rowRenderer.parse(parseHeight)
@@ -62,6 +69,9 @@ class RowRendererSpec extends RendererTestBase {
     }
 
     def "rowspan height is updated after render"() {
+        RowRenderer rowRenderer = rowRenderers[0]
+        CellRenderer cellRenderer = rowRenderer.cellRenderers[0]
+
         when:
         rowRenderer.parse(defaultLineHeight)
         rowRenderer.render(0)
@@ -83,21 +93,28 @@ class RowRendererSpec extends RendererTestBase {
     }
 
     def "parsedHeight is set correctly"() {
+        RowRenderer rowRenderer = rowRenderers[0]
+        CellRenderer cellRenderer = rowRenderer.cellRenderers[0]
+
         when:
-        float rowHeight = defaultLineHeight * 5
-        rowRenderer.parse(rowHeight)
+        float partialHeight = defaultLineHeight * 3
+        rowRenderer.parse(partialHeight)
         rowRenderer.render(0)
 
         then:
         cellRenderer.parsedHeight == 0
 
+        and:
+        cellRenderer.rowspanHeight == partialHeight
+
         when:
-        rowRenderer.parse(rowHeight)
+        float remainingHeight = defaultLineHeight * 2
+        rowRenderer.parse(remainingHeight)
         rowRenderer.render(0)
 
         then:
         cellRenderer.parsedHeight == 0
-        cellRenderer.rowspanHeight == (rowHeight * 2)
+        cellRenderer.rowspanHeight == partialHeight + remainingHeight
     }
 
 }

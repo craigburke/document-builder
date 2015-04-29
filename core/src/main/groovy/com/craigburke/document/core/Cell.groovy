@@ -8,6 +8,8 @@ class Cell extends BaseNode implements Stylable, Alignable, BackgroundAssignable
 	List children = []
 	Integer width
 	Integer colspan = 1
+
 	Integer rowspan = 1
 	Integer rowspanPosition = 1
+	BigDecimal rowspanHeight = 0
 }

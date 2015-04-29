@@ -12,7 +12,6 @@ import com.craigburke.document.core.TextBlock
 class CellRenderer implements Renderable {
 
     float currentRowHeight = 0
-    private float rowspanHeight = 0
 
     Cell cell
     List<Renderable> childRenderers = []
@@ -36,7 +35,7 @@ class CellRenderer implements Renderable {
     }
 
     float getRowspanHeight() {
-        rowspanHeight + currentRowHeight
+        cell.rowspanHeight + currentRowHeight
     }
 
     private float getPadding() {
@@ -62,11 +61,11 @@ class CellRenderer implements Renderable {
         if (fullyParsed) {
             parsedHeight += padding
         }
-        parsedHeight - rowspanHeight
+        Math.max(0, parsedHeight - rowspanHeight)
     }
 
     void updateRowspanHeight() {
-        rowspanHeight += currentRowHeight
+        cell.rowspanHeight += currentRowHeight
         currentRowHeight = 0
     }
 
@@ -74,8 +73,6 @@ class CellRenderer implements Renderable {
         if (!parsedHeight) {
             return
         }
-        rowspanHeight += currentRowHeight
-        currentRowHeight = 0
 
         float childY = startY
         if (onFirstPage) {
