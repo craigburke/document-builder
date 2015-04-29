@@ -67,7 +67,6 @@ class RowRenderer implements Renderable {
                 it.cell.rowspanPosition++
             }
         }
-        renderCount++
     }
 
     private List<CellRenderer> getCurrentRowCells() {

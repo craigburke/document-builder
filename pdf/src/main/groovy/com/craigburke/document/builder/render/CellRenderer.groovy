@@ -70,10 +70,6 @@ class CellRenderer implements Renderable {
     }
 
     void renderElement(float startY) {
-        if (!parsedHeight) {
-            return
-        }
-
         float childY = startY
         if (onFirstPage) {
             childY += padding
