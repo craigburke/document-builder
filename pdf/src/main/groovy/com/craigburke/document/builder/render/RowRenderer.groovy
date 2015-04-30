@@ -29,17 +29,12 @@ class RowRenderer implements Renderable {
     }
 
     void parse(float height) {
-        currentRowCells.each {
-            float parseHeight = height + it.rowspanHeight
-            it.parse(parseHeight)
-        }
-        rowspanCells.each {
-            it.currentRowHeight = parsedHeight
-        }
+        cellRenderers*.parse(height)
+        cellRenderers*.currentRowHeight = parsedHeight
     }
 
     boolean getFullyParsed() {
-        (currentRowCells) ? currentRowCells.every { it.fullyParsed } : true
+        cellRenderers.every { it.fullyParsed }
     }
 
     float getTotalHeight() {
@@ -47,7 +42,7 @@ class RowRenderer implements Renderable {
     }
 
     float getParsedHeight() {
-        float parsedHeight = currentRowCells*.parsedHeight.max() ?: 0
+        float parsedHeight = cellRenderers*.parsedHeight.max() ?: 0
         if (fullyParsed) {
             parsedHeight += table.border.size
         }
@@ -57,24 +52,7 @@ class RowRenderer implements Renderable {
     void renderElement(float startY) {
         renderBackgrounds(startY)
         renderBorders(startY)
-        currentRowCells.each {
-            float cellStartY = startY - it.rowspanHeight
-            it.render(cellStartY)
-        }
-        rowspanCells.each {
-            it.updateRowspanHeight()
-            if (fullyParsed) {
-                it.cell.rowspanPosition++
-            }
-        }
-    }
-
-    private List<CellRenderer> getCurrentRowCells() {
-        cellRenderers.findAll { it.rowspanEnd }
-    }
-
-    private List<CellRenderer> getRowspanCells() {
-        cellRenderers.findAll { !it.rowspanEnd }
+        cellRenderers*.render(startY)
     }
 
     private Table getTable() {
@@ -138,7 +116,7 @@ class RowRenderer implements Renderable {
 
             contentStream.drawLine(columnEndX, translatedYTop, columnEndX, translatedYBottom)
 
-            if (fullyParsed && columnElement.rowspanEnd) {
+            if (fullyParsed && columnElement.onLastRowspanRow) {
                 contentStream.drawLine(columnStartX, translatedYBottom, columnEndX, translatedYBottom)
             }
         }

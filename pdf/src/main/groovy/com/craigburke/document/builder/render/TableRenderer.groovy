@@ -46,10 +46,6 @@ class TableRenderer implements Renderable {
         else {
             parseEnd = parseStart
         }
-        parsedAndRendered = false
-        if (rowRenderers[parseEnd].fullyParsed) {
-            parseEnd++
-        }
 
         boolean reachedEnd = false
         float remainingHeight = height - (onFirstPage ? table.border.size : 0)
@@ -94,7 +90,9 @@ class TableRenderer implements Renderable {
         rowRenderers[parseStart..parseEnd].each {
             it.render(rowStartY)
             rowStartY += it.parsedHeight
-            it.cellRenderers.each { it.cell.rowspanPosition++ }
+            if (fullyParsed) {
+                it.cellRenderers.each { it.cell.rowsSpanned++ }
+            }
         }
         parsedAndRendered = true
     }

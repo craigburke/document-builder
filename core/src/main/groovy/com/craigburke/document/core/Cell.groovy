@@ -10,6 +10,6 @@ class Cell extends BaseNode implements Stylable, Alignable, BackgroundAssignable
 	Integer colspan = 1
 
 	Integer rowspan = 1
-	Integer rowspanPosition = 1
+	Integer rowsSpanned = 0
 	BigDecimal rowspanHeight = 0
 }

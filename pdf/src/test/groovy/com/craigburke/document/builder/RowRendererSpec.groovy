@@ -105,7 +105,7 @@ class RowRendererSpec extends RendererTestBase {
         cellRenderer.parsedHeight == 0
 
         and:
-        cellRenderer.rowspanHeight == partialHeight
+        cellRenderer.currentRowHeight == partialHeight
 
         when:
         float remainingHeight = defaultLineHeight * 2
@@ -127,7 +127,7 @@ class RowRendererSpec extends RendererTestBase {
         rowRenderer.render(0)
 
         then:
-        !cellRenderer.rowspanEnd
+        !cellRenderer.onLastRowspanRow
 
         when:
         float remainingHeight = rowHeight - defaultLineHeight
@@ -135,14 +135,14 @@ class RowRendererSpec extends RendererTestBase {
         rowRenderer.render(0)
 
         then:
-        cellRenderer.rowspanEnd
+        cellRenderer.onLastRowspanRow
 
         when:
         rowRenderer.parse(rowHeight)
         rowRenderer.render(0)
 
         then:
-        cellRenderer.rowspanEnd
+        cellRenderer.onLastRowspanRow
     }
 
 }

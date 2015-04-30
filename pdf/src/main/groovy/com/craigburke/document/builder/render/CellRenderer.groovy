@@ -43,6 +43,9 @@ class CellRenderer implements Renderable {
     }
 
     boolean getFullyParsed() {
+        if (cell.rowspan > 1 && !onLastRowspanRow) {
+            return true
+        }
         childRenderers.every { it.fullyParsed }
     }
 
@@ -51,7 +54,7 @@ class CellRenderer implements Renderable {
     }
 
     float getParsedHeight() {
-        if (!rowspanEnd) {
+        if (!onLastRowspanRow) {
             return 0
         }
         float parsedHeight = (childRenderers*.parsedHeight.sum() ?: 0f) as float
@@ -61,16 +64,19 @@ class CellRenderer implements Renderable {
         if (fullyParsed) {
             parsedHeight += padding
         }
-        Math.max(0, parsedHeight - rowspanHeight)
-    }
-
-    void updateRowspanHeight() {
-        cell.rowspanHeight += currentRowHeight
-        currentRowHeight = 0
+        if (cell.rowspan > 1) {
+            parsedHeight -= rowspanHeight
+        }
+        parsedHeight
     }
 
     void renderElement(float startY) {
         float childY = startY
+        if (cell.rowspan > 1) {
+            childY -= rowspanHeight
+            cell.rowspanHeight += currentRowHeight
+            currentRowHeight = 0
+        }
         if (onFirstPage) {
             childY += padding
         }
@@ -85,8 +91,8 @@ class CellRenderer implements Renderable {
         childRenderers*.parse(parseHeight)
     }
 
-    boolean isRowspanEnd() {
-        cell.rowspan == cell.rowspanPosition
+    boolean isOnLastRowspanRow() {
+        (cell.rowspan == 1) || (cell.rowsSpanned == (cell.rowspan - 1))
     }
 
 }

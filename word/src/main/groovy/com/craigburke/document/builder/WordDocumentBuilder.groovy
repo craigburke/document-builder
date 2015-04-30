@@ -313,13 +313,13 @@ class WordDocumentBuilder extends DocumentBuilder {
 			table.children.each { Row row ->
 				w.tr {
 					row.children.each { Cell column ->
-						if (column.rowspanPosition == 1) {
+						if (column.rowsSpanned == 1) {
 							addColumn(builder, column)
 						}
 						else {
 							addMergeColumn(builder)
 						}
-						column.rowspanPosition++
+						column.rowsSpanned++
 					}
 				}
 			}
