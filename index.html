@@ -413,7 +413,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.js"></script>
 <script>document.addEventListener('DOMContentLoaded', prettyPrint)</script>
-<link rel="stylesheet" href="css/document-builder.css?v=0.3.1" />
+<link rel="stylesheet" href="css/document-builder.css?v=0.4.0" />
 </head>
 <body class="article toc2 toc-left">
 <div id="header">
@@ -425,7 +425,11 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
+<li><a href="#_introduction">Introduction</a>
+<ul class="sectlevel2">
 <li><a href="#_getting_started">Getting Started</a></li>
+</ul>
+</li>
 <li><a href="#_paragraphs">Paragraphs</a>
 <ul class="sectlevel2">
 <li><a href="#_text">Text</a></li>
@@ -434,7 +438,15 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </ul>
 </li>
 <li><a href="#_headings">Headings</a></li>
-<li><a href="#_tables">Tables</a></li>
+<li><a href="#_tables">Tables</a>
+<ul class="sectlevel2">
+<li><a href="#_column_widths">Column Widths</a></li>
+<li><a href="#_backgrounds">Backgrounds</a></li>
+<li><a href="#_column_spanning">Column Spanning</a></li>
+<li><a href="#_row_spanning">Row Spanning</a></li>
+<li><a href="#_table_content">Table Content</a></li>
+</ul>
+</li>
 <li><a href="#_document">Document</a>
 <ul class="sectlevel2">
 <li><a href="#_units">Units</a></li>
@@ -457,12 +469,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </div>
 </div>
 <div class="sect1">
-<h2 id="_getting_started">Getting Started</h2>
+<h2 id="_introduction">Introduction</h2>
 <div class="sectionbody">
+<div class="sect2">
+<h3 id="_getting_started">Getting Started</h3>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">@Grab(group='com.craigburke.document', module='pdf', version='0.3.1')
-@Grab(group='com.craigburke.document', module='word', version='0.3.1')
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">@Grab(group='com.craigburke.document', module='pdf', version='0.4.0')
+@Grab(group='com.craigburke.document', module='word', version='0.4.0')
 
 import com.craigburke.document.builder.PdfDocumentBuilder
 import com.craigburke.document.builder.WordDocumentBuilder
@@ -481,6 +495,7 @@ pdfBuilder.create {
         paragraph 'Hello World (PDF)'
     }
 }</code></pre>
+</div>
 </div>
 </div>
 </div>
@@ -688,7 +703,7 @@ builder.create {
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>In addition to the bytes we need to include a name (should be unique). The height and the width if not specified
+<td>In addition to the bytes we can optionally include a name. The height and the width if not specified
 will default to the dimensions of the raw image.</td>
 </tr>
 </table>
@@ -797,16 +812,16 @@ that change how the tables are rendered.</p>
     document {
         table {  <i class="conum" data-value="1"></i><b>(1)</b>
             row {
-                cell "Cell1"
+                cell 'Cell1'
                 cell {
-                    text "Cell2" <i class="conum" data-value="2"></i><b>(2)</b>
+                    text 'Cell2' <i class="conum" data-value="2"></i><b>(2)</b>
                 }
             }
         }
 
         table(width: 6.inches, padding: 20.px, border: [size: 3.px, color: '#FF0000']) { <i class="conum" data-value="3"></i><b>(3)</b>
             row {
-                cell 'Cell1', width: 2.inches
+                cell 'Cell1'
                 cell 'Cell2', align: 'right' <i class="conum" data-value="4"></i><b>(4)</b>
             }
         }
@@ -829,10 +844,6 @@ that change how the tables are rendered.</p>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
 <td>Table with custom width padding and border</td>
 </tr>
-<tr>
-<td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>The width of the second cell is calculated based on the table width and the previous cell width</td>
-</tr>
 </table>
 </div>
 <div class="imageblock thumb">
@@ -852,6 +863,247 @@ A table with a border size of 0 can be used to build more complex layouts.
 </td>
 </tr>
 </table>
+</div>
+<div class="sect2">
+<h3 id="_column_widths">Column Widths</h3>
+<div class="paragraph">
+<p>By default all widths are given equal width based on the width of the table but you can also set the relative widths of each column with the <strong>columns</strong>
+property.</p>
+</div>
+<div class="listingblock">
+<div class="title">table-columns.groovy</div>
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
+    document {
+        table(columns: [1,2,3]) { <i class="conum" data-value="1"></i><b>(1)</b>
+            row {
+                cell 'Cell1-1'
+                cell 'Cell1-1' <i class="conum" data-value="2"></i><b>(2)</b>
+                cell 'Cell1-3' <i class="conum" data-value="3"></i><b>(3)</b>
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Proportional widths are set using the columns property</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>This cell is twice the width of the first cell</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>This cell is three times the width of the first cell</td>
+</tr>
+</table>
+</div>
+<div class="imageblock thumb">
+<div class="content">
+<img src="images/table-columns.png" alt="table columns">
+</div>
+<div class="title">Figure 7. result of table-columns.groovy</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_backgrounds">Backgrounds</h3>
+<div class="paragraph">
+<p>You can set a background color using the <strong>background</strong> property at the table, row or cell level.</p>
+</div>
+<div class="listingblock">
+<div class="title">table-background.groovy</div>
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
+    document {
+        table(background: '#6495ED') { <i class="conum" data-value="1"></i><b>(1)</b>
+            row {
+                cell 'Cell1-1'
+                cell 'Cell1-1'
+            }
+            row(background: '#FFFFFF') { <i class="conum" data-value="2"></i><b>(2)</b>
+               cell 'Cell2-1'
+               cell 'Cell2-2'
+            }
+            row {
+               cell 'Cell3-1', background: '#FFD700' <i class="conum" data-value="3"></i><b>(3)</b>
+               cell 'Cell3-2'
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Background color set for the entire table</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>The table background is overridden for this particular row</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Background set on an individual cell</td>
+</tr>
+</table>
+</div>
+<div class="imageblock thumb">
+<div class="content">
+<img src="images/table-background.png" alt="table background">
+</div>
+<div class="title">Figure 8. result of table-background.groovy</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_column_spanning">Column Spanning</h3>
+<div class="paragraph">
+<p>A cell can span multiple columns through use of the <strong>colspan</strong> property.</p>
+</div>
+<div class="listingblock">
+<div class="title">table-colspan.groovy</div>
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
+    document {
+        table {
+            row {
+                cell 'Cell1', colspan: 2 <i class="conum" data-value="1"></i><b>(1)</b>
+                cell 'Cell1-2'
+            }
+            row {
+                cell 'Cell2-1'
+                cell 'Cell2-2'
+                cell 'Cell2-3'
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This cell will span the normal width of the first two cells</td>
+</tr>
+</table>
+</div>
+<div class="imageblock thumb">
+<div class="content">
+<img src="images/table-colspan.png" alt="table colspan">
+</div>
+<div class="title">Figure 9. result of table-colspan.groovy</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_row_spanning">Row Spanning</h3>
+<div class="paragraph">
+<p>In addition to spanning multiple columns, a cell can also span multiple row through use of the <strong>rowspan</strong> property.</p>
+</div>
+<div class="listingblock">
+<div class="title">table-colspan.groovy</div>
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
+    document {
+        table {
+            row {
+                cell 'Cell1-1', rowspan: 2 <i class="conum" data-value="1"></i><b>(1)</b>
+                cell 'Cell1-2'
+                cell 'Cell1-3'
+            }
+            row { <i class="conum" data-value="2"></i><b>(2)</b>
+                cell 'Cell2-1'
+                cell 'Cell2-2'
+            }
+            row {
+                cell 'Cell3-1'
+                cell 'Cell3-2'
+                cell 'Cell3-3'
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>This cell will span the first two rows.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>This row has only two cells to a accomodate the cell from the first row</td>
+</tr>
+</table>
+</div>
+<div class="imageblock thumb">
+<div class="content">
+<img src="images/table-rowspan.png" alt="table rowspan">
+</div>
+<div class="title">Figure 10. result of table-rowspan.groovy</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_table_content">Table Content</h3>
+<div class="paragraph">
+<p>In addition to the standard paragraph content, a cell can also contain another table</p>
+</div>
+<div class="listingblock">
+<div class="title">table-content.groovy</div>
+<div class="content">
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">builder.create {
+    document {
+        table {
+            row {
+                cell {
+                    text 'Cell1-1' <i class="conum" data-value="2"></i><b>(2)</b>
+                }
+                cell { <i class="conum" data-value="1"></i><b>(1)</b>
+                    table {
+                        row {
+                            cell 'INNER-1'
+                            cell 'INNER-2'
+                        }
+                    }
+                }
+            }
+            row {
+                cell 'Cell2-1' <i class="conum" data-value="3"></i><b>(3)</b>
+                cell 'Cell2-2'
+            }
+        }
+    }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>We can use all the typical paragraph content (such as text or image) and they are added to an implicit paragraph of this cell.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Instead of paragraph content we can also add another table within this cell.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>We can also add cell text directly using the constructor.</td>
+</tr>
+</table>
+</div>
+<div class="imageblock thumb">
+<div class="content">
+<img src="images/table-content.png" alt="table content">
+</div>
+<div class="title">Figure 11. result of table-content.groovy</div>
+</div>
 </div>
 </div>
 </div>
@@ -960,7 +1212,7 @@ builder.create {
 <div class="content">
 <img src="images/header-footer.png" alt="header footer">
 </div>
-<div class="title">Figure 7. result of header-footer.groovy</div>
+<div class="title">Figure 12. result of header-footer.groovy</div>
 </div>
 </div>
 <div class="sect2">
@@ -971,11 +1223,11 @@ the template setting.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">Map customTemplate = [
-    document: [font: [family: 'Helvetica'],
-    paragraph: [font: [color: '#333333'], <i class="conum" data-value="1"></i><b>(1)</b>
-    'paragraph.myStyle': [font: [bold: true]] <i class="conum" data-value="2"></i><b>(2)</b>
-]
+<pre class="prettyprint highlight"><code class="language-groovy" data-lang="groovy">def customTemplate = {
+    'document' font: [family: 'Helvetica', size: 13.pt], margin: [top: 1.5.inches] <i class="conum" data-value="1"></i><b>(1)</b>
+    'paragraph' font: [color: '#333333'] <i class="conum" data-value="2"></i><b>(2)</b>
+    'paragraph.myStyle' font: [bold: true] <i class="conum" data-value="3"></i><b>(3)</b>
+}
 
 builder.create {
     document(template: customTemplate) {
@@ -989,11 +1241,15 @@ builder.create {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Defaults for all paragraphs</td>
+<td>Special units (like pt and inches) can be used within template closure</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Specific style that applied when a paragraph has the style <strong>myStyle</strong></td>
+<td>Sets a default for all paragraphs</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Sets a specific style that is applied when a paragraph has the style <strong>myStyle</strong></td>
 </tr>
 </table>
 </div>
@@ -1028,7 +1284,7 @@ builder.create {
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2015-04-08 08:36:52 EDT
+Last updated 2015-04-30 10:32:55 EDT
 </div>
 </div>
 </body>
