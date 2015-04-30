@@ -65,7 +65,7 @@ class CellRenderer implements Renderable {
             parsedHeight += padding
         }
         if (cell.rowspan > 1) {
-            parsedHeight -= rowspanHeight
+            parsedHeight -= cell.rowspanHeight
         }
         parsedHeight
     }
@@ -73,14 +73,18 @@ class CellRenderer implements Renderable {
     void renderElement(float startY) {
         float childY = startY
         if (cell.rowspan > 1) {
-            childY -= rowspanHeight
-            cell.rowspanHeight += currentRowHeight
-            currentRowHeight = 0
+            childY -= cell.rowspanHeight
         }
         if (onFirstPage) {
             childY += padding
         }
-        childRenderers*.render(childY)
+        if (onLastRowspanRow) {
+            childRenderers*.render(childY)
+        }
+        else {
+            cell.rowspanHeight += currentRowHeight
+            currentRowHeight = 0
+        }
     }
 
     void parse(float height) {

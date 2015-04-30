@@ -17,9 +17,6 @@ trait Renderable {
     int renderCount = 0
     
     void render(float startY) {
-        if (!parsedHeight) {
-            return
-        }
         float currentX = pdfDocument.x
         float currentY = pdfDocument.y        
         pdfDocument.y = startY

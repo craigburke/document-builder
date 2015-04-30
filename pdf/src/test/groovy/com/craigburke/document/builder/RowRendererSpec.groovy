@@ -83,6 +83,9 @@ class RowRendererSpec extends RendererTestBase {
         rowRenderer.parse(defaultLineHeight)
 
         then:
+        cellRenderer.currentRowHeight == defaultLineHeight
+
+        and:
         cellRenderer.rowspanHeight == (defaultLineHeight * 2)
 
         when:
@@ -105,44 +108,14 @@ class RowRendererSpec extends RendererTestBase {
         cellRenderer.parsedHeight == 0
 
         and:
-        cellRenderer.currentRowHeight == partialHeight
-
-        when:
-        float remainingHeight = defaultLineHeight * 2
-        rowRenderer.parse(remainingHeight)
-        rowRenderer.render(0)
-
-        then:
-        cellRenderer.parsedHeight == 0
-        cellRenderer.rowspanHeight == partialHeight + remainingHeight
-    }
-
-    def "rowSpanEnd is updated correctly"() {
-        RowRenderer rowRenderer = rowRenderers[0]
-        CellRenderer cellRenderer = rowRenderer.cellRenderers[0]
-        float rowHeight = defaultLineHeight * 5
+        cellRenderer.rowspanHeight == partialHeight
 
         when:
         rowRenderer.parse(defaultLineHeight)
-        rowRenderer.render(0)
 
         then:
-        !cellRenderer.onLastRowspanRow
-
-        when:
-        float remainingHeight = rowHeight - defaultLineHeight
-        rowRenderer.parse(remainingHeight)
-        rowRenderer.render(0)
-
-        then:
-        cellRenderer.onLastRowspanRow
-
-        when:
-        rowRenderer.parse(rowHeight)
-        rowRenderer.render(0)
-
-        then:
-        cellRenderer.onLastRowspanRow
+        cellRenderer.parsedHeight == 0
+        cellRenderer.rowspanHeight == partialHeight + defaultLineHeight
     }
 
 }
