@@ -56,7 +56,7 @@ class ParagraphRenderer implements Renderable {
         }
 
         if (parsedAndRendered) {
-            parseEnd++
+            parseEnd = Math.min(lines.size() - 1, parseEnd + 1)
             parseStart = parseEnd
         }
         else {
@@ -82,7 +82,7 @@ class ParagraphRenderer implements Renderable {
                 }
             }
             if (!reachedEnd) {
-                parseEnd++
+                parseEnd = Math.min(lines.size() - 1, parseEnd + 1)
             }
         }
         parsedAndRendered = false
