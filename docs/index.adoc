@@ -4,8 +4,9 @@ Craig Burke <craig@craigburke.com>
 [.ribbon]
 image::ribbon.png[link={projectUrl}]
 
-== Getting Started
+== Introduction
 
+=== Getting Started
 [source,groovy,subs='attributes']
 ----
 @Grab(group='com.craigburke.document', module='pdf', version='{version}')
@@ -149,7 +150,7 @@ builder.create {
 }
 ----
 <1> We need to provide the bytes of the image
-<2> In addition to the bytes we need to include a name (should be unique). The height and the width if not specified
+<2> In addition to the bytes we can optionally include a name. The height and the width if not specified
 will default to the dimensions of the raw image.
 
 
@@ -215,17 +216,17 @@ builder.create {
     document {
         table {  // <1>
             row {
-                column "Column1"
-                column {
-                    text "Column2" // <2>
+                cell 'Cell1'
+                cell {
+                    text 'Cell2' // <2>
                 }
             }
         }
         
         table(width: 6.inches, padding: 20.px, border: [size: 3.px, color: '#FF0000']) { // <3>
             row {
-                column 'Column1', width: 2.inches
-                column 'Column2', align: 'right' // <4>
+                cell 'Cell1'
+                cell 'Cell2', align: 'right' // <4>
             }
         }
         
@@ -233,15 +234,175 @@ builder.create {
 }
 ----
 <1> Table with default padding, width and border. If not specified width is 100% of the available area.
-<2> The column contains a single paragraph so the same elements can be added here (text, images or line breaks).
+<2> The cell contains a single paragraph so the same elements can be added here (text, images or line breaks).
 <3> Table with custom width padding and border
-<4> The width of the second column is calculated based on the table width and the previous column width
 
 [.thumb]
 .result of table.groovy
 image::table1.png[]
 
 TIP: A table with a border size of 0 can be used to build more complex layouts.
+
+=== Column Widths
+By default all widths are given equal width based on the width of the table but you can also set the relative widths of each column with the **columns**
+property.
+
+[source,groovy]
+.table-columns.groovy
+----
+builder.create {
+    document {
+        table(columns: [1,2,3]) { // <1>
+            row {
+                cell 'Cell1-1'
+                cell 'Cell1-1' // <2>
+                cell 'Cell1-3' // <3>
+            }
+        }
+    }
+}
+----
+<1> Proportional widths are set using the columns property
+<2> This cell is twice the width of the first cell
+<3> This cell is three times the width of the first cell
+
+[.thumb]
+.result of table-columns.groovy
+image::table-columns.png[]
+
+=== Backgrounds
+You can set a background color using the **background** property at the table, row or cell level.
+
+[source,groovy]
+.table-background.groovy
+----
+builder.create {
+    document {
+        table(background: '#6495ED') { // <1>
+            row {
+                cell 'Cell1-1'
+                cell 'Cell1-1'
+            }
+            row(background: '#FFFFFF') { // <2>
+               cell 'Cell2-1'
+               cell 'Cell2-2'
+            }
+            row {
+               cell 'Cell3-1', background: '#FFD700' // <3>
+               cell 'Cell3-2'
+            }
+        }
+    }
+}
+----
+<1> Background color set for the entire table
+<2> The table background is overridden for this particular row
+<3> Background set on an individual cell
+
+[.thumb]
+.result of table-background.groovy
+image::table-background.png[]
+
+=== Column Spanning
+
+A cell can span multiple columns through use of the **colspan** property.
+
+[source,groovy]
+.table-colspan.groovy
+----
+builder.create {
+    document {
+        table {
+            row {
+                cell 'Cell1', colspan: 2 // <1>
+                cell 'Cell1-2'
+            }
+            row {
+                cell 'Cell2-1'
+                cell 'Cell2-2'
+                cell 'Cell2-3'
+            }
+        }
+    }
+}
+----
+<1> This cell will span the normal width of the first two cells
+
+[.thumb]
+.result of table-colspan.groovy
+image::table-colspan.png[]
+
+=== Row Spanning
+
+In addition to spanning multiple columns, a cell can also span multiple row through use of the **rowspan** property.
+
+[source,groovy]
+.table-colspan.groovy
+----
+builder.create {
+    document {
+        table {
+            row {
+                cell 'Cell1-1', rowspan: 2 // <1>
+                cell 'Cell1-2'
+                cell 'Cell1-3'
+            }
+            row { // <2>
+                cell 'Cell2-1'
+                cell 'Cell2-2'
+            }
+            row {
+                cell 'Cell3-1'
+                cell 'Cell3-2'
+                cell 'Cell3-3'
+            }
+        }
+    }
+}
+----
+<1> This cell will span the first two rows.
+<2> This row has only two cells to a accomodate the cell from the first row
+
+[.thumb]
+.result of table-rowspan.groovy
+image::table-rowspan.png[]
+
+=== Table Content
+In addition to the standard paragraph content, a cell can also contain another table
+[source,groovy]
+.table-content.groovy
+----
+builder.create {
+    document {
+        table {
+            row {
+                cell {
+                    text 'Cell1-1' // <2>
+                }
+                cell { // <1>
+                    table {
+                        row {
+                            cell 'INNER-1'
+                            cell 'INNER-2'
+                        }
+                    }
+                }
+            }
+            row {
+                cell 'Cell2-1' // <3>
+                cell 'Cell2-2'
+            }
+        }
+    }
+}
+----
+<1> We can use all the typical paragraph content (such as text or image) and they are added to an implicit paragraph of this cell.
+<2> Instead of paragraph content we can also add another table within this cell.
+<3> We can also add cell text directly using the constructor.
+
+[.thumb]
+.result of table-content.groovy
+image::table-content.png[]
 
 == Document
 
@@ -287,8 +448,8 @@ builder.create {
         footer: { info ->
             table(border: [size: 0]) {
                 row {
-                    column "Date Generated: ${info.dateGenerated.format('yyyy-MM-dd hh:mm a')}" // <5>
-                    cecolumnll "Page ${info.pageNumber} of ${info.pageCount}", align: 'right' // <6>
+                    cell "Date Generated: ${info.dateGenerated.format('yyyy-MM-dd hh:mm a')}" // <5>
+                    cell "Page ${info.pageNumber} of ${info.pageCount}", align: 'right' // <6>
                 }
             }
         }
