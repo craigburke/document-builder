@@ -81,7 +81,7 @@ class RowRenderer implements Renderable {
                 boolean isLastColumn = (column == column.parent.children.last())
                 contentStream.setNonStrokingColor(*column.background.rgb)
                 float startX = columnElement.startX - tableBorderOffset
-                float width = column.width + (isLastColumn ? table.border.size : 0)
+                float width = column.width + (isLastColumn ? table.border.size : tableBorderOffset)
                 float height = parsedHeight - (fullyParsed ? 0 : tableBorderOffset)
                 height += ((fullyParsed && !onFirstPage) ? table.border.size : 0)
                 contentStream.fillRect(startX, translatedStartY, width, height)
