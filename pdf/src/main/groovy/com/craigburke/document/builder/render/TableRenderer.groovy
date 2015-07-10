@@ -14,7 +14,6 @@ class TableRenderer implements Renderable {
 
     private int parseStart = 0
     private int parseEnd = 0
-
     private boolean parsedAndRendered = false
 
     TableRenderer(Table table, PdfDocument pdfDocument, float startX) {
@@ -27,21 +26,13 @@ class TableRenderer implements Renderable {
         }
     }
 
-    int getParseStart() {
-        this.parseStart
-    }
-
-    int getParseEnd() {
-        this.parseEnd
-    }
-
     void parse(float height) {
         if (!rowRenderers) {
             return
         }
 
         if (parsedAndRendered) {
-            parseStart = parseEnd + (rowRenderers.size() == parseEnd + 1 ? 0 : 1)
+            parseStart = parseEnd + (rowRenderers.size() == (parseEnd + 1) ? 0 : 1)
         }
         else {
             parseEnd = parseStart
@@ -56,6 +47,7 @@ class TableRenderer implements Renderable {
             remainingHeight -= currentRenderer.parsedHeight
 
             if (remainingHeight < 0) {
+                currentRenderer.parse(0)
                 parseEnd = Math.max(0, parseEnd - 1)
                 reachedEnd = true
             }
@@ -86,6 +78,10 @@ class TableRenderer implements Renderable {
     }
 
     void renderElement(float startY) {
+        if (parsedAndRendered) {
+            return
+        }
+
         float rowStartY = startY
         rowRenderers[parseStart..parseEnd].each {
             it.render(rowStartY)
@@ -94,6 +90,7 @@ class TableRenderer implements Renderable {
                 it.cellRenderers.each { it.cell.rowsSpanned++ }
             }
         }
+
         parsedAndRendered = true
     }
 

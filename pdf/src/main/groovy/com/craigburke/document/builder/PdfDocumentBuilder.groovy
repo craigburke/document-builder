@@ -49,14 +49,14 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
             pdfDocument.x = renderStartX
 
-            ParagraphRenderer paragraphElement =
+            ParagraphRenderer paragraphRenderer =
                     new ParagraphRenderer(paragraph, pdfDocument, renderStartX, maxLineWidth)
 
-            while (!paragraphElement.fullyParsed) {
-                paragraphElement.parse(pdfDocument.remainingPageHeight)
-                paragraphElement.render(pdfDocument.y)
-                if (paragraphElement.fullyParsed) {
-                    pdfDocument.scrollDownPage(paragraphElement.totalHeight)
+            while (!paragraphRenderer.fullyParsed) {
+                paragraphRenderer.parse(pdfDocument.remainingPageHeight)
+                paragraphRenderer.render(pdfDocument.y)
+                if (paragraphRenderer.fullyParsed) {
+                    pdfDocument.scrollDownPage(paragraphRenderer.parsedHeight)
                 }
                 else {
                     pdfDocument.addPage()
@@ -69,12 +69,13 @@ class PdfDocumentBuilder extends DocumentBuilder {
         if (renderState == RenderState.PAGE) {
             pdfDocument.x = table.margin.left + document.margin.left
 
-            TableRenderer tableElement = new TableRenderer(table, pdfDocument, pdfDocument.x)
-            while (!tableElement.fullyParsed) {
-                tableElement.parse(pdfDocument.remainingPageHeight)
-                tableElement.render(pdfDocument.y)
-                if (tableElement.fullyParsed) {
-                    pdfDocument.scrollDownPage(tableElement.totalHeight)
+            TableRenderer tableRenderer = new TableRenderer(table, pdfDocument, pdfDocument.x)
+            while (!tableRenderer.fullyParsed) {
+                tableRenderer.parse(pdfDocument.remainingPageHeight)
+                tableRenderer.render(pdfDocument.y)
+
+                if (tableRenderer.fullyParsed) {
+                    pdfDocument.scrollDownPage(tableRenderer.parsedHeight)
                 }
                 else {
                     pdfDocument.addPage()

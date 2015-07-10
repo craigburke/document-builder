@@ -79,10 +79,11 @@ class ParagraphRenderer implements Renderable {
                 if (line == lines.last()) {
                     reachedEnd = true
                     fullyParsed = true
+                    parseEnd = lines.size() - 1
                 }
-            }
-            if (!reachedEnd) {
-                parseEnd = Math.min(lines.size() - 1, parseEnd + 1)
+                else {
+                    parseEnd = Math.min(lines.size() - 1, parseEnd + 1)
+                }
             }
         }
         parsedAndRendered = false
