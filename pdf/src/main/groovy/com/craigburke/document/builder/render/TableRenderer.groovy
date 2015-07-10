@@ -41,7 +41,7 @@ class TableRenderer implements Renderable {
         }
 
         if (parsedAndRendered) {
-            parseStart = parseEnd
+            parseStart = parseEnd + (rowRenderers.size() == parseEnd + 1 ? 0 : 1)
         }
         else {
             parseEnd = parseStart
