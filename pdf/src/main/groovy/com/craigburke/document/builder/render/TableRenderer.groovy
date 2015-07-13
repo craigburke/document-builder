@@ -32,7 +32,8 @@ class TableRenderer implements Renderable {
         }
 
         if (parsedAndRendered) {
-            parseStart = parseEnd + (rowRenderers.size() == (parseEnd + 1) ? 0 : 1)
+            parseEnd = Math.min(rowRenderers.size() - 1, parseEnd + 1)
+            parseStart = parseEnd
         }
         else {
             parseEnd = parseStart

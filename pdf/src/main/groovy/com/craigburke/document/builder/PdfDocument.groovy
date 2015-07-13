@@ -75,11 +75,6 @@ class PdfDocument {
 
     }
 
-    float translateAbsoluteY(float y) {
-        float totalPageHeight = currentPage.mediaBox.height - document.margin.top - document.margin.bottom
-        y % totalPageHeight
-    }
-
     float translateY(Number value) {
         currentPage.mediaBox.height - value
     }

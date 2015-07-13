@@ -24,16 +24,19 @@ class TableRendererSpec extends RendererTestBase {
     def setup() {
         table = new Table(margin:Margin.NONE, padding:20, border:[size:3], columns:[1])
         TextBlock paragraph = makeParagraph(5)
+        paragraph.margin = Margin.NONE
         tableRenderer = makeTableElement(table, paragraph, rowCount)
         defaultRowHeight = (defaultLineHeight * 5f) + (table.padding * 2f) + (table.border.size)
     }
 
     def "parse first row"() {
+        float firstRowHeight = defaultRowHeight + table.border.size
+
         when:
-        tableRenderer.parse(defaultRowHeight)
+        tableRenderer.parse(firstRowHeight)
 
         then:
-        tableRenderer.parsedHeight == defaultRowHeight + table.border.size
+        tableRenderer.parsedHeight == firstRowHeight
 
         and:
         tableRenderer.parseStart == 0
