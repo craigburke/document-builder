@@ -23,7 +23,7 @@ class ParagraphRenderer implements Renderable {
     List<ParagraphLine> lines
 
     private int parseStart = 0
-    private int parseEnd = 0
+    private int linesParsed = 0
 
     private float startX
     private boolean parsedAndRendered = false
@@ -46,7 +46,12 @@ class ParagraphRenderer implements Renderable {
     }
 
     int getParseEnd() {
-        this.parseEnd
+        int parseEnd = Math.max(0f, (parseStart + linesParsed - 1))
+        Math.min(lines.size() - 1, parseEnd)
+    }
+
+    int getLinesParsed() {
+        this.linesParsed
     }
 
     void parse(float height) {
@@ -56,41 +61,34 @@ class ParagraphRenderer implements Renderable {
         }
 
         if (parsedAndRendered) {
-            parseEnd = Math.min(lines.size() - 1, parseEnd + 1)
-            parseStart = parseEnd
+            parseStart += linesParsed
+            parseStart = Math.min(lines.size() - 1, parseStart)
         }
-        else {
-            parseEnd = parseStart
-        }
+        linesParsed = 0
 
         boolean reachedEnd = false
         float parsedHeight = 0
 
         while (!reachedEnd) {
-            ParagraphLine line = lines[parseEnd]
+            ParagraphLine line = lines[parseStart + linesParsed]
             parsedHeight += line.totalHeight
+            linesParsed++
 
             if (parsedHeight > height) {
-                parseEnd = Math.max(0f, parseEnd - 1)
+                linesParsed = Math.max(0f, linesParsed - 1)
                 reachedEnd = true
                 fullyParsed = false
             }
-            else {
-                if (line == lines.last()) {
-                    reachedEnd = true
-                    fullyParsed = true
-                    parseEnd = lines.size() - 1
-                }
-                else {
-                    parseEnd = Math.min(lines.size() - 1, parseEnd + 1)
-                }
+            else if (line == lines.last()) {
+                reachedEnd = true
+                fullyParsed = true
             }
         }
         parsedAndRendered = false
     }
 
     void renderElement(float startY) {
-        if (fullyRendered) {
+        if (fullyRendered || !linesParsed) {
             return
         }
 
@@ -111,6 +109,10 @@ class ParagraphRenderer implements Renderable {
     }
 
     float getParsedHeight() {
+        if (!linesParsed) {
+            return 0
+        }
+
         float linesHeight = lines[parseStart..parseEnd]*.totalHeight.sum() ?: 0
         float parsedHeight = (onFirstPage ? node.margin.top : 0) + linesHeight + (fullyParsed ? node.margin.bottom : 0)
         parsedHeight

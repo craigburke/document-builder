@@ -49,6 +49,9 @@ class ParagraphRendererSpec extends RendererTestBase {
         and:
         paragraphElement.parseEnd == 0
 
+        and:
+        paragraphElement.linesParsed == 1
+
         when:
         paragraphElement.with {
             render(0)
