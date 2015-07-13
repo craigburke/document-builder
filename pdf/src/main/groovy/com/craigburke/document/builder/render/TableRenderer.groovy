@@ -47,7 +47,7 @@ class TableRenderer implements Renderable {
             currentRenderer.parse(remainingHeight)
             remainingHeight -= currentRenderer.parsedHeight
 
-            if (remainingHeight < 0) {
+            if (remainingHeight < 0 || currentRenderer.parsedHeight == 0) {
                 currentRenderer.parse(0)
                 parseEnd = Math.max(0, parseEnd - 1)
                 reachedEnd = true

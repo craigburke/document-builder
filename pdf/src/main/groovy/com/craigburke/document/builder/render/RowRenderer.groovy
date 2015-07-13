@@ -50,6 +50,10 @@ class RowRenderer implements Renderable {
     }
 
     void renderElement(float startY) {
+        if (parsedHeight == 0) {
+            return
+        }
+
         renderBackgrounds(startY)
         renderBorders(startY)
         cellRenderers*.render(startY)

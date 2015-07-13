@@ -54,11 +54,12 @@ class CellRenderer implements Renderable {
     }
 
     float getParsedHeight() {
-        if (!onLastRowspanRow) {
+        if (!childRenderers || !onLastRowspanRow) {
             return 0
         }
         float parsedHeight = (childRenderers*.parsedHeight.sum() ?: 0f) as float
-        if (onFirstPage) {
+
+        if (onFirstPage && parsedHeight) {
             parsedHeight += padding
         }
         if (fullyParsed) {
