@@ -94,7 +94,7 @@ class ParagraphParser {
         String[] words = text.split()*.trim()
 
         int wordIndex = 0
-        int resultWidth = 0
+        BigDecimal resultWidth = 0
         while (words && resultWidth < width && wordIndex < words.size()) {
             result += (wordIndex == 0 ? '' : ' ') + words[wordIndex]
             resultWidth = getTextWidth(result, font, fontSize)
