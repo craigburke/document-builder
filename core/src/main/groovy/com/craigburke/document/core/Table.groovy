@@ -5,7 +5,7 @@ package com.craigburke.document.core
  * @author Craig Burke
  */
 class Table extends BlockNode implements BackgroundAssignable {
-    static Margin defaultMargin = new Margin(top:12, bottom:12, left:0, right:0)
+    static Margin defaultMargin = new Margin(top: 12, bottom: 12, left: 0, right: 0)
     List<Row> children = []
 
     Integer padding = 10
@@ -15,8 +15,7 @@ class Table extends BlockNode implements BackgroundAssignable {
     int getColumnCount() {
         if (columns) {
             columns.size()
-        }
-        else {
+        } else {
             (children) ? children.max { it.children.size() }.children.size() : 0
         }
     }
@@ -36,8 +35,7 @@ class Table extends BlockNode implements BackgroundAssignable {
         columns.eachWithIndex { column, index ->
             if (index == columns.size() - 1) {
                 columnWidths << totalCellWidth - ((columnWidths.sum() ?: 0) as int)
-            }
-            else {
+            } else {
                 columnWidths << (Math.ceil((columns[index] / relativeTotal) * totalCellWidth) as int)
             }
         }
@@ -73,12 +71,10 @@ class Table extends BlockNode implements BackgroundAssignable {
     private int getMaxWidth() {
         if (parent instanceof Document) {
             parent.width - parent.margin.left - parent.margin.right
-        }
-        else if (parent instanceof Cell) {
+        } else if (parent instanceof Cell) {
             Table outerTable = parent.parent.parent
             parent.width - (outerTable.padding * 2)
-        }
-        else {
+        } else {
             0
         }
 

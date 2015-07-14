@@ -17,7 +17,7 @@ class PdfDocumentLoader {
 
     static Document load(byte[] data) {
         PDDocument pdfDoc = PDDocument.load(new ByteArrayInputStream(data))
-        Document document = new Document(element:pdfDoc)
+        Document document = new Document(element: pdfDoc)
 
         def metaData = new XmlParser().parse(pdfDoc.documentCatalog.metadata.createInputStream())
 
@@ -29,8 +29,7 @@ class PdfDocumentLoader {
         metaData.each {
             if (it.name() == 'paragraph') {
                 this.loadParagraph(document, it)
-            }
-            else {
+            } else {
                 this.loadTable(document, it)
             }
         }
@@ -41,25 +40,25 @@ class PdfDocumentLoader {
     }
 
     private static loadParagraph(Document document, paragraphNode) {
-        def paragraph = new TextBlock(parent:document)
+        def paragraph = new TextBlock(parent: document)
         paragraph.margin.top = new BigDecimal(paragraphNode.'@marginTop')
         paragraph.margin.bottom = new BigDecimal(paragraphNode.'@marginBottom')
         paragraph.margin.left = new BigDecimal(paragraphNode.'@marginLeft')
         paragraph.margin.right = new BigDecimal(paragraphNode.'@marginRight')
 
         paragraphNode.image.each {
-            paragraph.children << new Image(parent:paragraph)
+            paragraph.children << new Image(parent: paragraph)
         }
 
         document.children << paragraph
     }
 
     private static loadTable(Document document, tableNode) {
-        def table = new Table(parent:document, width:new BigDecimal(tableNode.'@width'))
+        def table = new Table(parent: document, width: new BigDecimal(tableNode.'@width'))
         tableNode.row.each { rowNode ->
             Row row = new Row()
             rowNode.cell.each { cellNode ->
-                def cell = new Cell(width:new BigDecimal(cellNode.'@width'))
+                def cell = new Cell(width: new BigDecimal(cellNode.'@width'))
                 cell.children << new TextBlock()
                 row.children << cell
             }

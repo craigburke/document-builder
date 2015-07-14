@@ -171,11 +171,11 @@ ruleset {
     SpaceAfterSwitch
     SpaceAfterWhile
     SpaceAroundClosureArrow
-    'SpaceAroundMapEntryColon' doNotApplyToFilesMatching: '.*Spec.groovy'
+    'SpaceAroundMapEntryColon' characterBeforeColonRegex: /\S|\s*/, characterAfterColonRegex: /\s/, doNotApplyToFilesMatching: '.*Spec.groovy'
     SpaceAroundOperator
     SpaceBeforeClosingBrace
     SpaceBeforeOpeningBrace
-    TrailingWhitespace
+    'TrailingWhitespace' enabled: false
 
     // rulesets/generic.xml
     IllegalClassMember

@@ -24,8 +24,7 @@ class ParagraphParser {
             if (child.getClass() == LineBreak) {
                 currentChunk = []
                 paragraphChunks << currentChunk
-            }
-            else {
+            } else {
                 currentChunk << child
             }
         }
@@ -49,37 +48,35 @@ class ParagraphParser {
                 String remainingText = node.value
 
                 while (remainingText) {
-                    BigDecimal textWidth = pdfFont.getStringWidth(remainingText)  / 1000 * font.size
+                    BigDecimal textWidth = pdfFont.getStringWidth(remainingText) / 1000 * font.size
 
                     if (currentLine.contentWidth + textWidth > maxLineWidth) {
                         String text = getTextUntilBreak(remainingText, pdfFont, font.size, currentLine.remainingWidth)
                         int nextPosition = text.size()
                         remainingText = remainingText[nextPosition..-1].trim()
-                        int elementWidth = pdfFont.getStringWidth(text)  / 1000 * font.size
+                        int elementWidth = pdfFont.getStringWidth(text) / 1000 * font.size
                         currentLine.contentWidth += elementWidth
 
-                        currentLine.elements << new TextElement(pdfFont:pdfFont, text:text,
-                                node:node, width:elementWidth)
+                        currentLine.elements << new TextElement(pdfFont: pdfFont, text: text,
+                                node: node, width: elementWidth)
 
                         currentLine = new ParagraphLine(paragraph, maxLineWidth)
                         chunkLines << currentLine
-                    }
-                    else {
-                        currentLine.elements << new TextElement(pdfFont:pdfFont, text:remainingText,
-                                node:node, width:textWidth)
+                    } else {
+                        currentLine.elements << new TextElement(pdfFont: pdfFont, text: remainingText,
+                                node: node, width: textWidth)
                         remainingText = ''
                         currentLine.contentWidth += textWidth
                     }
 
                 }
-            }
-            else {
+            } else {
                 if (currentLine.remainingWidth < node.width) {
                     currentLine = new ParagraphLine(paragraph, maxLineWidth)
                     chunkLines << currentLine
                 }
                 currentLine.contentWidth += node.width
-                currentLine.elements << new ImageElement(node:node)
+                currentLine.elements << new ImageElement(node: node)
             }
         }
 
@@ -102,11 +99,9 @@ class ParagraphParser {
             if (resultWidth == width) {
                 spaceBreakpointFound = true
                 break
-            }
-            else if (resultWidth < width) {
+            } else if (resultWidth < width) {
                 spaceBreakpointFound = true
-            }
-            else if (resultWidth > width) {
+            } else if (resultWidth > width) {
                 result = previousResult
                 break
             }

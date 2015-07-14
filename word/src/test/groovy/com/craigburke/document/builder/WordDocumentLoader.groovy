@@ -40,13 +40,13 @@ class WordDocumentLoader {
     static private loadTables(Document document) {
 
         document.element.tables.each { tableItem ->
-            Table table = new Table(element:tableItem, width:twipToPoint(tableItem.width), parent:document)
+            Table table = new Table(element: tableItem, width: twipToPoint(tableItem.width), parent: document)
 
             tableItem.rows.each { rowItem ->
-                Row row = new Row(element:rowItem, parent:table)
+                Row row = new Row(element: rowItem, parent: table)
                 table.children << row
                 rowItem.tableCells.each { columnItem ->
-                    Cell column = new Cell(element:columnItem, parent:row)
+                    Cell column = new Cell(element: columnItem, parent: row)
                     int padding = columnItem.CTTc.tcPr.tcMar.left.w
                     int width = columnItem.CTTc.tcPr.tcW.w
                     column.width = twipToPoint(width + (padding * 2))
@@ -76,14 +76,13 @@ class WordDocumentLoader {
                 items << p
 
                 paragraph.runs.each { run ->
-                    Font font =  new Font(family:run.fontFamily, size:run.fontSize)
+                    Font font = new Font(family: run.fontFamily, size: run.fontSize)
                     p.font = p.font ?: font
 
                     if (run.embeddedPictures) {
-                        p.children << new Image(data:run.embeddedPictures[0].pictureData.data, parent:p)
-                    }
-                    else {
-                        def text = new Text(value:run.toString(), parent:p)
+                        p.children << new Image(data: run.embeddedPictures[0].pictureData.data, parent: p)
+                    } else {
+                        def text = new Text(value: run.toString(), parent: p)
                         text.font = font
                         p.children << text
                     }

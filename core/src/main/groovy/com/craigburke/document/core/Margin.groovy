@@ -8,7 +8,7 @@ import groovy.transform.AutoClone
  */
 @AutoClone
 class Margin {
-    static final Margin NONE = new Margin(top:0, right:0, bottom:0, left:0)
+    static final Margin NONE = new Margin(top: 0, right: 0, bottom: 0, left: 0)
 
     Integer top
     Integer bottom

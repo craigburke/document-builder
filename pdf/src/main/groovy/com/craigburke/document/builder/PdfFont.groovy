@@ -16,14 +16,14 @@ class PdfFont {
     private static final DEFAULT_FONT = PDType1Font.HELVETICA
 
     private static fonts = [
-        'Times-Roman':[regular:PDType1Font.TIMES_ROMAN, bold:PDType1Font.TIMES_BOLD,
-             italic:PDType1Font.TIMES_ITALIC, boldItalic:PDType1Font.TIMES_BOLD_ITALIC],
-        'Helvetica':[regular:PDType1Font.HELVETICA, bold:PDType1Font.HELVETICA_BOLD,
-             italic:PDType1Font.HELVETICA_OBLIQUE, boldItalic:PDType1Font.HELVETICA_BOLD_OBLIQUE],
-        'Courier':[regular:PDType1Font.COURIER, bold:PDType1Font.COURIER_BOLD,
-             italic:PDType1Font.COURIER_OBLIQUE, boldItalic:PDType1Font.COURIER_BOLD_OBLIQUE],
-        'Symbol':[regular:PDType1Font.SYMBOL],
-        'Dingbat':[regular:PDType1Font.ZAPF_DINGBATS]
+            'Times-Roman': [regular: PDType1Font.TIMES_ROMAN, bold: PDType1Font.TIMES_BOLD,
+                            italic : PDType1Font.TIMES_ITALIC, boldItalic: PDType1Font.TIMES_BOLD_ITALIC],
+            'Helvetica'  : [regular: PDType1Font.HELVETICA, bold: PDType1Font.HELVETICA_BOLD,
+                            italic : PDType1Font.HELVETICA_OBLIQUE, boldItalic: PDType1Font.HELVETICA_BOLD_OBLIQUE],
+            'Courier'    : [regular: PDType1Font.COURIER, bold: PDType1Font.COURIER_BOLD,
+                            italic : PDType1Font.COURIER_OBLIQUE, boldItalic: PDType1Font.COURIER_BOLD_OBLIQUE],
+            'Symbol'     : [regular: PDType1Font.SYMBOL],
+            'Dingbat'    : [regular: PDType1Font.ZAPF_DINGBATS]
     ]
 
     static PDFont getFont(Font font) {
@@ -37,11 +37,9 @@ class PdfFont {
         if (fontOptions) {
             if (font.italic && font.bold) {
                 pdfFont = fontOptions.containsKey('boldItalic') ? fontOptions.boldItalic : pdfFont
-            }
-            else if (font.italic) {
+            } else if (font.italic) {
                 pdfFont = fontOptions.containsKey('italic') ? fontOptions.italic : pdfFont
-            }
-            else if (font.bold) {
+            } else if (font.bold) {
                 pdfFont = fontOptions.containsKey('bold') ? fontOptions.bold : pdfFont
             }
         }
@@ -61,14 +59,11 @@ class PdfFont {
         fonts[fontName] = fonts[fontName] ?: [:]
         if (embeddedFont.bold && embeddedFont.italic) {
             fonts[fontName].boldItalic = font
-        }
-        else if (embeddedFont.bold) {
+        } else if (embeddedFont.bold) {
             fonts[fontName].bold = font
-        }
-        else if (embeddedFont.italic) {
+        } else if (embeddedFont.italic) {
             fonts[fontName].italic = font
-        }
-        else {
+        } else {
             fonts[fontName].regular = font
         }
 

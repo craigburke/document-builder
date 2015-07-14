@@ -10,6 +10,7 @@ import com.craigburke.document.core.Text
 class HeadingFactory extends AbstractFactory {
 
     boolean isLeaf() { false }
+
     boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
 
     def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
@@ -17,7 +18,7 @@ class HeadingFactory extends AbstractFactory {
         heading.level = Integer.valueOf(builder.currentName - 'heading')
         heading.parent = builder.document
         builder.setNodeProperties(heading, attributes, 'heading')
-        Text text = new Text(value:value, parent:heading)
+        Text text = new Text(value: value, parent: heading)
         heading.children << text
         builder.setNodeProperties(text, [:], 'text')
 

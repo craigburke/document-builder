@@ -19,7 +19,7 @@ class RendererTestBase extends Specification {
     final float defaultLineHeight = 19f
 
     Document makeDocument() {
-        new Document(margin:Document.defaultMargin, font:new Font())
+        new Document(margin: Document.defaultMargin, font: new Font())
     }
 
     TextBlock makeParagraph(TextBlock paragraph, BaseNode parent = makeDocument()) {
@@ -30,9 +30,9 @@ class RendererTestBase extends Specification {
     }
 
     TextBlock makeParagraph(int lineCount, BaseNode parent = makeDocument()) {
-        TextBlock paragraph = new TextBlock(margin:Margin.NONE, font:new Font())
+        TextBlock paragraph = new TextBlock(margin: Margin.NONE, font: new Font())
         lineCount.times {
-            paragraph.children << new Text(value:"Line${it}", font:new Font())
+            paragraph.children << new Text(value: "Line${it}", font: new Font())
             if (it != lineCount - 1) {
                 paragraph.children << new LineBreak()
             }
