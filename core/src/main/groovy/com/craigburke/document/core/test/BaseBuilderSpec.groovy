@@ -12,127 +12,132 @@ import spock.lang.Unroll
  */
 abstract class BaseBuilderSpec extends Specification {
 
-	@Shared ByteArrayOutputStream out
-	@Shared DocumentBuilder builder
-	@Shared byte[] imageData = getClass().classLoader.getResource('test/images/cheeseburger.jpg')?.bytes
+    @Shared
+    ByteArrayOutputStream out
+    @Shared
+    DocumentBuilder builder
+    @Shared
+    byte[] imageData = getClass().classLoader.getResource('test/images/cheeseburger.jpg')?.bytes
 
-	@Shared testMargins = [
-			[top:0, bottom:0, left:0, right:0],
-			[top:2 * 72, bottom:3 * 72, left:1.25 * 72, right:2.5 * 72],
-			[top:72 / 4, bottom:72 / 2, left:72 / 4, right:72 / 2]
-	]
+    @Shared
+            testMargins = [
+                    [top: 0, bottom: 0, left: 0, right: 0],
+                    [top: 2 * 72, bottom: 3 * 72, left: 1.25 * 72, right: 2.5 * 72],
+                    [top: 72 / 4, bottom: 72 / 2, left: 72 / 4, right: 72 / 2]
+            ]
 
-	byte[] getData() { out.toByteArray() }
+    byte[] getData() { out.toByteArray() }
 
-	abstract DocumentBuilder getBuilderInstance(OutputStream out)
-	abstract Document getDocument(byte[] data)
+    abstract DocumentBuilder getBuilderInstance(OutputStream out)
 
-	def setup() {
-		out = new ByteArrayOutputStream()
-		builder = getBuilderInstance(out)
-	}
+    abstract Document getDocument(byte[] data)
 
-	@Unroll
-	def "set document margins"() {
-		when:
-		builder.create {
-            document(margin:[top:margin.top, bottom:margin.bottom, left:margin.left, right:margin.right] ) {
-			    paragraph 'Content'
-		    }
+    def setup() {
+        out = new ByteArrayOutputStream()
+        builder = getBuilderInstance(out)
+    }
+
+    @Unroll
+    def "set document margins"() {
+        when:
+        builder.create {
+            document(margin: [top: margin.top, bottom: margin.bottom, left: margin.left, right: margin.right]) {
+                paragraph 'Content'
+            }
         }
 
-		def document = getDocument(data)
+        def document = getDocument(data)
 
-		then:
-		document.margin.left == margin.left
+        then:
+        document.margin.left == margin.left
 
-		and:
-		document.margin.right == margin.right
+        and:
+        document.margin.right == margin.right
 
-		and:
-		document.margin.top == margin.top
+        and:
+        document.margin.top == margin.top
 
-		and:
-		document.margin.bottom == margin.bottom
+        and:
+        document.margin.bottom == margin.bottom
 
-		where:
-		margin << testMargins
-	}
+        where:
+        margin << testMargins
+    }
 
-	@Unroll
-	def "set paragraph margins"() {
-		when:
-		builder.create {
+    @Unroll
+    def "set paragraph margins"() {
+        when:
+        builder.create {
             document {
-                paragraph(margin:currentMargin) {
+                paragraph(margin: currentMargin) {
                     text 'Foo'
                 }
-		    }
+            }
         }
 
-		def paragraph = getDocument(data).children[0]
+        def paragraph = getDocument(data).children[0]
 
-		then:
-		paragraph.margin.left == currentMargin.left
+        then:
+        paragraph.margin.left == currentMargin.left
 
-		and:
-		paragraph.margin.right >= currentMargin.right
+        and:
+        paragraph.margin.right >= currentMargin.right
 
-		and:
-		paragraph.margin.top == currentMargin.top
+        and:
+        paragraph.margin.top == currentMargin.top
 
-		where:
-		currentMargin << testMargins
-	}
+        where:
+        currentMargin << testMargins
+    }
 
-	def "create a simple table"() {
-		when:
-		builder.create {
+    def "create a simple table"() {
+        when:
+        builder.create {
             document {
                 table {
                     row {
-						cell {
+                        cell {
                             text 'FOOBAR'
                         }
                     }
                 }
-		    }
+            }
         }
 
-		def table = getDocument(data).children[0]
+        def table = getDocument(data).children[0]
 
-		then:
-		table.children[0].children[0].children[0].text == 'FOOBAR'
-	}
+        then:
+        table.children[0].children[0].children[0].text == 'FOOBAR'
+    }
 
-	def "set table options"() {
-		when:
-		builder.create {
+    def "set table options"() {
+        when:
+        builder.create {
             document {
-                table(width:403.px, columns:[100.px, 300.px], border:[size:1.px]) {
+                table(width: 403.px, columns: [100.px, 300.px], border: [size: 1.px]) {
                     row {
-						cell('Cell 1')
-						cell('Cell 2')
+                        cell('Cell 1')
+                        cell('Cell 2')
                     }
                 }
-		    }
+            }
         }
 
-		def table = getDocument(data).children[0]
+        def table = getDocument(data).children[0]
 
-		then:
-		table.width == 403
+        then:
+        table.width == 403
 
-		and:
-		table.children[0].children[0].width == 100
+        and:
+        table.children[0].children[0].width == 100
 
-		and:
-		table.children[0].children[1].width == 300
-	}
+        and:
+        table.children[0].children[1].width == 300
+    }
 
-	def "set paragraph text"() {
-		when:
-		builder.create {
+    def "set paragraph text"() {
+        when:
+        builder.create {
             document {
                 paragraph 'Foo'
                 paragraph('Foo') {
@@ -147,27 +152,27 @@ abstract class BaseBuilderSpec extends Specification {
             }
         }
 
-		def paragraphs = getDocument(data).children
+        def paragraphs = getDocument(data).children
 
-		then:
-		paragraphs[0].text == 'Foo'
+        then:
+        paragraphs[0].text == 'Foo'
 
-		and:
-		paragraphs[1].text == 'FooBar'
+        and:
+        paragraphs[1].text == 'FooBar'
 
-		and:
-		paragraphs[2].text == 'Bar'
-	}
+        and:
+        paragraphs[2].text == 'Bar'
+    }
 
-	def "create a table with multiple columns"() {
-		when:
-		builder.create {
+    def "create a table with multiple columns"() {
+        when:
+        builder.create {
             document {
                 table {
                     row {
-						cell 'Cell1'
-						cell 'Cell2'
-						cell {
+                        cell 'Cell1'
+                        cell 'Cell2'
+                        cell {
                             text 'Cell3'
                         }
                     }
@@ -176,9 +181,9 @@ abstract class BaseBuilderSpec extends Specification {
             }
         }
 
-		then:
-		notThrown(Exception)
-	}
+        then:
+        notThrown(Exception)
+    }
 
     def "create a table with lots of rows"() {
         when:
@@ -187,13 +192,13 @@ abstract class BaseBuilderSpec extends Specification {
                 table {
                     50.times { i ->
                         row {
-							cell {
+                            cell {
                                 text 'TEST ' * (i + 1)
                             }
                             cell {
                                 text 'FOO ' * (i + 1)
                             }
-							cell {
+                            cell {
                                 text 'BAR ' * (i + 1)
                             }
                         }
@@ -206,128 +211,128 @@ abstract class BaseBuilderSpec extends Specification {
         notThrown(Exception)
     }
 
-	def "add an image"() {
-		when:
-		builder.create {
+    def "add an image"() {
+        when:
+        builder.create {
             document {
                 paragraph {
-                    image(data:imageData, width:500.px, height:431.px)
+                    image(data: imageData, width: 500.px, height: 431.px)
                 }
             }
         }
 
-		then:
-		notThrown(Exception)
-	}
+        then:
+        notThrown(Exception)
+    }
 
-	def "paragraph header"() {
-		when:
-		builder.create {
-			document ( header: { paragraph 'HEADER' } ) {
-				paragraph 'Content'
-			}
-		}
+    def "paragraph header"() {
+        when:
+        builder.create {
+            document(header: { paragraph 'HEADER' }) {
+                paragraph 'Content'
+            }
+        }
 
-		then:
-		notThrown(Exception)
-	}
+        then:
+        notThrown(Exception)
+    }
 
-	def "paragraph footer"() {
-		when:
-		builder.create {
-			document ( footer: { paragraph 'FOOTER' } ) {
-				paragraph 'Content'
-			}
-		}
+    def "paragraph footer"() {
+        when:
+        builder.create {
+            document(footer: { paragraph 'FOOTER' }) {
+                paragraph 'Content'
+            }
+        }
 
-		then:
-		notThrown(Exception)
-	}
+        then:
+        notThrown(Exception)
+    }
 
-	def "paragraph header and footer"() {
-		when:
-		builder.create {
-			document (header: { paragraph 'HEADER' }, footer: { paragraph 'FOOTER' }) {
-				paragraph 'Content'
-			}
-		}
+    def "paragraph header and footer"() {
+        when:
+        builder.create {
+            document(header: { paragraph 'HEADER' }, footer: { paragraph 'FOOTER' }) {
+                paragraph 'Content'
+            }
+        }
 
-		then:
-		notThrown(Exception)
-	}
+        then:
+        notThrown(Exception)
+    }
 
-	def "table header"() {
-		when:
-		builder.create {
-			document ( header: { table { row { cell 'HEADER' } } } ) {
-				paragraph 'Content'
-			}
-		}
+    def "table header"() {
+        when:
+        builder.create {
+            document(header: { table { row { cell 'HEADER' } } }) {
+                paragraph 'Content'
+            }
+        }
 
-		then:
-		notThrown(Exception)
-	}
+        then:
+        notThrown(Exception)
+    }
 
-	def "table footer"() {
-		when:
-		builder.create {
-			document ( footer: { table { row { cell 'FOOTER' } } } ) {
-				paragraph 'Content'
-			}
-		}
+    def "table footer"() {
+        when:
+        builder.create {
+            document(footer: { table { row { cell 'FOOTER' } } }) {
+                paragraph 'Content'
+            }
+        }
 
-		then:
-		notThrown(Exception)
-	}
+        then:
+        notThrown(Exception)
+    }
 
-	def "table within table"() {
-		when:
-		builder.create {
-			document {
-				table {
-					row {
-						cell 'OUTER TABLE'
-						cell {
-							table {
-								row {
-									cell 'INNER TABLE'
-								}
-							}
-						}
-					}
-				}
-			}
-		}
+    def "table within table"() {
+        when:
+        builder.create {
+            document {
+                table {
+                    row {
+                        cell 'OUTER TABLE'
+                        cell {
+                            table {
+                                row {
+                                    cell 'INNER TABLE'
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-		then:
-		notThrown(Exception)
-	}
+        then:
+        notThrown(Exception)
+    }
 
-	def "table with rowspan"() {
-		when:
-		builder.create {
-			document {
-				table {
-					row {
-						cell 'FOO\nBAR', rowspan: 3
-						cell('COL1-2')
-					}
-					row {
-						cell('COL2-1')
-					}
-					row {
-						cell('COL3-1')
-					}
-					row {
-						cell('COL4-1')
-						cell('COL4-2')
-					}
-				}
-			}
-		}
+    def "table with rowspan"() {
+        when:
+        builder.create {
+            document {
+                table {
+                    row {
+                        cell 'FOO\nBAR', rowspan: 3
+                        cell('COL1-2')
+                    }
+                    row {
+                        cell('COL2-1')
+                    }
+                    row {
+                        cell('COL3-1')
+                    }
+                    row {
+                        cell('COL4-1')
+                        cell('COL4-2')
+                    }
+                }
+            }
+        }
 
-		then:
-		notThrown(Exception)
-	}
+        then:
+        notThrown(Exception)
+    }
 
 }

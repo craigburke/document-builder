@@ -26,7 +26,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
     PdfDocument pdfDocument
 
-	void initializeDocument(Document document, OutputStream out) {
+    void initializeDocument(Document document, OutputStream out) {
         pdfDocument = new PdfDocument(document)
         pdfDocument.x = document.margin.left
         pdfDocument.y = document.margin.top
@@ -41,7 +41,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
         pdfDocument.addPage()
     }
 
-	def onTextBlockComplete = { TextBlock paragraph ->
+    def onTextBlockComplete = { TextBlock paragraph ->
         if (renderState == RenderState.PAGE && paragraph.parent instanceof Document) {
             int pageWidth = document.width - document.margin.left - document.margin.right
             int maxLineWidth = pageWidth - paragraph.margin.left - paragraph.margin.right
@@ -57,8 +57,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
                 paragraphRenderer.render(pdfDocument.y)
                 if (paragraphRenderer.fullyParsed) {
                     pdfDocument.scrollDownPage(paragraphRenderer.parsedHeight)
-                }
-                else {
+                } else {
                     pdfDocument.addPage()
                 }
             }
@@ -76,26 +75,25 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
                 if (tableRenderer.fullyParsed) {
                     pdfDocument.scrollDownPage(tableRenderer.parsedHeight)
-                }
-                else {
+                } else {
                     pdfDocument.addPage()
                 }
             }
         }
     }
 
-	void writeDocument(Document document, OutputStream out) {
+    void writeDocument(Document document, OutputStream out) {
         addHeaderFooter()
-		addMetadata()
+        addMetadata()
 
-		pdfDocument.contentStream?.close()
+        pdfDocument.contentStream?.close()
         pdfDocument.pdDocument.save(out)
         pdfDocument.pdDocument.close()
-	}
+    }
 
     private void addHeaderFooter() {
         int pageCount = pdfDocument.pages.size()
-        def options = new HeaderFooterOptions(pageCount:pageCount, dateGenerated:new Date())
+        def options = new HeaderFooterOptions(pageCount: pageCount, dateGenerated: new Date())
 
         (1..pageCount).each { int pageNumber ->
             pdfDocument.pageNumber = pageNumber
@@ -122,8 +120,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
         if (renderState == RenderState.HEADER) {
             startY = 0
-        }
-        else {
+        } else {
             float pageBottom = pdfDocument.pageBottomY + document.margin.bottom
             startY = pageBottom - getElementHeight(headerFooter) - headerFooter.margin.bottom
         }
@@ -131,8 +128,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
         def renderer
         if (headerFooter instanceof TextBlock) {
             renderer = new ParagraphRenderer(headerFooter, pdfDocument, startX, document.width)
-        }
-        else {
+        } else {
             renderer = new TableRenderer(headerFooter as Table, pdfDocument, startX)
         }
 
@@ -145,26 +141,24 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
         if (element instanceof TextBlock) {
             new ParagraphRenderer(element, pdfDocument, 0, width).totalHeight
-        }
-        else if (element instanceof Table) {
+        } else if (element instanceof Table) {
             new TableRenderer(element, pdfDocument, 0).totalHeight
-        }
-        else {
+        } else {
             0
         }
     }
 
-	private void addMetadata() {
-		ByteArrayOutputStream xmpOut = new ByteArrayOutputStream()
-		def xml = new MarkupBuilder(xmpOut.newWriter())
+    private void addMetadata() {
+        ByteArrayOutputStream xmpOut = new ByteArrayOutputStream()
+        def xml = new MarkupBuilder(xmpOut.newWriter())
 
-		xml.document(marginTop:"${document.margin.top}", marginBottom:"${document.margin.bottom}",
-                marginLeft:"${document.margin.left}", marginRight:"${document.margin.right}") {
+        xml.document(marginTop: "${document.margin.top}", marginBottom: "${document.margin.bottom}",
+                marginLeft: "${document.margin.left}", marginRight: "${document.margin.right}") {
 
-			delegate = xml
-			resolveStrategy = Closure.DELEGATE_FIRST
+            delegate = xml
+            resolveStrategy = Closure.DELEGATE_FIRST
 
-			document.children.each { child ->
+            document.children.each { child ->
                 switch (child.getClass()) {
                     case TextBlock:
                         addParagraphToMetadata(delegate, child)
@@ -173,30 +167,30 @@ class PdfDocumentBuilder extends DocumentBuilder {
                         addTableToMetadata(delegate, child)
                         break
                 }
-			}
-		}
+            }
+        }
 
-		def catalog = pdfDocument.pdDocument.documentCatalog
+        def catalog = pdfDocument.pdDocument.documentCatalog
         InputStream inputStream = new ByteArrayInputStream(xmpOut.toByteArray())
 
-		PDMetadata metadata = new PDMetadata(pdfDocument.pdDocument, inputStream, false)
-		catalog.metadata = metadata
-	}
+        PDMetadata metadata = new PDMetadata(pdfDocument.pdDocument, inputStream, false)
+        catalog.metadata = metadata
+    }
 
     private void addParagraphToMetadata(builder, TextBlock paragraphNode) {
-        builder.paragraph(marginTop:"${paragraphNode.margin.top}",
-                marginBottom:"${paragraphNode.margin.bottom}",
-                marginLeft:"${paragraphNode.margin.left}",
-                marginRight:"${paragraphNode.margin.right}") {
-                    paragraphNode.children?.findAll { it.getClass() == Image }.each {
-                        builder.image()
-                    }
-                }
+        builder.paragraph(marginTop: "${paragraphNode.margin.top}",
+                marginBottom: "${paragraphNode.margin.bottom}",
+                marginLeft: "${paragraphNode.margin.left}",
+                marginRight: "${paragraphNode.margin.right}") {
+            paragraphNode.children?.findAll { it.getClass() == Image }.each {
+                builder.image()
+            }
+        }
     }
 
     private void addTableToMetadata(builder, Table tableNode) {
 
-        builder.table(columns:tableNode.columnCount, width:tableNode.width, borderSize:tableNode.border.size) {
+        builder.table(columns: tableNode.columnCount, width: tableNode.width, borderSize: tableNode.border.size) {
 
             delegate = builder
             resolveStrategy = Closure.DELEGATE_FIRST
@@ -205,7 +199,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
                 def cells = it.children
                 row {
                     cells.each {
-                        cell(width:"${it.width ?: 0}")
+                        cell(width: "${it.width ?: 0}")
                     }
                 }
             }

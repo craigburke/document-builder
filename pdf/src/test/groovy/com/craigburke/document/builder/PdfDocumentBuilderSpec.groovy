@@ -11,12 +11,12 @@ import com.craigburke.document.core.test.BaseBuilderSpec
  */
 class PdfDocumentBuilderSpec extends BaseBuilderSpec {
 
-	DocumentBuilder getBuilderInstance(OutputStream out) {
-		new PdfDocumentBuilder(out)
-	}
+    DocumentBuilder getBuilderInstance(OutputStream out) {
+        new PdfDocumentBuilder(out)
+    }
 
-	Document getDocument(byte[] data) {
-		PdfDocumentLoader.load(data)
-	}
+    Document getDocument(byte[] data) {
+        PdfDocumentLoader.load(data)
+    }
 
 }

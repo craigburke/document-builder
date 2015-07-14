@@ -14,11 +14,12 @@ import java.security.MessageDigest
  */
 class ImageFactory extends AbstractFactory {
 
-	boolean isLeaf() { true }
+    boolean isLeaf() { true }
+
     boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
 
-	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
-		Image image = new Image(attributes)
+    def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
+        Image image = new Image(attributes)
 
         if (!image.width || !image.height) {
             InputStream inputStream = new ByteArrayInputStream(image.data)
@@ -35,15 +36,14 @@ class ImageFactory extends AbstractFactory {
         TextBlock paragraph
         if (builder.parentName == 'paragraph') {
             paragraph = builder.current
-        }
-        else {
+        } else {
             paragraph = builder.getColumnParagraph(builder.current)
         }
         image.parent = paragraph
         paragraph.children << image
 
         image
-	}
+    }
 
     String generateImageName(Image image) {
         Formatter hexHash = new Formatter()

@@ -11,27 +11,27 @@ import com.craigburke.document.core.Cell
  */
 class CellFactory extends AbstractFactory {
 
-	boolean isLeaf() { false }
+    boolean isLeaf() { false }
 
-	boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
+    boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
 
-	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
-		Cell cell = new Cell(attributes)
-		Row row = builder.current
-		cell.parent = row
-		builder.setNodeProperties(cell, attributes, 'cell')
+    def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
+        Cell cell = new Cell(attributes)
+        Row row = builder.current
+        cell.parent = row
+        builder.setNodeProperties(cell, attributes, 'cell')
 
-		if (value) {
-			TextBlock paragraph = builder.getColumnParagraph(cell)
-			List elements = paragraph.addText(value.toString())
-			elements.each { node ->
-				if (node instanceof Text) {
-					builder.setNodeProperties(node, [:], 'text')
-				}
-			}
-		}
+        if (value) {
+            TextBlock paragraph = builder.getColumnParagraph(cell)
+            List elements = paragraph.addText(value.toString())
+            elements.each { node ->
+                if (node instanceof Text) {
+                    builder.setNodeProperties(node, [:], 'text')
+                }
+            }
+        }
 
-		cell
-	}
+        cell
+    }
 
 }

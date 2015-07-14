@@ -8,13 +8,13 @@ import com.craigburke.document.core.test.BaseBuilderSpec
  * WordDocument tests
  * @author Craig Burke
  */
-class WordDocumentBuilderSpec extends BaseBuilderSpec  {
+class WordDocumentBuilderSpec extends BaseBuilderSpec {
 
-	DocumentBuilder getBuilderInstance(OutputStream out) {
-		new WordDocumentBuilder(out)
-	}
+    DocumentBuilder getBuilderInstance(OutputStream out) {
+        new WordDocumentBuilder(out)
+    }
 
-	Document getDocument(byte[] data) {
-		WordDocumentLoader.load(data)
-	}
+    Document getDocument(byte[] data) {
+        WordDocumentLoader.load(data)
+    }
 }

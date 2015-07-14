@@ -29,381 +29,375 @@ import com.craigburke.document.core.Document
 @InheritConstructors
 class WordDocumentBuilder extends DocumentBuilder {
 
-	private static final String PAGE_NUMBER_PLACEHOLDER = '##pageNumber##'
-	private static final Map RUN_TEXT_OPTIONS = ['xml:space':'preserve']
+    private static final String PAGE_NUMBER_PLACEHOLDER = '##pageNumber##'
+    private static final Map RUN_TEXT_OPTIONS = ['xml:space': 'preserve']
 
-	void initializeDocument(Document document, OutputStream out) {
-		document.element = new WordDocument(out)
-	}
+    void initializeDocument(Document document, OutputStream out) {
+        document.element = new WordDocument(out)
+    }
 
-	WordDocument getWordDocument() {
-		document.element
-	}
+    WordDocument getWordDocument() {
+        document.element
+    }
 
-	void writeDocument(Document document, OutputStream out) {
-		def headerFooterOptions = new HeaderFooterOptions(
-				pageNumber:PAGE_NUMBER_PLACEHOLDER,
-				pageCount:document.pageCount,
-				dateGenerated:new Date()
-		)
+    void writeDocument(Document document, OutputStream out) {
+        def headerFooterOptions = new HeaderFooterOptions(
+                pageNumber: PAGE_NUMBER_PLACEHOLDER,
+                pageCount: document.pageCount,
+                dateGenerated: new Date()
+        )
 
-		def header = renderHeader(headerFooterOptions)
-		def footer = renderFooter(headerFooterOptions)
+        def header = renderHeader(headerFooterOptions)
+        def footer = renderFooter(headerFooterOptions)
 
-		renderState = RenderState.PAGE
-		wordDocument.generateDocument { builder ->
-			w.document {
-				w.body {
-					document.children.each { child ->
-						if (child instanceof TextBlock) {
-							addParagraph(builder, child)
-						}
-						else if (child instanceof PageBreak) {
-							addPageBreak(builder)
-						}
-						else if (child instanceof Table) {
-							addTable(builder, child)
-						}
-					}
-					w.sectPr {
-						w.pgSz(	'w:h':pointToTwip(document.height),
-								'w:w':pointToTwip(document.width),
-								'w:orient':'portrait'
-						)
-						w.pgMar('w:bottom':pointToTwip(document.margin.bottom),
-								'w:top':pointToTwip(document.margin.top),
-								'w:right':pointToTwip(document.margin.right),
-								'w:left':pointToTwip(document.margin.left),
-								'w:footer':pointToTwip(footer ? footer.node.margin.bottom : 0),
-								'w:header':pointToTwip(header ? header.node.margin.top : 0)
-						)
-						if (header) {
-							w.headerReference('r:id':header.id, 'w:type':'default')
-						}
-						if (footer) {
-							w.footerReference('r:id':footer.id, 'w:type':'default')
-						}
-					}
-				}
-			}
-		}
+        renderState = RenderState.PAGE
+        wordDocument.generateDocument { builder ->
+            w.document {
+                w.body {
+                    document.children.each { child ->
+                        if (child instanceof TextBlock) {
+                            addParagraph(builder, child)
+                        } else if (child instanceof PageBreak) {
+                            addPageBreak(builder)
+                        } else if (child instanceof Table) {
+                            addTable(builder, child)
+                        }
+                    }
+                    w.sectPr {
+                        w.pgSz('w:h': pointToTwip(document.height),
+                                'w:w': pointToTwip(document.width),
+                                'w:orient': 'portrait'
+                        )
+                        w.pgMar('w:bottom': pointToTwip(document.margin.bottom),
+                                'w:top': pointToTwip(document.margin.top),
+                                'w:right': pointToTwip(document.margin.right),
+                                'w:left': pointToTwip(document.margin.left),
+                                'w:footer': pointToTwip(footer ? footer.node.margin.bottom : 0),
+                                'w:header': pointToTwip(header ? header.node.margin.top : 0)
+                        )
+                        if (header) {
+                            w.headerReference('r:id': header.id, 'w:type': 'default')
+                        }
+                        if (footer) {
+                            w.footerReference('r:id': footer.id, 'w:type': 'default')
+                        }
+                    }
+                }
+            }
+        }
 
-		document.element.write()
-	}
+        document.element.write()
+    }
 
-	def renderHeader(HeaderFooterOptions options) {
-		def header = [:]
-		if (document.header) {
-			renderState = RenderState.HEADER
-			header.node = document.header(options)
-			header.id = wordDocument.generateHeader { builder ->
-				w.hdr {
-					renderHeaderFooterNode(builder, header.node as BlockNode)
-				}
-			}
-		}
-		header
-	}
+    def renderHeader(HeaderFooterOptions options) {
+        def header = [:]
+        if (document.header) {
+            renderState = RenderState.HEADER
+            header.node = document.header(options)
+            header.id = wordDocument.generateHeader { builder ->
+                w.hdr {
+                    renderHeaderFooterNode(builder, header.node as BlockNode)
+                }
+            }
+        }
+        header
+    }
 
-	def renderFooter(HeaderFooterOptions options) {
-		def footer = [:]
-		if (document.footer) {
-			renderState = RenderState.FOOTER
-			footer.node = document.footer(options)
-			footer.id = wordDocument.generateFooter { builder ->
-				w.hdr {
-					renderHeaderFooterNode(builder, footer.node as BlockNode)
-				}
-			}
-		}
-		footer
-	}
+    def renderFooter(HeaderFooterOptions options) {
+        def footer = [:]
+        if (document.footer) {
+            renderState = RenderState.FOOTER
+            footer.node = document.footer(options)
+            footer.id = wordDocument.generateFooter { builder ->
+                w.hdr {
+                    renderHeaderFooterNode(builder, footer.node as BlockNode)
+                }
+            }
+        }
+        footer
+    }
 
-	void renderHeaderFooterNode(builder, BlockNode node) {
-		if (node instanceof TextBlock) {
-			addParagraph(builder, node)
-		}
-		else {
-			addTable(builder, node)
-		}
+    void renderHeaderFooterNode(builder, BlockNode node) {
+        if (node instanceof TextBlock) {
+            addParagraph(builder, node)
+        } else {
+            addTable(builder, node)
+        }
 
-	}
+    }
 
-	void addPageBreak(builder) {
-		builder.w.p {
-			w.r {
-				w.br('w:type':'page')
-			}
-		}
-	}
+    void addPageBreak(builder) {
+        builder.w.p {
+            w.r {
+                w.br('w:type': 'page')
+            }
+        }
+    }
 
-	int calculateSpacingAfter(BlockNode node) {
-		int totalSpacing
+    int calculateSpacingAfter(BlockNode node) {
+        int totalSpacing
 
-		switch (renderState) {
-			case RenderState.PAGE:
-				totalSpacing = node.margin.bottom
+        switch (renderState) {
+            case RenderState.PAGE:
+                totalSpacing = node.margin.bottom
 
-				def items = node.parent.children
-				int index = items.findIndexOf { it == node }
+                def items = node.parent.children
+                int index = items.findIndexOf { it == node }
 
-				if (index != items.size() - 1) {
-					def nextSibling = items[index + 1]
-					if (nextSibling instanceof BlockNode) {
-						totalSpacing += nextSibling.margin.top
-					}
-				}
-				break
+                if (index != items.size() - 1) {
+                    def nextSibling = items[index + 1]
+                    if (nextSibling instanceof BlockNode) {
+                        totalSpacing += nextSibling.margin.top
+                    }
+                }
+                break
 
-			case RenderState.HEADER:
-				totalSpacing = node.margin.bottom
-				break
+            case RenderState.HEADER:
+                totalSpacing = node.margin.bottom
+                break
 
-			case RenderState.FOOTER:
-				totalSpacing = 0
-		}
-		pointToTwip(totalSpacing)
-	}
+            case RenderState.FOOTER:
+                totalSpacing = 0
+        }
+        pointToTwip(totalSpacing)
+    }
 
-	int calculatedSpacingBefore(BlockNode node) {
-		int totalSpacing
+    int calculatedSpacingBefore(BlockNode node) {
+        int totalSpacing
 
-		switch (renderState) {
-			case RenderState.PAGE:
-				totalSpacing = node.margin.top
-				def items = node.parent.children
-				int index = items.findIndexOf { it == node }
-				if (index > 0) {
-					def previousSibling = items[index - 1]
-					if (previousSibling instanceof Table) {
-						totalSpacing += previousSibling.margin.bottom
-					}
-				}
-				break
+        switch (renderState) {
+            case RenderState.PAGE:
+                totalSpacing = node.margin.top
+                def items = node.parent.children
+                int index = items.findIndexOf { it == node }
+                if (index > 0) {
+                    def previousSibling = items[index - 1]
+                    if (previousSibling instanceof Table) {
+                        totalSpacing += previousSibling.margin.bottom
+                    }
+                }
+                break
 
-			case RenderState.HEADER:
-				totalSpacing = 0
-				break
+            case RenderState.HEADER:
+                totalSpacing = 0
+                break
 
-			case RenderState.FOOTER:
-				totalSpacing = node.margin.top
-				break
-		}
+            case RenderState.FOOTER:
+                totalSpacing = node.margin.top
+                break
+        }
 
-		pointToTwip(totalSpacing)
-	}
+        pointToTwip(totalSpacing)
+    }
 
-	void addParagraph(builder, TextBlock paragraph) {
+    void addParagraph(builder, TextBlock paragraph) {
 
-		builder.w.p {
-			w.pPr {
-				String lineRule = (paragraph.lineSpacing) ? 'exact' : 'auto'
-				BigDecimal lineValue = (paragraph.lineSpacing) ?
-						pointToTwip(paragraph.lineSpacing) : (paragraph.lineSpacingMultiplier * 240)
-				w.spacing(
-						'w:before':calculatedSpacingBefore(paragraph),
-						'w:after':calculateSpacingAfter(paragraph),
-						'w:lineRule':lineRule,
-						'w:line':lineValue
-				)
-				w.ind(
-						'w:start':pointToTwip(paragraph.margin.left),
-						'w:left':pointToTwip(paragraph.margin.left),
-						'w:right':pointToTwip(paragraph.margin.right),
-						'w:end':pointToTwip(paragraph.margin.right)
-				)
-				w.jc('w:val':paragraph.align.value)
-			}
-			paragraph.children.each { child ->
-				switch (child.getClass()) {
-					case Text:
-						addTextRun(builder, child.font as Font, child.value as String)
-						break
-					case Image:
-						addImageRun(builder, child)
-						break
-					case LineBreak:
-						addLineBreakRun(builder)
-						break
-				}
-			}
-		}
-	}
+        builder.w.p {
+            w.pPr {
+                String lineRule = (paragraph.lineSpacing) ? 'exact' : 'auto'
+                BigDecimal lineValue = (paragraph.lineSpacing) ?
+                        pointToTwip(paragraph.lineSpacing) : (paragraph.lineSpacingMultiplier * 240)
+                w.spacing(
+                        'w:before': calculatedSpacingBefore(paragraph),
+                        'w:after': calculateSpacingAfter(paragraph),
+                        'w:lineRule': lineRule,
+                        'w:line': lineValue
+                )
+                w.ind(
+                        'w:start': pointToTwip(paragraph.margin.left),
+                        'w:left': pointToTwip(paragraph.margin.left),
+                        'w:right': pointToTwip(paragraph.margin.right),
+                        'w:end': pointToTwip(paragraph.margin.right)
+                )
+                w.jc('w:val': paragraph.align.value)
+            }
+            paragraph.children.each { child ->
+                switch (child.getClass()) {
+                    case Text:
+                        addTextRun(builder, child.font as Font, child.value as String)
+                        break
+                    case Image:
+                        addImageRun(builder, child)
+                        break
+                    case LineBreak:
+                        addLineBreakRun(builder)
+                        break
+                }
+            }
+        }
+    }
 
-	void addLineBreakRun(builder) {
-		builder.w.r {
-			w.br()
-		}
-	}
+    void addLineBreakRun(builder) {
+        builder.w.r {
+            w.br()
+        }
+    }
 
-	DocumentPartType getCurrentDocumentPart() {
-		switch (renderState) {
-			case RenderState.PAGE:
-				DocumentPartType.DOCUMENT
-				break
-			case RenderState.HEADER:
-				DocumentPartType.HEADER
-				break
-			case RenderState.FOOTER:
-				DocumentPartType.FOOTER
-				break
-		}
-	}
+    DocumentPartType getCurrentDocumentPart() {
+        switch (renderState) {
+            case RenderState.PAGE:
+                DocumentPartType.DOCUMENT
+                break
+            case RenderState.HEADER:
+                DocumentPartType.HEADER
+                break
+            case RenderState.FOOTER:
+                DocumentPartType.FOOTER
+                break
+        }
+    }
 
-	void addImageRun(builder, Image image) {
-		String blipId = document.element.addImage(image.name, image.data, currentDocumentPart)
+    void addImageRun(builder, Image image) {
+        String blipId = document.element.addImage(image.name, image.data, currentDocumentPart)
 
-		int widthInEmu = pointToEmu(image.width)
-		int heightInEmu = pointToEmu(image.height)
-		String imageDescription = "Image: ${image.name}"
+        int widthInEmu = pointToEmu(image.width)
+        int heightInEmu = pointToEmu(image.height)
+        String imageDescription = "Image: ${image.name}"
 
-		builder.w.r {
-			w.drawing {
-				wp.inline(distT:0, distR:0, distB:0, distL:0) {
-					wp.extent(cx:widthInEmu, cy:heightInEmu)
-					wp.docPr(id:1, name:imageDescription, descr:image.name)
-					a.graphic {
-						a.graphicData(uri:'http://schemas.openxmlformats.org/drawingml/2006/picture') {
-							pic.pic {
-								pic.nvPicPr {
-									pic.cNvPr(id:0, name:imageDescription, descr:image.name)
-									pic.cNvPicPr {
-										a.picLocks(noChangeAspect:'true')
-									}
-								}
-								pic.blipFill {
-									a.blip('r:embed':blipId)
-									a.stretch {
-										a.fillRect()
-									}
-								}
-								pic.spPr {
-									a.xfrm {
-										a.off(x:0, y:0)
-										a.ext(cx:widthInEmu, cy:heightInEmu)
-									}
-									a.prstGeom(prst:'rect') {
-										a.avLst()
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+        builder.w.r {
+            w.drawing {
+                wp.inline(distT: 0, distR: 0, distB: 0, distL: 0) {
+                    wp.extent(cx: widthInEmu, cy: heightInEmu)
+                    wp.docPr(id: 1, name: imageDescription, descr: image.name)
+                    a.graphic {
+                        a.graphicData(uri: 'http://schemas.openxmlformats.org/drawingml/2006/picture') {
+                            pic.pic {
+                                pic.nvPicPr {
+                                    pic.cNvPr(id: 0, name: imageDescription, descr: image.name)
+                                    pic.cNvPicPr {
+                                        a.picLocks(noChangeAspect: 'true')
+                                    }
+                                }
+                                pic.blipFill {
+                                    a.blip('r:embed': blipId)
+                                    a.stretch {
+                                        a.fillRect()
+                                    }
+                                }
+                                pic.spPr {
+                                    a.xfrm {
+                                        a.off(x: 0, y: 0)
+                                        a.ext(cx: widthInEmu, cy: heightInEmu)
+                                    }
+                                    a.prstGeom(prst: 'rect') {
+                                        a.avLst()
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-	void addTable(builder, Table table) {
-		builder.w.tbl {
-			w.tblPr {
-				w.tblW('w:w':pointToTwip(table.width))
-				w.tblBorders {
-					def properties = ['top', 'right', 'bottom', 'left', 'insideH', 'insideV']
-					properties.each { String property ->
-						w."${property}"(
-							'w:sz':pointToEigthPoint(table.border.size),
-							'w:color':table.border.color.hex,
-							'w:val':(table.border.size == 0 ? 'none' : 'single')
-						)
-					}
-				}
-			}
+    void addTable(builder, Table table) {
+        builder.w.tbl {
+            w.tblPr {
+                w.tblW('w:w': pointToTwip(table.width))
+                w.tblBorders {
+                    def properties = ['top', 'right', 'bottom', 'left', 'insideH', 'insideV']
+                    properties.each { String property ->
+                        w."${property}"(
+                                'w:sz': pointToEigthPoint(table.border.size),
+                                'w:color': table.border.color.hex,
+                                'w:val': (table.border.size == 0 ? 'none' : 'single')
+                        )
+                    }
+                }
+            }
 
-			table.children.each { Row row ->
-				w.tr {
-					row.children.each { Cell column ->
-						if (column.rowsSpanned == 0) {
-							addColumn(builder, column)
-						}
-						else {
-							addMergeColumn(builder)
-						}
-						column.rowsSpanned++
-					}
-				}
-			}
-		}
-	}
+            table.children.each { Row row ->
+                w.tr {
+                    row.children.each { Cell column ->
+                        if (column.rowsSpanned == 0) {
+                            addColumn(builder, column)
+                        } else {
+                            addMergeColumn(builder)
+                        }
+                        column.rowsSpanned++
+                    }
+                }
+            }
+        }
+    }
 
-	void addColumn(builder, Cell column) {
-		Table table = column.parent.parent
+    void addColumn(builder, Cell column) {
+        Table table = column.parent.parent
 
-		builder.w.tc {
-			w.tcPr {
-				w.vAlign('w:val':'center')
-				w.tcW('w:w':pointToTwip(column.width - (table.padding * 2)))
-				w.tcMar {
-					w.top('w:w':pointToTwip(table.padding))
-					w.bottom('w:w':pointToTwip(table.padding))
-					w.left('w:w':pointToTwip(table.padding))
-					w.right('w:w':pointToTwip(table.padding))
-				}
-				if (column.background) {
-					w.shd('w:val':'clear', 'w:color':'auto', 'w:fill':column.background.hex)
-				}
-				if (column.colspan > 1) {
-					w.gridSpan('w:val':column.colspan)
-				}
-				if (column.rowspan > 1) {
-					w.vMerge('w:val':'restart')
-				}
-			}
-			column.children.each {
-				if (it instanceof TextBlock) {
-					addParagraph(builder, it)
-				}
-				else {
-					addTable(builder, it)
-					w.p()
-				}
-			}
-			if (!column.children) {
-				w.p()
-			}
-		}
+        builder.w.tc {
+            w.tcPr {
+                w.vAlign('w:val': 'center')
+                w.tcW('w:w': pointToTwip(column.width - (table.padding * 2)))
+                w.tcMar {
+                    w.top('w:w': pointToTwip(table.padding))
+                    w.bottom('w:w': pointToTwip(table.padding))
+                    w.left('w:w': pointToTwip(table.padding))
+                    w.right('w:w': pointToTwip(table.padding))
+                }
+                if (column.background) {
+                    w.shd('w:val': 'clear', 'w:color': 'auto', 'w:fill': column.background.hex)
+                }
+                if (column.colspan > 1) {
+                    w.gridSpan('w:val': column.colspan)
+                }
+                if (column.rowspan > 1) {
+                    w.vMerge('w:val': 'restart')
+                }
+            }
+            column.children.each {
+                if (it instanceof TextBlock) {
+                    addParagraph(builder, it)
+                } else {
+                    addTable(builder, it)
+                    w.p()
+                }
+            }
+            if (!column.children) {
+                w.p()
+            }
+        }
 
-	}
+    }
 
-	void addMergeColumn(builder) {
-		builder.w.tc {
-			w.tcPr {
-				w.vMerge()
-			}
-			w.p()
-		}
-	}
+    void addMergeColumn(builder) {
+        builder.w.tc {
+            w.tcPr {
+                w.vMerge()
+            }
+            w.p()
+        }
+    }
 
-	void addTextRun(builder, Font font, String text) {
-		builder.w.r {
-			w.rPr {
-				w.rFonts('w:ascii':font.family)
-				if (font.bold) {
-					w.b()
-				}
-				if (font.italic) {
-					w.i()
-				}
-				w.color('w:val':font.color.hex)
-				w.sz('w:val':pointToHalfPoint(font.size))
-			}
-			if (renderState == RenderState.PAGE) {
-				w.t(text, RUN_TEXT_OPTIONS)
-			}
-			else {
-				parseHeaderFooterText(builder, text)
-			}
-		}
-	}
+    void addTextRun(builder, Font font, String text) {
+        builder.w.r {
+            w.rPr {
+                w.rFonts('w:ascii': font.family)
+                if (font.bold) {
+                    w.b()
+                }
+                if (font.italic) {
+                    w.i()
+                }
+                w.color('w:val': font.color.hex)
+                w.sz('w:val': pointToHalfPoint(font.size))
+            }
+            if (renderState == RenderState.PAGE) {
+                w.t(text, RUN_TEXT_OPTIONS)
+            } else {
+                parseHeaderFooterText(builder, text)
+            }
+        }
+    }
 
-	void parseHeaderFooterText(builder, String text) {
-		def textParts = text.split(PAGE_NUMBER_PLACEHOLDER)
-		textParts.eachWithIndex { String part, int index ->
-			if (index != 0) {
-				builder.w.pgNum()
-			}
-			builder.w.t(part, RUN_TEXT_OPTIONS)
-		}
-	}
+    void parseHeaderFooterText(builder, String text) {
+        def textParts = text.split(PAGE_NUMBER_PLACEHOLDER)
+        textParts.eachWithIndex { String part, int index ->
+            if (index != 0) {
+                builder.w.pgNum()
+            }
+            builder.w.t(part, RUN_TEXT_OPTIONS)
+        }
+    }
 
 }

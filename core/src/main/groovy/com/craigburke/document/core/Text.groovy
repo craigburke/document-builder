@@ -5,5 +5,5 @@ package com.craigburke.document.core
  * @author Craig Burke
  */
 class Text extends BaseNode implements Stylable, Linkable {
-	String value
+    String value
 }

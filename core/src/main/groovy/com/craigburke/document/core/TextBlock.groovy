@@ -8,34 +8,34 @@ import groovy.transform.AutoClone
  */
 @AutoClone
 class TextBlock extends BlockNode implements Linkable {
-	static Margin defaultMargin = new Margin(top:12, bottom:12, left:0, right:0)
+    static Margin defaultMargin = new Margin(top: 12, bottom: 12, left: 0, right: 0)
 
-	Integer lineSpacing
-	BigDecimal lineSpacingMultiplier = 1.15
+    Integer lineSpacing
+    BigDecimal lineSpacingMultiplier = 1.15
 
-	List children = []
+    List children = []
 
-	String getText() {
-		children.findAll { it.getClass() == Text }*.value.join('')
-	}
+    String getText() {
+        children.findAll { it.getClass() == Text }*.value.join('')
+    }
 
-	List addText(String text) {
-		List elements = []
-		def textSections = text.split('\n')
+    List addText(String text) {
+        List elements = []
+        def textSections = text.split('\n')
 
-		textSections.each { String section ->
-			elements << new Text(value:section, parent:this)
+        textSections.each { String section ->
+            elements << new Text(value: section, parent: this)
 
-			if (section != textSections.last()) {
-				elements << new LineBreak(parent:this)
-			}
-		}
+            if (section != textSections.last()) {
+                elements << new LineBreak(parent: this)
+            }
+        }
 
-		if (text.endsWith('\n')) {
-			elements << new LineBreak(parent:this)
-		}
+        if (text.endsWith('\n')) {
+            elements << new LineBreak(parent: this)
+        }
 
-		children += elements
-		elements
-	}
+        children += elements
+        elements
+    }
 }

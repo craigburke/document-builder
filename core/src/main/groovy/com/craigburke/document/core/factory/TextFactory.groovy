@@ -9,26 +9,26 @@ import com.craigburke.document.core.Text
  */
 class TextFactory extends AbstractFactory {
 
-	boolean isLeaf() { true }
+    boolean isLeaf() { true }
+
     boolean onHandleNodeAttributes(FactoryBuilderSupport builder, node, Map attributes) { false }
 
-	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
+    def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
         TextBlock paragraph
         if (builder.parentName == 'paragraph') {
             paragraph = builder.current
-        }
-        else {
+        } else {
             paragraph = builder.getColumnParagraph(builder.current)
         }
         List elements = paragraph.addText(value.toString())
-         elements.each { node ->
+        elements.each { node ->
             node.parent = paragraph
             if (node instanceof Text) {
                 node.url = attributes.url
                 builder.setNodeProperties(node, attributes, 'text')
             }
         }
-		elements
-	}
+        elements
+    }
 
 }

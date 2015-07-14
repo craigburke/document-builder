@@ -1,12 +1,12 @@
 dependencies {
-	provided 'org.spockframework:spock-core:0.7-groovy-2.0'
+    provided 'org.spockframework:spock-core:0.7-groovy-2.0'
 }
 
-project.ext {
-	artifactId = 'core'
-	description = 'Groovy Document Builder Core'
-	license = [
-		name: 'Mozilla Public License, Version 2.0',
-		url: 'https://www.mozilla.org/MPL/2.0/'
-	]
+project.ext { 
+    artifactId = 'core'
+    description = 'Groovy Document Builder Core'
+    license = [
+            name: 'Mozilla Public License, Version 2.0',
+            url : 'https://www.mozilla.org/MPL/2.0/'
+    ]
 }

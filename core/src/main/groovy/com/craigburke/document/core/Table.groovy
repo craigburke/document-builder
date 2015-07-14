@@ -9,7 +9,7 @@ class Table extends BlockNode implements BackgroundAssignable {
     List<Row> children = []
 
     Integer padding = 10
-	Integer width
+    Integer width
     List<Integer> columns = []
 
     int getColumnCount() {

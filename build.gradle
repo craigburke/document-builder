@@ -9,17 +9,17 @@ buildscript {
 }
 
 plugins {
-	id 'org.ajoberstar.github-pages' version '1.1.0'
-	id 'org.asciidoctor.gradle.asciidoctor' version '1.5.1'
+    id 'org.ajoberstar.github-pages' version '1.1.0'
+    id 'org.asciidoctor.gradle.asciidoctor' version '1.5.1'
 }
 
 allprojects {
     apply plugin: 'idea'
     apply plugin: 'eclipse'
-	
+
     apply plugin: 'groovy'
     targetCompatibility = 1.6
-	
+
     apply plugin: 'codenarc'
     apply plugin: 'cobertura'
 
@@ -48,7 +48,7 @@ allprojects {
     }
 
     group = 'com.craigburke.document'
-    version = '0.4.5'
+    version = '0.5.0-SNAPSHOT'
 }
 
 subprojects {
@@ -89,7 +89,7 @@ subprojects {
             }
         }
 
-        publishing  {
+        publishing {
             publications {
                 maven(MavenPublication) {
                     artifactId project.artifactId
@@ -136,35 +136,35 @@ subprojects {
 }
 
 asciidoctor {
-	sourceDir = file('docs')
-    
+    sourceDir = file('docs')
+
     resources {
         from(sourceDir) {
             include 'css/**', 'images/**'
         }
     }
-    
-    attributes  'source-highlighter': 'prettify',
-                'docinfo1': ['version' : project.version],
-                'imagesdir': 'images',
-                'stylesdir': 'css',
-                icons: 'font',
-                'toc': 'left',
-                version: project.version,
-                'projectUrl': 'https://github.com/craigburke/document-builder'
+
+    attributes 'source-highlighter': 'prettify',
+            'docinfo1': ['version': project.version],
+            'imagesdir': 'images',
+            'stylesdir': 'css',
+            icons: 'font',
+            'toc': 'left',
+            version: project.version,
+            'projectUrl': 'https://github.com/craigburke/document-builder'
 }
 
 githubPages {
-	repoUri = 'https://github.com/craigburke/document-builder.git'
+    repoUri = 'https://github.com/craigburke/document-builder.git'
 
-	credentials {
-		username = project.hasProperty('githubToken') ? project.githubToken : ''
-		password = ''
-	}
+    credentials {
+        username = project.hasProperty('githubToken') ? project.githubToken : ''
+        password = ''
+    }
 
-	pages {
-		from file(asciidoctor.outputDir.path + '/html5')
-	}
+    pages {
+        from file(asciidoctor.outputDir.path + '/html5')
+    }
 }
 
 publishGhPages.dependsOn asciidoctor

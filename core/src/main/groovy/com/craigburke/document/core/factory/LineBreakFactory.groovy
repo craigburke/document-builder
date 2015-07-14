@@ -9,22 +9,21 @@ import com.craigburke.document.core.TextBlock
  */
 class LineBreakFactory extends AbstractFactory {
 
-	boolean isLeaf() { true }
+    boolean isLeaf() { true }
 
-	def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
-		LineBreak lineBreak = new LineBreak()
+    def newInstance(FactoryBuilderSupport builder, name, value, Map attributes) {
+        LineBreak lineBreak = new LineBreak()
 
-		TextBlock paragraph
-		if (builder.parentName == 'paragraph') {
-			paragraph = builder.current
-		}
-		else {
-			paragraph = builder.getColumnParagraph(builder.current)
-		}
-		lineBreak.parent = paragraph
-		paragraph.children << lineBreak
+        TextBlock paragraph
+        if (builder.parentName == 'paragraph') {
+            paragraph = builder.current
+        } else {
+            paragraph = builder.getColumnParagraph(builder.current)
+        }
+        lineBreak.parent = paragraph
+        paragraph.children << lineBreak
 
-		lineBreak
-	}
+        lineBreak
+    }
 
 }

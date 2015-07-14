@@ -5,6 +5,6 @@ package com.craigburke.document.core
  * @author Craig Burke
  */
 class Row extends BaseNode implements Stylable, BackgroundAssignable {
-	List<Cell> children = []
+    List<Cell> children = []
     Integer width
 }
