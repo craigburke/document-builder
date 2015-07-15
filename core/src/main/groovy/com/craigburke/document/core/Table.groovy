@@ -10,7 +10,7 @@ class Table extends BlockNode implements BackgroundAssignable {
 
     Integer padding = 10
     Integer width
-    List<Integer> columns = []
+    List<BigDecimal> columns = []
 
     int getColumnCount() {
         if (columns) {
@@ -27,16 +27,16 @@ class Table extends BlockNode implements BackgroundAssignable {
         if (!columns) {
             columnCount.times { columns << 1 }
         }
-        int relativeTotal = columns.sum()
-        int totalBorderWidth = (columnCount + 1) * border.size
-        int totalCellWidth = width - totalBorderWidth
+        BigDecimal relativeTotal = columns.sum()
+        BigDecimal totalBorderWidth = (columnCount + 1) * border.size
+        BigDecimal totalCellWidth = width - totalBorderWidth
 
-        List<Integer> columnWidths = []
+        List<BigDecimal> columnWidths = []
         columns.eachWithIndex { column, index ->
             if (index == columns.size() - 1) {
-                columnWidths << totalCellWidth - ((columnWidths.sum() ?: 0) as int)
+                columnWidths << totalCellWidth - ((columnWidths.sum() ?: 0) as BigDecimal)
             } else {
-                columnWidths << (Math.ceil((columns[index] / relativeTotal) * totalCellWidth) as int)
+                columnWidths << (Math.ceil((columns[index] / relativeTotal) * totalCellWidth) as BigDecimal)
             }
         }
 
@@ -44,7 +44,7 @@ class Table extends BlockNode implements BackgroundAssignable {
             int columnWidthIndex = 0
             row.children.eachWithIndex { column, index ->
                 int endIndex = columnWidthIndex + column.colspan - 1
-                int missingBorderWidth = (column.colspan - 1) * border.size
+                BigDecimal missingBorderWidth = (column.colspan - 1) * border.size
                 column.width = columnWidths[columnWidthIndex..endIndex].sum() + missingBorderWidth
                 columnWidthIndex += column.colspan
                 column.children.findAll { it instanceof Table }.each { it.normalizeColumnWidths() }

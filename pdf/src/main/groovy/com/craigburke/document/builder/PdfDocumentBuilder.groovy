@@ -48,6 +48,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
             int renderStartX = document.margin.left + paragraph.margin.left
 
             pdfDocument.x = renderStartX
+            pdfDocument.scrollDownPage(paragraph.margin.top)
 
             ParagraphRenderer paragraphRenderer =
                     new ParagraphRenderer(paragraph, pdfDocument, renderStartX, maxLineWidth)
@@ -61,13 +62,14 @@ class PdfDocumentBuilder extends DocumentBuilder {
                     pdfDocument.addPage()
                 }
             }
+            pdfDocument.scrollDownPage(paragraph.margin.bottom)
         }
     }
 
     def onTableComplete = { Table table ->
         if (renderState == RenderState.PAGE) {
             pdfDocument.x = table.margin.left + document.margin.left
-
+            pdfDocument.scrollDownPage(table.margin.top)
             TableRenderer tableRenderer = new TableRenderer(table, pdfDocument, pdfDocument.x)
             while (!tableRenderer.fullyParsed) {
                 tableRenderer.parse(pdfDocument.remainingPageHeight)
@@ -79,6 +81,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
                     pdfDocument.addPage()
                 }
             }
+            pdfDocument.scrollDownPage(table.margin.bottom)
         }
     }
 

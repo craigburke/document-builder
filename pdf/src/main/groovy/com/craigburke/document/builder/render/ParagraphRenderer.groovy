@@ -92,10 +92,6 @@ class ParagraphRenderer implements Renderable {
             return
         }
 
-        if (onFirstPage) {
-            pdfDocument.y += node.margin.top
-        }
-
         lines[parseStart..parseEnd].each { ParagraphLine line ->
             pdfDocument.x = startX
             renderLine(line)
@@ -105,7 +101,7 @@ class ParagraphRenderer implements Renderable {
     }
 
     float getTotalHeight() {
-        node.margin.top + lines.sum { it.totalHeight } + node.margin.bottom
+        lines.sum { it.totalHeight }
     }
 
     float getParsedHeight() {
@@ -113,9 +109,7 @@ class ParagraphRenderer implements Renderable {
             return 0
         }
 
-        float linesHeight = lines[parseStart..parseEnd]*.totalHeight.sum() ?: 0
-        float parsedHeight = (onFirstPage ? node.margin.top : 0) + linesHeight + (fullyParsed ? node.margin.bottom : 0)
-        parsedHeight
+        lines[parseStart..parseEnd]*.totalHeight.sum() ?: 0
     }
 
     private void renderLine(ParagraphLine line) {
