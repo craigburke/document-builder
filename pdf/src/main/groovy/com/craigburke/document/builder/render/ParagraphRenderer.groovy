@@ -55,7 +55,7 @@ class ParagraphRenderer implements Renderable {
     }
 
     void parse(float height) {
-        if (!lines || fullyRendered || !node.text) {
+        if (!lines || fullyRendered) {
             fullyParsed = true
             return
         }
@@ -105,7 +105,7 @@ class ParagraphRenderer implements Renderable {
     }
 
     float getParsedHeight() {
-        if (!linesParsed || !node.text) {
+        if (!linesParsed) {
             return 0
         }
 
