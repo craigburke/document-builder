@@ -294,7 +294,7 @@ class WordDocumentBuilder extends DocumentBuilder {
     void addTable(builder, Table table) {
         builder.w.tbl {
             w.tblPr {
-                w.tblW('w:w': pointToTwip(table.width))
+                w.tblW('w:w': pointToTwip(table.width), 'w:type': 'dxa')
                 w.tblBorders {
                     def properties = ['top', 'right', 'bottom', 'left', 'insideH', 'insideV']
                     properties.each { String property ->
@@ -328,12 +328,12 @@ class WordDocumentBuilder extends DocumentBuilder {
         builder.w.tc {
             w.tcPr {
                 w.vAlign('w:val': 'center')
-                w.tcW('w:w': pointToTwip(column.width - (table.padding * 2)))
+                w.tcW('w:w': pointToTwip(column.width - (table.padding * 2)), 'w:type': 'dxa')
                 w.tcMar {
-                    w.top('w:w': pointToTwip(table.padding))
-                    w.bottom('w:w': pointToTwip(table.padding))
-                    w.left('w:w': pointToTwip(table.padding))
-                    w.right('w:w': pointToTwip(table.padding))
+                    w.top('w:w': pointToTwip(table.padding), 'w:type': 'dxa')
+                    w.bottom('w:w': pointToTwip(table.padding), 'w:type': 'dxa')
+                    w.left('w:w': pointToTwip(table.padding), 'w:type': 'dxa')
+                    w.right('w:w': pointToTwip(table.padding), 'w:type': 'dxa')
                 }
                 if (column.background) {
                     w.shd('w:val': 'clear', 'w:color': 'auto', 'w:fill': column.background.hex)
