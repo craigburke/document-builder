@@ -3,6 +3,7 @@ package com.craigburke.document.core.builder
 import com.craigburke.document.core.BackgroundAssignable
 import com.craigburke.document.core.BaseNode
 import com.craigburke.document.core.BlockNode
+import com.craigburke.document.core.Bookmarkable
 import com.craigburke.document.core.Cell
 import com.craigburke.document.core.EmbeddedFont
 import com.craigburke.document.core.Heading
@@ -80,6 +81,10 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
         if (node instanceof Linkable) {
             String parentUrl = (node.parent instanceof Linkable) ? node.parent.url : null
             node.url = node.url ?: parentUrl
+        }
+        if (node instanceof Bookmarkable) {
+            // it doesn't make any sense to let this prefil from the template
+            node.ref = attributes.ref
         }
     }
 

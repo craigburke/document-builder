@@ -214,7 +214,18 @@ class WordDocumentBuilder extends DocumentBuilder {
             paragraph.children.each { child ->
                 switch (child.getClass()) {
                     case Text:
-                        addTextRun(builder, child.font as Font, child.value as String)
+                        if (child.url && child.url.startsWith('#') && child.url.size() > 1) {
+                            w.hyperlink('w:anchor': child.url[1..-1]) {
+                                addTextRun(builder, child.font as Font, child.value as String)
+                            }
+                        } else if (child.ref) {
+                            String id = UUID.randomUUID().toString()
+                            w.bookmarkStart('w:id': id, 'w:name': child.ref)
+                            addTextRun(builder, child.font as Font, child.value as String)
+                            w.bookmarkEnd('w:id': id)
+                        } else {
+                            addTextRun(builder, child.font as Font, child.value as String)
+                        }
                         break
                     case Image:
                         addImageRun(builder, child)
