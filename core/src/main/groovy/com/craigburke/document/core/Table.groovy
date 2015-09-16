@@ -27,6 +27,22 @@ class Table extends BlockNode implements BackgroundAssignable {
         if (!columns) {
             columnCount.times { columns << 1 }
         }
+
+        List<BigDecimal> columnWidths = computeColumnWidths()
+
+        children.each { row ->
+            int columnWidthIndex = 0
+            row.children.eachWithIndex { column, index ->
+                int endIndex = columnWidthIndex + column.colspan - 1
+                BigDecimal missingBorderWidth = (column.colspan - 1) * border.size
+                column.width = columnWidths[columnWidthIndex..endIndex].sum() + missingBorderWidth
+                columnWidthIndex += column.colspan
+                column.children.findAll { it instanceof Table }.each { it.normalizeColumnWidths() }
+            }
+        }
+    }
+
+    List<BigDecimal> computeColumnWidths() {
         BigDecimal relativeTotal = columns.sum()
         BigDecimal totalBorderWidth = (columnCount + 1) * border.size
         BigDecimal totalCellWidth = width - totalBorderWidth
@@ -39,17 +55,8 @@ class Table extends BlockNode implements BackgroundAssignable {
                 columnWidths << (Math.ceil((columns[index] / relativeTotal) * totalCellWidth) as BigDecimal)
             }
         }
+        columnWidths
 
-        children.each { row ->
-            int columnWidthIndex = 0
-            row.children.eachWithIndex { column, index ->
-                int endIndex = columnWidthIndex + column.colspan - 1
-                BigDecimal missingBorderWidth = (column.colspan - 1) * border.size
-                column.width = columnWidths[columnWidthIndex..endIndex].sum() + missingBorderWidth
-                columnWidthIndex += column.colspan
-                column.children.findAll { it instanceof Table }.each { it.normalizeColumnWidths() }
-            }
-        }
     }
 
     void updateRowspanColumns() {

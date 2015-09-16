@@ -307,6 +307,15 @@ class WordDocumentBuilder extends DocumentBuilder {
                 }
             }
 
+            if (table.columns) {
+                w.tblGrid {
+                    List<BigDecimal> columnWidths = table.computeColumnWidths()
+                    for (BigDecimal columnWidth in columnWidths) {
+                        w.gridCol('w:w': pointToTwip(columnWidth).longValue())
+                    }
+                }
+            }
+
             table.children.each { Row row ->
                 w.tr {
                     row.children.each { Cell column ->
