@@ -219,7 +219,7 @@ class WordDocumentBuilder extends DocumentBuilder {
                                 addTextRun(builder, child.font as Font, child.value as String)
                             }
                         } else if (child.ref) {
-                            String id = UUID.randomUUID().toString()
+                            String id = UUID.randomUUID()
                             w.bookmarkStart('w:id': id, 'w:name': child.ref)
                             addTextRun(builder, child.font as Font, child.value as String)
                             w.bookmarkEnd('w:id': id)
