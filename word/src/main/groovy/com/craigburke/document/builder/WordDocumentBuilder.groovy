@@ -86,63 +86,80 @@ class WordDocumentBuilder extends DocumentBuilder {
                 }
             }
         }
-
-        wordDocument.generateNumbering { builder ->
-            w.numbering {
-                w.abstractNum 'w:abstractNumId': "1", {
-                    for (int lvl in 0..8) {
-                        w.lvl 'w:ilvl': "${lvl}", {
-                            w.start 'w:val': '1'
-                            w.numFmt 'w:val': 'none'
-                            w.suff 'w:val': 'nothing'
-                            w.lvlText 'w:val': ''
-                            w.lvlJc 'w:val': 'left'
-                            w.pPr {
-                                // let's make the fifth level at the one inch
-                                String tabPosition = pointToTwip(22 + lvl * 10).intValue().toString()
-                                w.tabs {
-                                    w.tab 'w:val': 'num', 'w:pos': tabPosition
-                                }
-                                w.ind 'w:left': tabPosition, 'w:hanging': tabPosition
-                            }
-                        }
-                    }
-                    w.num 'w:numId': "1", {
-                        w.abstractNumId 'w:val': '1'
-                    }
-                }
-            }
-        }
-
+//
+//        wordDocument.generateNumbering { builder ->
+//            w.numbering {
+//                w.abstractNum 'w:abstractNumId': "1", {
+//                    for (int lvl in 0..8) {
+//                        w.lvl 'w:ilvl': "${lvl}", {
+//                            w.start 'w:val': '1'
+//                            w.numFmt 'w:val': 'none'
+//                            w.suff 'w:val': 'nothing'
+//                            w.lvlText 'w:val': ''
+//                            w.lvlJc 'w:val': 'left'
+//                            w.pPr {
+//                                // let's make the fifth level at the one inch
+//                                String tabPosition = pointToTwip(22 + lvl * 10).intValue().toString()
+//                                w.tabs {
+//                                    w.tab 'w:val': 'num', 'w:pos': tabPosition
+//                                }
+//                                w.ind 'w:left': tabPosition, 'w:hanging': tabPosition
+//                            }
+//                        }
+//                    }
+//                    w.num 'w:numId': "1", {
+//                        w.abstractNumId 'w:val': '1'
+//                    }
+//                }
+//            }
+//        }
+//
         wordDocument.generateStyles {
             w.styles {
+                w.style 'w:type':'paragraph', 'w:styleId': 'Normal', 'w:default': '1', {
+                    w.name 'w:val': 'Normal'
+                    w.qFormat()
+                }
                 for (int lvl in 1..10) {
                     w.style 'w:type':"paragraph", 'w:styleId': "Heading${lvl}", {
                         w.name 'w:val': "heading ${lvl}"
-                        w.pPr{
-                            w.numPr {
-                                w.ilvl 'w:val': "${lvl - 1}"
-                                w.numId 'w:val' : "1"
-                            }
-                            w.outlineLvl('w:val': "${lvl - 1}")
-                        }
-                    }
-                    w.style 'w:type':"paragraph", 'w:styleId': "TOC${lvl}", {
-                        w.name 'w:val': "toc ${lvl}"
+                        w.basedOn 'w:val': 'Normal'
+                        w.next 'w:val': 'Normal'
+                        w.uiPriority 'w:val': '9'
+                        w.qFormat()
                         w.pPr {
-                            w.ind 'w:left': "${lvl * 120}"
+//                            w.numPr {
+//                                w.ilvl 'w:val': "${lvl - 1}"
+//                                w.numId 'w:val' : "1"
+//                            }
+                            w.outlineLvl('w:val': "${lvl - 1}")
+                            w.keepNext()
+                            w.keepLines()
                         }
-                        w.rPr {
-                            w.b()
-                            w.i()
-                        }
-                        w.suppressLineNumbers()
+                        w.link 'w:val': "Heading${lvl}Char"
                     }
+                    w.style 'w:type':'character', 'w:styleId': "Heading${lvl}Char", {
+                        w.name 'w:val': "heading ${lvl} char"
+                        w.link 'w:val': "Heading${lvl}"
+                        w.qFormat()
+                    }
+
+//                    w.style 'w:type':"paragraph", 'w:styleId': "TOC${lvl}", {
+//                        w.name 'w:val': "toc ${lvl}"
+//                        w.pPr {
+//                            w.ind 'w:left': "${lvl * 120}"
+//                        }
+//                        w.rPr {
+//                            w.b()
+//                            w.i()
+//                        }
+//                        w.suppressLineNumbers()
+//                    }
                 }
-                w.style 'w:type':"paragraph", 'w:styleId': 'TOCHeading', {
-                    w.name 'w:val': 'TOC Heading'
-                    w.suppressLineNumbers()
-                }
+//                w.style 'w:type':"paragraph", 'w:styleId': 'TOCHeading', {
+//                    w.name 'w:val': 'TOC Heading'
+//                    w.suppressLineNumbers()
+//                }
             }
         }
 
@@ -273,10 +290,10 @@ class WordDocumentBuilder extends DocumentBuilder {
 
                 if (paragraph instanceof Heading) {
                     w.pStyle 'w:val': "Heading${paragraph.level}"
-                    w.numPr {
-                        w.ilvl('w:val': "${paragraph.level - 1}")
-                        w.numId('w:val': "1")
-                    }
+//                    w.numPr {
+//                        w.ilvl('w:val': "${paragraph.level - 1}")
+//                        w.numId('w:val': "1")
+//                    }
                     w.outlineLvl('w:val': "${paragraph.level - 1}")
                 }
             }
