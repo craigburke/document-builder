@@ -150,6 +150,46 @@ class WordDocument {
         )
     }
 
+
+
+    String generateNumbering(Closure numberingClosure) {
+        documentParts[DocumentPartType.NUMBERING.value] = new DocumentPart(type: DocumentPartType.NUMBERING)
+
+        zipStream.putNextEntry(new ZipEntry("${CONTENT_FOLDER}/${DocumentPartType.NUMBERING.fileName}"))
+        zipStream << new StreamingMarkupBuilder().bind { builder ->
+            mkp.yieldUnescaped(XML_HEADER)
+            namespaces << DOCUMENT_NAMESPACES
+            numberingClosure.delegate = builder
+            numberingClosure(builder)
+        }.toString()
+        zipStream.closeEntry()
+
+        addRelationship(
+                DocumentPartType.NUMBERING.fileName,
+                'http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering',
+                DocumentPartType.DOCUMENT
+        )
+    }
+
+    String generateStyles(Closure stylesClosure) {
+        documentParts[DocumentPartType.STYLES.value] = new DocumentPart(type: DocumentPartType.STYLES)
+
+        zipStream.putNextEntry(new ZipEntry("${CONTENT_FOLDER}/${DocumentPartType.STYLES.fileName}"))
+        zipStream << new StreamingMarkupBuilder().bind { builder ->
+            mkp.yieldUnescaped(XML_HEADER)
+            namespaces << DOCUMENT_NAMESPACES
+            stylesClosure.delegate = builder
+            stylesClosure(builder)
+        }.toString()
+        zipStream.closeEntry()
+
+        addRelationship(
+                DocumentPartType.NUMBERING.fileName,
+                'http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles',
+                DocumentPartType.DOCUMENT
+        )
+    }
+
     private addImageFiles() {
         documentParts.each { String name, DocumentPart part ->
             part.images.each { image ->

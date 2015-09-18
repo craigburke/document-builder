@@ -6,6 +6,7 @@ import static com.craigburke.document.core.UnitUtil.pointToTwip
 import static com.craigburke.document.core.UnitUtil.pointToHalfPoint
 
 import com.craigburke.document.core.HeaderFooterOptions
+import com.craigburke.document.core.Heading
 import com.craigburke.document.core.builder.RenderState
 import com.craigburke.document.core.BlockNode
 import com.craigburke.document.core.Cell
@@ -82,6 +83,65 @@ class WordDocumentBuilder extends DocumentBuilder {
                             w.footerReference('r:id': footer.id, 'w:type': 'default')
                         }
                     }
+                }
+            }
+        }
+
+        wordDocument.generateNumbering { builder ->
+            w.numbering {
+                w.abstractNum 'w:abstractNumId': "1", {
+                    for (int lvl in 0..8) {
+                        w.lvl 'w:ilvl': "${lvl}", {
+                            w.start 'w:val': '1'
+                            w.numFmt 'w:val': 'none'
+                            w.suff 'w:val': 'nothing'
+                            w.lvlText 'w:val': ''
+                            w.lvlJc 'w:val': 'left'
+                            w.pPr {
+                                // let's make the fifth level at the one inch
+                                String tabPosition = pointToTwip(22 + lvl * 10).intValue().toString()
+                                w.tabs {
+                                    w.tab 'w:val': 'num', 'w:pos': tabPosition
+                                }
+                                w.ind 'w:left': tabPosition, 'w:hanging': tabPosition
+                            }
+                        }
+                    }
+                    w.num 'w:numId': "1", {
+                        w.abstractNumId 'w:val': '1'
+                    }
+                }
+            }
+        }
+
+        wordDocument.generateStyles {
+            w.styles {
+                for (int lvl in 1..10) {
+                    w.style 'w:type':"paragraph", 'w:styleId': "Heading${lvl}", {
+                        w.name 'w:val': "heading ${lvl}"
+                        w.pPr{
+                            w.numPr {
+                                w.ilvl 'w:val': "${lvl - 1}"
+                                w.numId 'w:val' : "1"
+                            }
+                            w.outlineLvl('w:val': "${lvl - 1}")
+                        }
+                    }
+                    w.style 'w:type':"paragraph", 'w:styleId': "TOC${lvl}", {
+                        w.name 'w:val': "toc ${lvl}"
+                        w.pPr {
+                            w.ind 'w:left': "${lvl * 120}"
+                        }
+                        w.rPr {
+                            w.b()
+                            w.i()
+                        }
+                        w.suppressLineNumbers()
+                    }
+                }
+                w.style 'w:type':"paragraph", 'w:styleId': 'TOCHeading', {
+                    w.name 'w:val': 'TOC Heading'
+                    w.suppressLineNumbers()
                 }
             }
         }
@@ -210,6 +270,19 @@ class WordDocumentBuilder extends DocumentBuilder {
                         'w:end': pointToTwip(paragraph.margin.right)
                 )
                 w.jc('w:val': paragraph.align.value)
+
+                if (paragraph instanceof Heading) {
+                    w.pStyle 'w:val': "Heading${paragraph.level}"
+                    w.numPr {
+                        w.ilvl('w:val': "${paragraph.level - 1}")
+                        w.numId('w:val': "1")
+                    }
+                    w.outlineLvl('w:val': "${paragraph.level - 1}")
+                }
+            }
+            String paragraphLinkId = UUID.randomUUID().toString()
+            if (paragraph.ref) {
+                w.bookmarkStart('w:id': paragraphLinkId, 'w:name': paragraph.ref)
             }
             paragraph.children.each { child ->
                 switch (child.getClass()) {
@@ -234,6 +307,9 @@ class WordDocumentBuilder extends DocumentBuilder {
                         addLineBreakRun(builder)
                         break
                 }
+            }
+            if (paragraph.ref) {
+                w.bookmarkEnd('w:id': paragraphLinkId)
             }
         }
     }
