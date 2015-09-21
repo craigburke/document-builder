@@ -99,7 +99,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 //                            w.lvlJc 'w:val': 'left'
 //                            w.pPr {
 //                                // let's make the fifth level at the one inch
-//                                String tabPosition = pointToTwip(22 + lvl * 10).intValue().toString()
+//                                String tabPosition = pointToTwip(22 + lvl * 10).intValue()
 //                                w.tabs {
 //                                    w.tab 'w:val': 'num', 'w:pos': tabPosition
 //                                }
@@ -114,54 +114,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 //            }
 //        }
 //
-        wordDocument.generateStyles {
-            w.styles {
-                w.style 'w:type':'paragraph', 'w:styleId': 'Normal', 'w:default': '1', {
-                    w.name 'w:val': 'Normal'
-                    w.qFormat()
-                }
-                for (int lvl in 1..10) {
-                    w.style 'w:type':"paragraph", 'w:styleId': "Heading${lvl}", {
-                        w.name 'w:val': "heading ${lvl}"
-                        w.basedOn 'w:val': 'Normal'
-                        w.next 'w:val': 'Normal'
-                        w.uiPriority 'w:val': '9'
-                        w.qFormat()
-                        w.pPr {
-//                            w.numPr {
-//                                w.ilvl 'w:val': "${lvl - 1}"
-//                                w.numId 'w:val' : "1"
-//                            }
-                            w.outlineLvl('w:val': "${lvl - 1}")
-                            w.keepNext()
-                            w.keepLines()
-                        }
-                        w.link 'w:val': "Heading${lvl}Char"
-                    }
-                    w.style 'w:type':'character', 'w:styleId': "Heading${lvl}Char", {
-                        w.name 'w:val': "heading ${lvl} char"
-                        w.link 'w:val': "Heading${lvl}"
-                        w.qFormat()
-                    }
-
-//                    w.style 'w:type':"paragraph", 'w:styleId': "TOC${lvl}", {
-//                        w.name 'w:val': "toc ${lvl}"
-//                        w.pPr {
-//                            w.ind 'w:left': "${lvl * 120}"
-//                        }
-//                        w.rPr {
-//                            w.b()
-//                            w.i()
-//                        }
-//                        w.suppressLineNumbers()
-//                    }
-                }
-//                w.style 'w:type':"paragraph", 'w:styleId': 'TOCHeading', {
-//                    w.name 'w:val': 'TOC Heading'
-//                    w.suppressLineNumbers()
-//                }
-            }
-        }
+        renderStyles()
 
         document.element.write()
     }
@@ -201,6 +154,59 @@ class WordDocumentBuilder extends DocumentBuilder {
             addTable(builder, node)
         }
 
+    }
+
+    @SuppressWarnings('UnnecessaryObjectReferences')
+    def renderStyles() {
+        wordDocument.generateStyles {
+            w.styles {
+                def normal = ['w:val': 'Normal']
+                w.style 'w:type': 'paragraph', 'w:styleId': 'Normal', 'w:default': '1', {
+                    w.name normal
+                    w.qFormat()
+                }
+                int headingMax = 8
+                for (int lvl in 1..headingMax) {
+                    w.style 'w:type': 'paragraph', 'w:styleId': "Heading${lvl}", {
+                        w.name 'w:val': "heading ${lvl}"
+                        w.basedOn normal
+                        w.next normal
+                        w.link 'w:val': "Heading${lvl}Char"
+                        w.uiPriority 'w:val': '9'
+                        w.qFormat()
+                        w.pPr {
+                            w.keepNext()
+                            w.keepLines()
+                            w.outlineLvl('w:val': "${lvl - 1}")
+                        }
+                        w.rPr {
+                            w.b()
+                            w.bCs()
+                            switch (lvl) {
+                                case 1:
+                                    def params = ['w:val': '32']
+                                    w.sz params
+                                    w.szCs params
+                                    break
+                                case 2:
+                                    def params = ['w:val': '26']
+                                    w.sz params
+                                    w.szCs params
+                                    break
+                            }
+                        }
+
+                    }
+                }
+                for (int lvl in 1..headingMax) {
+                    w.style 'w:type': 'character', 'w:styleId': "Heading${lvl}Char", {
+                        w.name 'w:val': "heading ${lvl} char"
+                        w.link 'w:val': "Heading${lvl}"
+                        w.qFormat()
+                    }
+                }
+            }
+        }
     }
 
     void addPageBreak(builder) {
@@ -270,7 +276,12 @@ class WordDocumentBuilder extends DocumentBuilder {
     void addParagraph(builder, TextBlock paragraph) {
 
         builder.w.p {
-            w.pPr {
+            builder.w.pPr {
+
+                if (paragraph instanceof Heading) {
+                    w.pStyle 'w:val': "Heading${paragraph.level}"
+                }
+
                 String lineRule = (paragraph.lineSpacing) ? 'exact' : 'auto'
                 BigDecimal lineValue = (paragraph.lineSpacing) ?
                         pointToTwip(paragraph.lineSpacing) : (paragraph.lineSpacingMultiplier * 240)
@@ -289,15 +300,11 @@ class WordDocumentBuilder extends DocumentBuilder {
                 w.jc('w:val': paragraph.align.value)
 
                 if (paragraph instanceof Heading) {
-                    w.pStyle 'w:val': "Heading${paragraph.level}"
-//                    w.numPr {
-//                        w.ilvl('w:val': "${paragraph.level - 1}")
-//                        w.numId('w:val': "1")
-//                    }
                     w.outlineLvl('w:val': "${paragraph.level - 1}")
                 }
             }
-            String paragraphLinkId = UUID.randomUUID().toString()
+
+            String paragraphLinkId = UUID.randomUUID()
             if (paragraph.ref) {
                 w.bookmarkStart('w:id': paragraphLinkId, 'w:name': paragraph.ref)
             }
@@ -305,14 +312,14 @@ class WordDocumentBuilder extends DocumentBuilder {
                 switch (child.getClass()) {
                     case Text:
                         if (child.url && child.url.startsWith('#') && child.url.size() > 1) {
-                            w.hyperlink('w:anchor': child.url[1..-1]) {
+                            builder.w.hyperlink('w:anchor': child.url[1..-1]) {
                                 addTextRun(builder, child.font as Font, child.value as String)
                             }
                         } else if (child.ref) {
-                            String id = UUID.randomUUID().toString()
-                            w.bookmarkStart('w:id': id, 'w:name': child.ref)
+                            String id = UUID.randomUUID()
+                            builder.w.bookmarkStart('w:id': id, 'w:name': child.ref)
                             addTextRun(builder, child.font as Font, child.value as String)
-                            w.bookmarkEnd('w:id': id)
+                            builder.w.bookmarkEnd('w:id': id)
                         } else {
                             addTextRun(builder, child.font as Font, child.value as String)
                         }
@@ -330,6 +337,8 @@ class WordDocumentBuilder extends DocumentBuilder {
             }
         }
     }
+
+
 
     void addLineBreakRun(builder) {
         builder.w.r {
@@ -503,7 +512,7 @@ class WordDocumentBuilder extends DocumentBuilder {
         }
     }
 
-    void parseHeaderFooterText(builder, String text) {
+    static void parseHeaderFooterText(builder, String text) {
         def textParts = text.split(PAGE_NUMBER_PLACEHOLDER)
         textParts.eachWithIndex { String part, int index ->
             if (index != 0) {

@@ -12,7 +12,8 @@ enum DocumentPartType {
     ),
     HEADER('header', 'header.xml', 'application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml'),
     FOOTER('footer', 'footer.xml', 'application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml'),
-    NUMBERING('numbering', 'nubering.xml', 'application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml'),
+    NUMBERING('numbering', 'nubering.xml',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml'),
     STYLES('styles', 'styles.xml', 'application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml')
 
     final String value
