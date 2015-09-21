@@ -1,8 +1,6 @@
-:version: 0.4.7
+:version: 0.4.9
 
 = Groovy Document Builder
-
-image::https://codeship.com/projects/c4c04780-74d2-0132-8185-6662d475f668/status?branch=master[link="https://codeship.com/projects/55079"]
 
 A document builder for Groovy for PDF or Word documents. This is still very much a work in progress.
 
