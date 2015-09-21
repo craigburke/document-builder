@@ -48,7 +48,7 @@ allprojects {
     }
 
     group = 'com.craigburke.document'
-    version = '0.4.10'
+    version = '0.4.9'
 }
 
 subprojects {
