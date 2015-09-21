@@ -278,9 +278,9 @@ class WordDocumentBuilder extends DocumentBuilder {
     void addParagraph(builder, TextBlock paragraph) {
 
         builder.w.p {
-            builder.w.pPr {
+            w.pPr {
 
-                if (paragraph instanceof Heading) {
+                if (paragraph instanceof Heading && stylesEnabled) {
                     w.pStyle 'w:val': "Heading${paragraph.level}"
                 }
 
@@ -314,14 +314,14 @@ class WordDocumentBuilder extends DocumentBuilder {
                 switch (child.getClass()) {
                     case Text:
                         if (child.url && child.url.startsWith('#') && child.url.size() > 1) {
-                            builder.w.hyperlink('w:anchor': child.url[1..-1]) {
+                            w.hyperlink('w:anchor': child.url[1..-1]) {
                                 addTextRun(builder, child.font as Font, child.value as String)
                             }
                         } else if (child.ref) {
                             String id = UUID.randomUUID()
-                            builder.w.bookmarkStart('w:id': id, 'w:name': child.ref)
+                            w.bookmarkStart('w:id': id, 'w:name': child.ref)
                             addTextRun(builder, child.font as Font, child.value as String)
-                            builder.w.bookmarkEnd('w:id': id)
+                            w.bookmarkEnd('w:id': id)
                         } else {
                             addTextRun(builder, child.font as Font, child.value as String)
                         }
@@ -341,6 +341,9 @@ class WordDocumentBuilder extends DocumentBuilder {
     }
 
 
+    protected boolean isStylesEnabled() {
+        return false
+    }
 
     void addLineBreakRun(builder) {
         builder.w.r {
