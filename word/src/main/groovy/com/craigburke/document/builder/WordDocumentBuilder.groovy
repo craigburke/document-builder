@@ -86,8 +86,16 @@ class WordDocumentBuilder extends DocumentBuilder {
                 }
             }
         }
-//
-//        wordDocument.generateNumbering { builder ->
+
+        renderState = RenderState.CUSTOM
+        renderCustomFiles()
+
+        document.element.write()
+    }
+
+    def renderCustomFiles() {
+
+//        wordDocument.generateDocumentPart(BasicDocumentPartTypes.NUMBERING) { builder ->
 //            w.numbering {
 //                w.abstractNum 'w:abstractNumId': "1", {
 //                    for (int lvl in 0..8) {
@@ -114,9 +122,56 @@ class WordDocumentBuilder extends DocumentBuilder {
 //            }
 //        }
 //
-        renderStyles()
-
-        document.element.write()
+//
+//        wordDocument.generateDocumentPart(BasicDocumentPartTypes.STYLES) {
+//            w.styles {
+//                def normal = ['w:val': 'Normal']
+//                w.style 'w:type': 'paragraph', 'w:styleId': 'Normal', 'w:default': '1', {
+//                    w.name normal
+//                    w.qFormat()
+//                }
+//                int headingMax = 8
+//                for (int lvl in 1..headingMax) {
+//                    w.style 'w:type': 'paragraph', 'w:styleId': "Heading${lvl}", {
+//                        w.name 'w:val': "heading ${lvl}"
+//                        w.basedOn normal
+//                        w.next normal
+//                        w.link 'w:val': "Heading${lvl}Char"
+//                        w.uiPriority 'w:val': '9'
+//                        w.qFormat()
+//                        w.pPr {
+//                            w.keepNext()
+//                            w.keepLines()
+//                            w.outlineLvl('w:val': "${lvl - 1}")
+//                        }
+//                        w.rPr {
+//                            w.b()
+//                            w.bCs()
+//                            switch (lvl) {
+//                                case 1:
+//                                    def params = ['w:val': '32']
+//                                    w.sz params
+//                                    w.szCs params
+//                                    break
+//                                case 2:
+//                                    def params = ['w:val': '26']
+//                                    w.sz params
+//                                    w.szCs params
+//                                    break
+//                            }
+//                        }
+//
+//                    }
+//                }
+//                for (int lvl in 1..headingMax) {
+//                    w.style 'w:type': 'character', 'w:styleId': "Heading${lvl}Char", {
+//                        w.name 'w:val': "heading ${lvl} char"
+//                        w.link 'w:val': "Heading${lvl}"
+//                        w.qFormat()
+//                    }
+//                }
+//            }
+//        }
     }
 
     def renderHeader(HeaderFooterOptions options) {
@@ -124,7 +179,7 @@ class WordDocumentBuilder extends DocumentBuilder {
         if (document.header) {
             renderState = RenderState.HEADER
             header.node = document.header(options)
-            header.id = wordDocument.generateHeader { builder ->
+            header.id = wordDocument.generateDocumentPart(BasicDocumentPartTypes.HEADER) { builder ->
                 w.hdr {
                     renderHeaderFooterNode(builder, header.node as BlockNode)
                 }
@@ -138,7 +193,7 @@ class WordDocumentBuilder extends DocumentBuilder {
         if (document.footer) {
             renderState = RenderState.FOOTER
             footer.node = document.footer(options)
-            footer.id = wordDocument.generateFooter { builder ->
+            footer.id = wordDocument.generateDocumentPart(BasicDocumentPartTypes.FOOTER) { builder ->
                 w.hdr {
                     renderHeaderFooterNode(builder, footer.node as BlockNode)
                 }
@@ -154,59 +209,6 @@ class WordDocumentBuilder extends DocumentBuilder {
             addTable(builder, node)
         }
 
-    }
-
-    @SuppressWarnings('UnnecessaryObjectReferences')
-    def renderStyles() {
-        wordDocument.generateStyles {
-            w.styles {
-                def normal = ['w:val': 'Normal']
-                w.style 'w:type': 'paragraph', 'w:styleId': 'Normal', 'w:default': '1', {
-                    w.name normal
-                    w.qFormat()
-                }
-                int headingMax = 8
-                for (int lvl in 1..headingMax) {
-                    w.style 'w:type': 'paragraph', 'w:styleId': "Heading${lvl}", {
-                        w.name 'w:val': "heading ${lvl}"
-                        w.basedOn normal
-                        w.next normal
-                        w.link 'w:val': "Heading${lvl}Char"
-                        w.uiPriority 'w:val': '9'
-                        w.qFormat()
-                        w.pPr {
-                            w.keepNext()
-                            w.keepLines()
-                            w.outlineLvl('w:val': "${lvl - 1}")
-                        }
-                        w.rPr {
-                            w.b()
-                            w.bCs()
-                            switch (lvl) {
-                                case 1:
-                                    def params = ['w:val': '32']
-                                    w.sz params
-                                    w.szCs params
-                                    break
-                                case 2:
-                                    def params = ['w:val': '26']
-                                    w.sz params
-                                    w.szCs params
-                                    break
-                            }
-                        }
-
-                    }
-                }
-                for (int lvl in 1..headingMax) {
-                    w.style 'w:type': 'character', 'w:styleId': "Heading${lvl}Char", {
-                        w.name 'w:val': "heading ${lvl} char"
-                        w.link 'w:val': "Heading${lvl}"
-                        w.qFormat()
-                    }
-                }
-            }
-        }
     }
 
     void addPageBreak(builder) {
@@ -349,13 +351,13 @@ class WordDocumentBuilder extends DocumentBuilder {
     DocumentPartType getCurrentDocumentPart() {
         switch (renderState) {
             case RenderState.PAGE:
-                DocumentPartType.DOCUMENT
+                BasicDocumentPartTypes.DOCUMENT
                 break
             case RenderState.HEADER:
-                DocumentPartType.HEADER
+                BasicDocumentPartTypes.HEADER
                 break
             case RenderState.FOOTER:
-                DocumentPartType.FOOTER
+                BasicDocumentPartTypes.FOOTER
                 break
         }
     }

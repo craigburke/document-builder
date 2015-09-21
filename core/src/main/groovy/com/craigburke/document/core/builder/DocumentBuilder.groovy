@@ -183,5 +183,5 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
 }
 
 enum RenderState {
-    PAGE, HEADER, FOOTER
+    PAGE, HEADER, FOOTER, CUSTOM
 }

@@ -30,14 +30,14 @@ class WordDocument {
     List<ContentTypeOverride> contentTypeOverrides = []
 
     WordDocument(OutputStream out) {
-        documentParts[DocumentPartType.ROOT.value] = new DocumentPart(type: DocumentPartType.ROOT)
-        documentParts[DocumentPartType.DOCUMENT.value] = new DocumentPart(type: DocumentPartType.DOCUMENT)
+        documentParts[BasicDocumentPartTypes.ROOT.value] = new DocumentPart(type: BasicDocumentPartTypes.ROOT)
+        documentParts[BasicDocumentPartTypes.DOCUMENT.value] = new DocumentPart(type: BasicDocumentPartTypes.DOCUMENT)
 
         zipStream = new ZipOutputStream(out)
         addRelationship(
-                "${CONTENT_FOLDER}/${DocumentPartType.DOCUMENT.fileName}",
+                "${CONTENT_FOLDER}/${BasicDocumentPartTypes.DOCUMENT.fileName}",
                 'http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument',
-                DocumentPartType.ROOT
+                BasicDocumentPartTypes.ROOT
         )
 
         contentTypes << new ContentType(
@@ -58,28 +58,22 @@ class WordDocument {
 
     void write() {
         writeDocPropsFiles()
+        writeCustomFiles()
         writeRelationships()
         writeContentTypes()
         zipStream.close()
     }
 
     void writeDocPropsFiles() {
-        zipStream.putNextEntry(new ZipEntry('docProps/app.xml'))
-        zipStream << new StreamingMarkupBuilder().bind { builder ->
+        writeZipEntry 'docProps/app.xml', 'application/vnd.openxmlformats-officedocument.extended-properties+xml', new StreamingMarkupBuilder().bind { builder ->
             mkp.yieldUnescaped(XML_HEADER)
             namespaces << ['': 'http://schemas.openxmlformats.org/officeDocument/2006/extended-properties']
             Properties {
                 Application('Groovy Document Builder')
             }
         }
-        zipStream.closeEntry()
-        contentTypeOverrides << new ContentTypeOverride(
-                partName: '/docProps/app.xml',
-                contentType: 'application/vnd.openxmlformats-officedocument.extended-properties+xml'
-        )
 
-        zipStream.putNextEntry(new ZipEntry('docProps/core.xml'))
-        zipStream << new StreamingMarkupBuilder().bind { builder ->
+        writeZipEntry 'docProps/core.xml', 'conteapplication/vnd.openxmlformats-package.core-properties+xml', new StreamingMarkupBuilder().bind { builder ->
             mkp.yieldUnescaped(XML_HEADER)
             namespaces << [
                     ''       : 'http://schemas.openxmlformats.org/package/2006/metadata/core-properties',
@@ -92,15 +86,24 @@ class WordDocument {
                 dc.creator('Groovy Document Builder')
             }
         }
+    }
+
+    void writeCustomFiles() {}
+
+    protected writeZipEntry(String filePath, String contentType = null, Writable writable) {
+        zipStream.putNextEntry(new ZipEntry(filePath))
+        zipStream << writable
         zipStream.closeEntry()
-        contentTypeOverrides << new ContentTypeOverride(
-                partName: '/docProps/core.xml',
-                contentType: 'conteapplication/vnd.openxmlformats-package.core-properties+xml'
-        )
+        if (contentType) {
+            contentTypeOverrides << new ContentTypeOverride(
+                    partName: "/${filePath}",
+                    contentType: contentType
+            )
+        }
     }
 
     def generateDocument(Closure documentClosure) {
-        zipStream.putNextEntry(new ZipEntry("${CONTENT_FOLDER}/${DocumentPartType.DOCUMENT.fileName}"))
+        zipStream.putNextEntry(new ZipEntry("${CONTENT_FOLDER}/${BasicDocumentPartTypes.DOCUMENT.fileName}"))
         zipStream << new StreamingMarkupBuilder().bind { builder ->
             mkp.yieldUnescaped(XML_HEADER)
             namespaces << DOCUMENT_NAMESPACES
@@ -112,81 +115,22 @@ class WordDocument {
         addImageFiles()
     }
 
-    String generateHeader(Closure headerClosure) {
-        documentParts[DocumentPartType.HEADER.value] = new DocumentPart(type: DocumentPartType.HEADER)
+    String generateDocumentPart(DocumentPartType type, Closure builderClosure) {
+        documentParts[type.value] = new DocumentPart(type: type)
 
-        zipStream.putNextEntry(new ZipEntry("${CONTENT_FOLDER}/${DocumentPartType.HEADER.fileName}"))
+        zipStream.putNextEntry(new ZipEntry("${CONTENT_FOLDER}/${type.fileName}"))
         zipStream << new StreamingMarkupBuilder().bind { builder ->
             mkp.yieldUnescaped(XML_HEADER)
             namespaces << DOCUMENT_NAMESPACES
-            headerClosure.delegate = builder
-            headerClosure(builder)
+            builderClosure.delegate = builder
+            builderClosure(builder)
         }.toString()
         zipStream.closeEntry()
 
         addRelationship(
-                DocumentPartType.HEADER.fileName,
-                'http://schemas.openxmlformats.org/officeDocument/2006/relationships/header',
-                DocumentPartType.DOCUMENT
-        )
-    }
-
-    String generateFooter(Closure footerClosure) {
-        documentParts[DocumentPartType.FOOTER.value] = new DocumentPart(type: DocumentPartType.FOOTER)
-
-        zipStream.putNextEntry(new ZipEntry("${CONTENT_FOLDER}/${DocumentPartType.FOOTER.fileName}"))
-        zipStream << new StreamingMarkupBuilder().bind { builder ->
-            mkp.yieldUnescaped(XML_HEADER)
-            namespaces << DOCUMENT_NAMESPACES
-            footerClosure.delegate = builder
-            footerClosure(builder)
-        }.toString()
-        zipStream.closeEntry()
-
-        addRelationship(
-                DocumentPartType.FOOTER.fileName,
-                'http://schemas.openxmlformats.org/officeDocument/2006/relationships/footer',
-                DocumentPartType.DOCUMENT
-        )
-    }
-
-
-
-    String generateNumbering(Closure numberingClosure) {
-        documentParts[DocumentPartType.NUMBERING.value] = new DocumentPart(type: DocumentPartType.NUMBERING)
-
-        zipStream.putNextEntry(new ZipEntry("${CONTENT_FOLDER}/${DocumentPartType.NUMBERING.fileName}"))
-        zipStream << new StreamingMarkupBuilder().bind { builder ->
-            mkp.yieldUnescaped(XML_HEADER)
-            namespaces << DOCUMENT_NAMESPACES
-            numberingClosure.delegate = builder
-            numberingClosure(builder)
-        }.toString()
-        zipStream.closeEntry()
-
-        addRelationship(
-                DocumentPartType.NUMBERING.fileName,
-                'http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering',
-                DocumentPartType.DOCUMENT
-        )
-    }
-
-    String generateStyles(Closure stylesClosure) {
-        documentParts[DocumentPartType.STYLES.value] = new DocumentPart(type: DocumentPartType.STYLES)
-
-        zipStream.putNextEntry(new ZipEntry("${CONTENT_FOLDER}/${DocumentPartType.STYLES.fileName}"))
-        zipStream << new StreamingMarkupBuilder().bind { builder ->
-            mkp.yieldUnescaped(XML_HEADER)
-            namespaces << DOCUMENT_NAMESPACES
-            stylesClosure.delegate = builder
-            stylesClosure(builder)
-        }.toString()
-        zipStream.closeEntry()
-
-        addRelationship(
-                DocumentPartType.NUMBERING.fileName,
-                'http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles',
-                DocumentPartType.DOCUMENT
+                type.fileName,
+                type.relationshipType,
+                BasicDocumentPartTypes.DOCUMENT
         )
     }
 
@@ -219,7 +163,7 @@ class WordDocument {
 
     private void writeRelationshipsForPart(DocumentPartType documentPart) {
         String fileLocation
-        if (documentPart == DocumentPartType.ROOT) {
+        if (documentPart == BasicDocumentPartTypes.ROOT) {
             fileLocation = ROOT_RELATIONSHIP_FILE
         } else {
             fileLocation = "${CONTENT_FOLDER}/_rels/${documentPart.fileName}.rels"
@@ -247,7 +191,7 @@ class WordDocument {
                 contentTypes.each { ContentType type ->
                     Default(Extension: type.extension, ContentType: type.type)
                 }
-                def nonRootParts = documentParts.findAll { it.key != DocumentPartType.ROOT.value }
+                def nonRootParts = documentParts.findAll { it.key != BasicDocumentPartTypes.ROOT.value }
                 nonRootParts.each { String name, DocumentPart documentPart ->
                     Override(PartName: "/${CONTENT_FOLDER}/${documentPart.type.fileName}",
                             ContentType: documentPart.type.contentType)
