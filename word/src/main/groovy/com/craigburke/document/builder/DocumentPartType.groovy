@@ -1,8 +1,9 @@
 package com.craigburke.document.builder
 
 /**
- * Enum for the various types of document parts a relationship can exist in
- * @author Craig Burke
+ * Interface to describe various document parts such as document, styles or numbering XML files.
+ * @author Vladimir Orany
+ * @see BasicDocumentPartTypes
  */
 interface DocumentPartType {
 
