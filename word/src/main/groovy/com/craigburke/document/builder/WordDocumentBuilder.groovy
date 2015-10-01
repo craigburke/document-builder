@@ -6,6 +6,7 @@ import static com.craigburke.document.core.UnitUtil.pointToTwip
 import static com.craigburke.document.core.UnitUtil.pointToHalfPoint
 
 import com.craigburke.document.core.HeaderFooterOptions
+import com.craigburke.document.core.Heading
 import com.craigburke.document.core.builder.RenderState
 import com.craigburke.document.core.BlockNode
 import com.craigburke.document.core.Cell
@@ -86,7 +87,91 @@ class WordDocumentBuilder extends DocumentBuilder {
             }
         }
 
+        renderState = RenderState.CUSTOM
+        renderCustomFiles()
+
         document.element.write()
+    }
+
+    def renderCustomFiles() {
+
+//        wordDocument.generateDocumentPart(BasicDocumentPartTypes.NUMBERING) { builder ->
+//            w.numbering {
+//                w.abstractNum 'w:abstractNumId': "1", {
+//                    for (int lvl in 0..8) {
+//                        w.lvl 'w:ilvl': "${lvl}", {
+//                            w.start 'w:val': '1'
+//                            w.numFmt 'w:val': 'none'
+//                            w.suff 'w:val': 'nothing'
+//                            w.lvlText 'w:val': ''
+//                            w.lvlJc 'w:val': 'left'
+//                            w.pPr {
+//                                // let's make the fifth level at the one inch
+//                                String tabPosition = pointToTwip(22 + lvl * 10).intValue()
+//                                w.tabs {
+//                                    w.tab 'w:val': 'num', 'w:pos': tabPosition
+//                                }
+//                                w.ind 'w:left': tabPosition, 'w:hanging': tabPosition
+//                            }
+//                        }
+//                    }
+//                    w.num 'w:numId': "1", {
+//                        w.abstractNumId 'w:val': '1'
+//                    }
+//                }
+//            }
+//        }
+//
+//
+//        wordDocument.generateDocumentPart(BasicDocumentPartTypes.STYLES) {
+//            w.styles {
+//                def normal = ['w:val': 'Normal']
+//                w.style 'w:type': 'paragraph', 'w:styleId': 'Normal', 'w:default': '1', {
+//                    w.name normal
+//                    w.qFormat()
+//                }
+//                int headingMax = 8
+//                for (int lvl in 1..headingMax) {
+//                    w.style 'w:type': 'paragraph', 'w:styleId': "Heading${lvl}", {
+//                        w.name 'w:val': "heading ${lvl}"
+//                        w.basedOn normal
+//                        w.next normal
+//                        w.link 'w:val': "Heading${lvl}Char"
+//                        w.uiPriority 'w:val': '9'
+//                        w.qFormat()
+//                        w.pPr {
+//                            w.keepNext()
+//                            w.keepLines()
+//                            w.outlineLvl('w:val': "${lvl - 1}")
+//                        }
+//                        w.rPr {
+//                            w.b()
+//                            w.bCs()
+//                            switch (lvl) {
+//                                case 1:
+//                                    def params = ['w:val': '32']
+//                                    w.sz params
+//                                    w.szCs params
+//                                    break
+//                                case 2:
+//                                    def params = ['w:val': '26']
+//                                    w.sz params
+//                                    w.szCs params
+//                                    break
+//                            }
+//                        }
+//
+//                    }
+//                }
+//                for (int lvl in 1..headingMax) {
+//                    w.style 'w:type': 'character', 'w:styleId': "Heading${lvl}Char", {
+//                        w.name 'w:val': "heading ${lvl} char"
+//                        w.link 'w:val': "Heading${lvl}"
+//                        w.qFormat()
+//                    }
+//                }
+//            }
+//        }
     }
 
     def renderHeader(HeaderFooterOptions options) {
@@ -94,7 +179,7 @@ class WordDocumentBuilder extends DocumentBuilder {
         if (document.header) {
             renderState = RenderState.HEADER
             header.node = document.header(options)
-            header.id = wordDocument.generateHeader { builder ->
+            header.id = wordDocument.generateDocumentPart(BasicDocumentPartTypes.HEADER) { builder ->
                 w.hdr {
                     renderHeaderFooterNode(builder, header.node as BlockNode)
                 }
@@ -108,7 +193,7 @@ class WordDocumentBuilder extends DocumentBuilder {
         if (document.footer) {
             renderState = RenderState.FOOTER
             footer.node = document.footer(options)
-            footer.id = wordDocument.generateFooter { builder ->
+            footer.id = wordDocument.generateDocumentPart(BasicDocumentPartTypes.FOOTER) { builder ->
                 w.hdr {
                     renderHeaderFooterNode(builder, footer.node as BlockNode)
                 }
@@ -194,6 +279,11 @@ class WordDocumentBuilder extends DocumentBuilder {
 
         builder.w.p {
             w.pPr {
+
+                if (paragraph instanceof Heading && stylesEnabled) {
+                    w.pStyle 'w:val': "Heading${paragraph.level}"
+                }
+
                 String lineRule = (paragraph.lineSpacing) ? 'exact' : 'auto'
                 BigDecimal lineValue = (paragraph.lineSpacing) ?
                         pointToTwip(paragraph.lineSpacing) : (paragraph.lineSpacingMultiplier * 240)
@@ -210,6 +300,15 @@ class WordDocumentBuilder extends DocumentBuilder {
                         'w:end': pointToTwip(paragraph.margin.right)
                 )
                 w.jc('w:val': paragraph.align.value)
+
+                if (paragraph instanceof Heading) {
+                    w.outlineLvl('w:val': "${paragraph.level - 1}")
+                }
+            }
+
+            String paragraphLinkId = UUID.randomUUID()
+            if (paragraph.ref) {
+                w.bookmarkStart('w:id': paragraphLinkId, 'w:name': paragraph.ref)
             }
             paragraph.children.each { child ->
                 switch (child.getClass()) {
@@ -235,7 +334,15 @@ class WordDocumentBuilder extends DocumentBuilder {
                         break
                 }
             }
+            if (paragraph.ref) {
+                w.bookmarkEnd('w:id': paragraphLinkId)
+            }
         }
+    }
+
+
+    protected boolean isStylesEnabled() {
+        return false
     }
 
     void addLineBreakRun(builder) {
@@ -247,13 +354,13 @@ class WordDocumentBuilder extends DocumentBuilder {
     DocumentPartType getCurrentDocumentPart() {
         switch (renderState) {
             case RenderState.PAGE:
-                DocumentPartType.DOCUMENT
+                BasicDocumentPartTypes.DOCUMENT
                 break
             case RenderState.HEADER:
-                DocumentPartType.HEADER
+                BasicDocumentPartTypes.HEADER
                 break
             case RenderState.FOOTER:
-                DocumentPartType.FOOTER
+                BasicDocumentPartTypes.FOOTER
                 break
         }
     }
@@ -410,7 +517,7 @@ class WordDocumentBuilder extends DocumentBuilder {
         }
     }
 
-    void parseHeaderFooterText(builder, String text) {
+    static void parseHeaderFooterText(builder, String text) {
         def textParts = text.split(PAGE_NUMBER_PLACEHOLDER)
         textParts.eachWithIndex { String part, int index ->
             if (index != 0) {
