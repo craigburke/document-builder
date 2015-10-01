@@ -88,8 +88,6 @@ class WordDocumentBuilder extends DocumentBuilder {
         }
 
         renderState = RenderState.CUSTOM
-        renderCustomFiles()
-
         document.element.write()
     }
 
@@ -232,15 +230,10 @@ class WordDocumentBuilder extends DocumentBuilder {
             paragraph.children.each { child ->
                 switch (child.getClass()) {
                     case Text:
-                        if (child.url && child.url.startsWith('#') && child.url.size() > 1) {
-                            w.hyperlink('w:anchor': child.url[1..-1]) {
-                                addTextRun(builder, child.font as Font, child.value as String)
-                            }
+                        if (child.url?.startsWith('#') && child.url.size() > 1) {
+                            addLink(builder, child)
                         } else if (child.ref) {
-                            String id = UUID.randomUUID()
-                            w.bookmarkStart('w:id': id, 'w:name': child.ref)
-                            addTextRun(builder, child.font as Font, child.value as String)
-                            w.bookmarkEnd('w:id': id)
+                            addBookmark(builder, child)
                         } else {
                             addTextRun(builder, child.font as Font, child.value as String)
                         }
@@ -259,9 +252,21 @@ class WordDocumentBuilder extends DocumentBuilder {
         }
     }
 
-
     protected boolean isStylesEnabled() {
-        return false
+        false
+    }
+
+    void addBookmark(builder, Text text) {
+        String id = UUID.randomUUID()
+        builder.w.bookmarkStart('w:id': id, 'w:name': text.ref)
+        addTextRun(builder, text.font as Font, text.value as String)
+        builder.w.bookmarkEnd('w:id': id)
+    }
+
+    void addLink(builder, Text text) {
+        builder.w.hyperlink('w:anchor': text.url[1..-1]) {
+            addTextRun(builder, text.font as Font, text.value as String)
+        }
     }
 
     void addLineBreakRun(builder) {

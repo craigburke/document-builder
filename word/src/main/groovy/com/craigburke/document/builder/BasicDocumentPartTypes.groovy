@@ -60,8 +60,6 @@ enum BasicDocumentPartTypes implements DocumentPartType {
             'http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable'
     ),
 
-
-
     final String value
     final String fileName
     final String contentType

@@ -10,7 +10,6 @@ import java.util.zip.ZipOutputStream
  * @author Craig Burke
  */
 class WordDocument {
-
     private static final String ROOT_RELATIONSHIP_FILE = '_rels/.rels'
     private static final String CONTENT_FOLDER = 'word'
     private static final String IMAGE_FOLDER = 'media'
@@ -58,14 +57,16 @@ class WordDocument {
 
     void write() {
         writeDocPropsFiles()
-        writeCustomFiles()
         writeRelationships()
         writeContentTypes()
         zipStream.close()
     }
 
     void writeDocPropsFiles() {
-        writeZipEntry 'docProps/app.xml', 'application/vnd.openxmlformats-officedocument.extended-properties+xml', new StreamingMarkupBuilder().bind { builder ->
+
+        writeZipEntry 'docProps/app.xml',
+                'application/vnd.openxmlformats-officedocument.extended-properties+xml',
+                new StreamingMarkupBuilder().bind { builder ->
             mkp.yieldUnescaped(XML_HEADER)
             namespaces << ['': 'http://schemas.openxmlformats.org/officeDocument/2006/extended-properties']
             Properties {
@@ -73,7 +74,9 @@ class WordDocument {
             }
         }
 
-        writeZipEntry 'docProps/core.xml', 'conteapplication/vnd.openxmlformats-package.core-properties+xml', new StreamingMarkupBuilder().bind { builder ->
+        writeZipEntry 'docProps/core.xml',
+                'conteapplication/vnd.openxmlformats-package.core-properties+xml',
+                new StreamingMarkupBuilder().bind { builder ->
             mkp.yieldUnescaped(XML_HEADER)
             namespaces << [
                     ''       : 'http://schemas.openxmlformats.org/package/2006/metadata/core-properties',
@@ -87,8 +90,6 @@ class WordDocument {
             }
         }
     }
-
-    void writeCustomFiles() {}
 
     protected writeZipEntry(String filePath, String contentType = null, Writable writable) {
         zipStream.putNextEntry(new ZipEntry(filePath))
