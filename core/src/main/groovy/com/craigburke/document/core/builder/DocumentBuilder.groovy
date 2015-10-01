@@ -107,12 +107,12 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
     }
 
     protected void setNodeBackground(BackgroundAssignable node, nodeProperties) {
-        nodeProperties.each { Map property ->
-            if (property.hasProperty('background')) {
-                node.background = property.background
+        nodeProperties.each { Map properties ->
+            if (properties.containsKey('background')) {
+                node.background = properties.background
             }
         }
-        if (!node.background && node.parent instanceof BackgroundAssignable && node.parent.background) {
+        if (!node.background && (node.parent instanceof BackgroundAssignable) && node.parent.background) {
             node.background = "#${node.parent.background.hex}"
         }
     }
