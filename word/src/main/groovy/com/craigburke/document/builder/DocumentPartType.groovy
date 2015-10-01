@@ -1,25 +1,15 @@
 package com.craigburke.document.builder
 
 /**
- * Enum for the various types of document parts a relationship can exist in
- * @author Craig Burke
+ * Interface to describe various document parts such as document, styles or numbering XML files.
+ * @author Vladimir Orany
+ * @see BasicDocumentPartTypes
  */
-enum DocumentPartType {
-    ROOT('root', null, null),
-    DOCUMENT('document',
-            'document.xml',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml'
-    ),
-    HEADER('header', 'header.xml', 'application/vnd.openxmlformats-officedocument.wordprocessingml.header+xml'),
-    FOOTER('footer', 'footer.xml', 'application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml')
+interface DocumentPartType {
 
-    final String value
-    final String fileName
-    final String contentType
+    String getValue()
+    String getFileName()
+    String getContentType()
+    String getRelationshipType()
 
-    DocumentPartType(String value, String fileName, String contentType) {
-        this.value = value
-        this.fileName = fileName
-        this.contentType = contentType
-    }
 }
