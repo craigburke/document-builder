@@ -13,6 +13,7 @@ trait Renderable {
     abstract boolean getFullyParsed()
     abstract float getTotalHeight()
     abstract float getParsedHeight()
+    abstract float getRenderedHeight()
     abstract void renderElement(float startY)
     int renderCount = 0
     

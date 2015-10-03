@@ -14,6 +14,7 @@ class RowRenderer implements Renderable {
 
     Row row
     List<CellRenderer> cellRenderers = []
+    float renderedHeight = 0
 
     RowRenderer(Row row, PdfDocument pdfDocument, float startX) {
         this.row = row
@@ -43,7 +44,7 @@ class RowRenderer implements Renderable {
 
     float getParsedHeight() {
         float parsedHeight = cellRenderers*.parsedHeight.max() ?: 0
-        if (fullyParsed) {
+        if (fullyParsed && parsedHeight > 0) {
             parsedHeight += table.border.size
         }
         parsedHeight
@@ -57,6 +58,7 @@ class RowRenderer implements Renderable {
         renderBackgrounds(startY)
         renderBorders(startY)
         cellRenderers*.render(startY)
+        renderedHeight = parsedHeight
     }
 
     private Table getTable() {

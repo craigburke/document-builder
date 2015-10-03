@@ -12,6 +12,7 @@ class TableRenderer implements Renderable {
     Table table
     List<RowRenderer> rowRenderers = []
 
+    float renderedHeight = 0
     private int parseStart = 0
     private int parseEnd = 0
     private boolean parsedAndRendered = false
@@ -31,11 +32,7 @@ class TableRenderer implements Renderable {
             return
         }
 
-        if (parsedAndRendered) {
-            parseEnd = Math.min(rowRenderers.size() - 1, parseEnd)
-            parseStart = parseEnd
-        }
-        else {
+        if (!parsedAndRendered) {
             parseEnd = parseStart
         }
 
@@ -84,12 +81,23 @@ class TableRenderer implements Renderable {
         }
 
         float rowStartY = startY
+        boolean lastRowRendered = false
         rowRenderers[parseStart..parseEnd].each {
             it.render(rowStartY)
             rowStartY += it.parsedHeight
-            if (fullyParsed) {
+            lastRowRendered = it.fullyParsed
+            if (lastRowRendered) {
                 it.cellRenderers.each { it.cell.rowsSpanned++ }
             }
+        }
+        renderedHeight = parsedHeight
+
+        if (lastRowRendered) {
+            parseStart = Math.min(rowRenderers.size() - 1, parseEnd + 1)
+            parseEnd = parseStart
+        }
+        else {
+            parseStart = parseEnd
         }
 
         parsedAndRendered = true

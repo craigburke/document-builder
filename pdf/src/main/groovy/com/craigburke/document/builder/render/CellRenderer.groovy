@@ -12,6 +12,7 @@ import com.craigburke.document.core.TextBlock
 class CellRenderer implements Renderable {
 
     float currentRowHeight = 0
+    float renderedHeight = 0
 
     Cell cell
     List<Renderable> childRenderers = []
@@ -86,6 +87,7 @@ class CellRenderer implements Renderable {
             cell.rowspanHeight += currentRowHeight
             currentRowHeight = 0
         }
+        renderedHeight = parsedHeight
     }
 
     void parse(float height) {

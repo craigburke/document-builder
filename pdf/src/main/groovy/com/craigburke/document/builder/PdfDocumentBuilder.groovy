@@ -57,7 +57,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
                 paragraphRenderer.parse(pdfDocument.remainingPageHeight)
                 paragraphRenderer.render(pdfDocument.y)
                 if (paragraphRenderer.fullyParsed) {
-                    pdfDocument.scrollDownPage(paragraphRenderer.parsedHeight)
+                    pdfDocument.scrollDownPage(paragraphRenderer.renderedHeight)
                 } else {
                     pdfDocument.addPage()
                 }
@@ -76,7 +76,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
                 tableRenderer.render(pdfDocument.y)
 
                 if (tableRenderer.fullyParsed) {
-                    pdfDocument.scrollDownPage(tableRenderer.parsedHeight)
+                    pdfDocument.scrollDownPage(tableRenderer.renderedHeight)
                 } else {
                     pdfDocument.addPage()
                 }

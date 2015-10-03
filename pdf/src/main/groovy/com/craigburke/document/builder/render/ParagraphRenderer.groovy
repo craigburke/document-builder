@@ -25,6 +25,7 @@ class ParagraphRenderer implements Renderable {
     private int parseStart = 0
     private int linesParsed = 0
 
+    float renderedHeight = 0
     private float startX
     private boolean parsedAndRendered = false
     private boolean fullyRendered = false
@@ -96,20 +97,21 @@ class ParagraphRenderer implements Renderable {
             pdfDocument.x = startX
             renderLine(line)
         }
+        renderedHeight = parsedHeight
         fullyRendered = fullyParsed
         parsedAndRendered = true
     }
 
     float getTotalHeight() {
-        lines.sum { it.totalHeight }
+        lines.sum { it.totalHeight } as float
     }
 
     float getParsedHeight() {
         if (!linesParsed) {
-            return 0
+            return 0f
         }
 
-        lines[parseStart..parseEnd]*.totalHeight.sum() ?: 0
+        lines[parseStart..parseEnd]*.totalHeight.sum() as float ?: 0f
     }
 
     private void renderLine(ParagraphLine line) {
