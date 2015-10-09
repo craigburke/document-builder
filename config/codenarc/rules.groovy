@@ -158,7 +158,7 @@ ruleset {
     ClosureStatementOnOpeningLineOfMultipleLineClosure
     ConsecutiveBlankLines
     FileEndsWithoutNewline
-    LineLength
+    'LineLength' doNotApplyToFilesMatching: '*Spec.groovy'
     MissingBlankLineAfterImports
     MissingBlankLineAfterPackage
     SpaceAfterCatch
@@ -326,7 +326,7 @@ ruleset {
     AbcMetric   // Requires the GMetrics jar
     ClassSize
     CrapMetric   // Requires the GMetrics jar and a Cobertura coverage file
-    CyclomaticComplexity   // Requires the GMetrics jar
+    'CyclomaticComplexity' doNotApplyToFilesMatching: '.*Spec.groovy'   // Requires the GMetrics jar
     MethodCount
     MethodSize
     'NestedBlockDepth' doNotApplyToFileNames: 'WordDocumentBuilder.groovy'
@@ -338,7 +338,7 @@ ruleset {
     ConsecutiveStringConcatenation
     UnnecessaryBigDecimalInstantiation
     UnnecessaryBigIntegerInstantiation
-    UnnecessaryBooleanExpression
+    'UnnecessaryBooleanExpression' doNotApplyToFilesMatching: '.*Spec.groovy'
     UnnecessaryBooleanInstantiation
     UnnecessaryCallForLastElement
     UnnecessaryCallToSubstring

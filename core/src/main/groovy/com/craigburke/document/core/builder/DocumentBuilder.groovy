@@ -73,7 +73,7 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
             setNodeFont(node, nodeProperties)
         }
         if (node instanceof BlockNode) {
-            setNodeMargins(node, nodeProperties)
+            setBlockProperties(node, nodeProperties)
         }
         if (node instanceof BackgroundAssignable) {
             setNodeBackground(node, nodeProperties)
@@ -99,10 +99,13 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
         }
     }
 
-    protected void setNodeMargins(BlockNode node, nodeProperties) {
+    protected void setBlockProperties(BlockNode node, nodeProperties) {
         node.margin = node.getClass().defaultMargin.clone()
         nodeProperties.each {
             node.margin << it.margin
+            if (it.border) {
+                node.border << it.border
+            }
         }
     }
 
@@ -117,7 +120,7 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
         }
     }
 
-    protected String[] getTemplateKeys(BaseNode node, String nodeKey) {
+    static String[] getTemplateKeys(BaseNode node, String nodeKey) {
         def keys = [nodeKey]
         if (node instanceof Heading) {
             keys << "heading${node.level}"

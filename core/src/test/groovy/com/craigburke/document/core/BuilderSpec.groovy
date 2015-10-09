@@ -1,7 +1,9 @@
 package com.craigburke.document.core
 
+import com.craigburke.document.core.builder.DocumentBuilder
 import spock.lang.Shared
 import spock.lang.Specification
+import spock.lang.Unroll
 
 /**
  * Builder core tests
@@ -496,6 +498,42 @@ class BuilderSpec extends Specification {
         paragraph2.url == null
         paragraph2.children[0].url == null
         paragraph2.children[1].url == url
+    }
+
+    @Unroll('Template keys calculated for #description')
+    def "template keys are calculated"() {
+        expect:
+        DocumentBuilder.getTemplateKeys(node, nodeKey) == expectedKeys.toArray()
+
+        where:
+        node                                   | nodeKey     || expectedKeys
+        new TextBlock()                        | 'paragraph' || ['paragraph']
+        new TextBlock(style: 'foo')            | 'paragraph' || ['paragraph', 'paragraph.foo']
+
+        new Text()                             | 'text'      || ['text']
+        new Text(style: 'bar')                 | 'text'      || ['text', 'text.bar']
+
+        new Table()                            | 'table'     || ['table']
+        new Table(style: 'foo')                | 'table'     || ['table', 'table.foo']
+        new Row()                              | 'row'       || ['row']
+        new Row(style: 'foo')                  | 'row'       || ['row', 'row.foo']
+        new Cell()                             | 'cell'      || ['cell']
+        new Cell(style: 'foo')                 | 'cell'      || ['cell', 'cell.foo']
+
+        new Heading(level: 1)                  | 'heading'   || ['heading', 'heading1']
+        new Heading(level: 1, style: 'foobar') | 'heading'   || ['heading', 'heading1', 'heading.foobar', 'heading1.foobar']
+        new Heading(level: 2)                  | 'heading'   || ['heading', 'heading2']
+        new Heading(level: 2, style: 'foobar') | 'heading'   || ['heading', 'heading2', 'heading.foobar', 'heading2.foobar']
+        new Heading(level: 3)                  | 'heading'   || ['heading', 'heading3']
+        new Heading(level: 3, style: 'foobar') | 'heading'   || ['heading', 'heading3', 'heading.foobar', 'heading3.foobar']
+        new Heading(level: 4)                  | 'heading'   || ['heading', 'heading4']
+        new Heading(level: 4, style: 'foobar') | 'heading'   || ['heading', 'heading4', 'heading.foobar', 'heading4.foobar']
+        new Heading(level: 5)                  | 'heading'   || ['heading', 'heading5']
+        new Heading(level: 5, style: 'foobar') | 'heading'   || ['heading', 'heading5', 'heading.foobar', 'heading5.foobar']
+        new Heading(level: 6)                  | 'heading'   || ['heading', 'heading6']
+        new Heading(level: 6, style: 'foobar') | 'heading'   || ['heading', 'heading6', 'heading.foobar', 'heading6.foobar']
+
+        description = "${nodeKey}${node.style ? ".${node.style}" : ''}"
     }
 
 }

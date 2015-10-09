@@ -25,6 +25,7 @@ class TextFactory extends AbstractFactory {
             node.parent = paragraph
             if (node instanceof Text) {
                 node.url = attributes.url
+                node.style = attributes.style
                 builder.setNodeProperties(node, attributes, 'text')
             }
         }
