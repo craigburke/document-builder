@@ -1,10 +1,7 @@
 buildscript {
-    repositories {
-        jcenter()
-    }
     dependencies {
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.0'
-        classpath 'net.saliman:gradle-cobertura-plugin:2.2.6'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.5'
+        classpath 'com.netflix.nebula:gradle-extra-configurations-plugin:3.0.3'
     }
 }
 
@@ -14,14 +11,15 @@ plugins {
 }
 
 allprojects {
+    apply plugin: 'groovy'
     apply plugin: 'idea'
     apply plugin: 'eclipse'
-
-    apply plugin: 'groovy'
-    targetCompatibility = 1.6
-
     apply plugin: 'codenarc'
-    apply plugin: 'cobertura'
+    apply plugin: 'nebula.provided-base'
+
+    group = 'com.craigburke.document'
+    version = '0.4.14'
+    targetCompatibility = 1.6
 
     repositories {
         mavenLocal()
@@ -30,8 +28,8 @@ allprojects {
     }
 
     dependencies {
-        compile 'org.codehaus.groovy:groovy-all:2.3.9'
-        testCompile 'org.spockframework:spock-core:0.7-groovy-2.0'
+        provided 'org.codehaus.groovy:groovy-all:2.4.5'
+        testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
         testCompile 'cglib:cglib-nodep:3.1'
         testCompile 'org.objenesis:objenesis:2.1'
         codenarc 'org.codenarc:CodeNarc:0.23'
@@ -41,30 +39,11 @@ allprojects {
         toolVersion = '0.23'
         configFile = file("${rootProject.projectDir}/config/codenarc/rules.groovy")
     }
-
-    cobertura {
-        coverageSourceDirs = [sourceSets.main.allSource.srcDirs]
-        coverageExcludes = [/.*com\.craigburke\.document\.core\.test.*/, /.*com\.craigburke\.document\.core\.Align.*/]
-    }
-
-    group = 'com.craigburke.document'
-    version = '0.4.13'
 }
 
 subprojects {
     apply plugin: 'maven-publish'
     apply plugin: 'com.jfrog.bintray'
-
-    configurations {
-        provided
-        testCompile { extendsFrom provided }
-    }
-
-    sourceSets {
-        main {
-            compileClasspath += configurations.provided
-        }
-    }
 
     task sourcesJar(type: Jar) {
         classifier = 'sources'
@@ -170,5 +149,5 @@ githubPages {
 publishGhPages.dependsOn asciidoctor
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.2'
+    gradleVersion = '2.9'
 }
