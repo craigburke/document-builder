@@ -378,7 +378,7 @@ class WordDocumentBuilder extends DocumentBuilder {
 
         builder.w.tc {
             w.tcPr {
-                w.vAlign('w:val': 'center')
+                w.vAlign('w:val': 'top')
                 w.tcW('w:w': pointToTwip(column.width - (table.padding * 2)), 'w:type': 'dxa')
                 w.tcMar {
                     w.top('w:w': pointToTwip(table.padding), 'w:type': 'dxa')

@@ -18,7 +18,7 @@ allprojects {
     apply plugin: 'nebula.provided-base'
 
     group = 'com.craigburke.document'
-    version = '0.4.14'
+    version = '0.4.15'
     targetCompatibility = 1.6
 
     repositories {

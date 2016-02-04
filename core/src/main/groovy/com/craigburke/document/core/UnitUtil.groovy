@@ -5,8 +5,8 @@ package com.craigburke.document.core
  * @author Craig Burke
  */
 class UnitUtil {
-
-    static final BigDecimal DPI = 72
+    static final BigDecimal POINTS_PER_INCH = 72
+    static final BigDecimal POINTS_PER_CENTIMETER = 28.346457
     static final BigDecimal PICA_POINTS = 6
     static final BigDecimal TWIP_POINTS = 20
     static final BigDecimal EIGTH_POINTS = 8
@@ -14,11 +14,11 @@ class UnitUtil {
     static final BigDecimal EMU_POINTS = 12700
 
     static BigDecimal inchToPoint(BigDecimal inch) {
-        inch * DPI
+        inch * POINTS_PER_INCH
     }
 
     static BigDecimal pointToInch(BigDecimal point) {
-        point / DPI
+        point / POINTS_PER_INCH
     }
 
     static BigDecimal pointToPica(BigDecimal point) {
