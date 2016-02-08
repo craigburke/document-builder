@@ -1,7 +1,7 @@
 dependencies {
     compile project(':core')
 
-    String POI_VERSION = '3.10.1'
+    String POI_VERSION = '3.13'
 
     testCompile 'xml-apis:xml-apis:1.4.01'
     testCompile "org.apache.poi:poi:${POI_VERSION}"
