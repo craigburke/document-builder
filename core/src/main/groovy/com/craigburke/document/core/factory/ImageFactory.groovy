@@ -22,10 +22,18 @@ class ImageFactory extends AbstractFactory {
         Image image = new Image(attributes)
 
         if (!image.width || !image.height) {
-            InputStream inputStream = new ByteArrayInputStream(image.data)
-            BufferedImage bufferedImage = ImageIO.read(inputStream)
-            image.width = bufferedImage.width
-            image.height = bufferedImage.height
+            BufferedImage bufferedImage = image.withInputStream { ImageIO.read(it) }
+            if(bufferedImage == null) {
+                throw new IllegalStateException("could not read image $attributes")
+            }
+            if(image.width) {
+                image.height = image.width * (bufferedImage.height / bufferedImage.width)
+            } else if(image.height) {
+                image.width =  image.height * (bufferedImage.width / bufferedImage.height)
+            } else {
+                image.width = bufferedImage.width
+                image.height = bufferedImage.height
+            }
         }
 
         if (!image.name || builder.imageFileNames.contains(image.name)) {
@@ -46,11 +54,7 @@ class ImageFactory extends AbstractFactory {
     }
 
     String generateImageName(Image image) {
-        Formatter hexHash = new Formatter()
-        MessageDigest.getInstance('SHA-1').digest(image.data).each {
-            b -> hexHash.format('%02x', b)
-        }
-        "${hexHash}.${image.type == ImageType.JPG ? 'jpg' : 'png'}"
+        "${image.hash}.${image.type == ImageType.JPG ? 'jpg' : 'png'}"
     }
 
 }
