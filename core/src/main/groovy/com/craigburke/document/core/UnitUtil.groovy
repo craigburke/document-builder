@@ -6,7 +6,8 @@ package com.craigburke.document.core
  */
 class UnitUtil {
     static final BigDecimal POINTS_PER_INCH = 72
-    static final BigDecimal POINTS_PER_CENTIMETER = 28.346457
+    static final BigDecimal CENTIMETER_PER_INCH = 2.54
+    static final BigDecimal POINTS_PER_CENTIMETER = POINTS_PER_INCH / CENTIMETER_PER_INCH
     static final BigDecimal PICA_POINTS = 6
     static final BigDecimal TWIP_POINTS = 20
     static final BigDecimal EIGTH_POINTS = 8
@@ -19,6 +20,14 @@ class UnitUtil {
 
     static BigDecimal pointToInch(BigDecimal point) {
         point / POINTS_PER_INCH
+    }
+
+    static BigDecimal cmToPoint(BigDecimal cm) {
+        cm * POINTS_PER_CENTIMETER
+    }
+
+    static BigDecimal pointToCm(BigDecimal point) {
+        point / POINTS_PER_CENTIMETER
     }
 
     static BigDecimal pointToPica(BigDecimal point) {
@@ -61,4 +70,11 @@ class UnitUtil {
         emu / EMU_POINTS
     }
 
+    static BigDecimal inchToCm(BigDecimal inch) {
+        inch * CENTIMETER_PER_INCH
+    }
+
+    static BigDecimal cmToInch(BigDecimal inch) {
+        inch / CENTIMETER_PER_INCH
+    }
 }
