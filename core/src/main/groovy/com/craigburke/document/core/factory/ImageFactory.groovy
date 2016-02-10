@@ -6,7 +6,6 @@ import com.craigburke.document.core.TextBlock
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
-import java.security.MessageDigest
 
 /**
  * Factory for image nodes
