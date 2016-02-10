@@ -81,4 +81,8 @@ class Document extends BlockNode {
             height = tmp
         }
     }
+
+    boolean isLandscape() {
+        this.orientation == LANDSCAPE
+    }
 }
