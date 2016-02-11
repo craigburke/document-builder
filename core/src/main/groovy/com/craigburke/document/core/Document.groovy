@@ -48,20 +48,30 @@ class Document extends BlockNode {
     /**
      * Set width and height of the document.
      *
-     * @param arg a Dimension instance, a List<Number> [width, height] or the name of a standard paper size ("a4", "letter", "legal")
+     * @param arg name of a standard paper size ("a4", "letter", "legal")
      */
-    void setSize(def arg) {
-        if (arg instanceof Dimension) {
-            width = inchToPoint(arg.width)
-            height = inchToPoint(arg.height)
-        } else if (arg instanceof List && arg.size() == 2) {
-            width = inchToPoint(arg[0])
-            height = inchToPoint(arg[1])
-        } else {
-            def size = PaperSize.get(arg.toString())
-            width = inchToPoint(size.width)
-            height = inchToPoint(size.height)
-        }
+    void setSize(String arg) {
+        setSize(PaperSize.get(arg))
+    }
+
+    /**
+     * Set width and height of the document.
+     *
+     * @param arg a Dimension instance
+     */
+    void setSize(Dimension arg) {
+        width = inchToPoint(arg.width)
+        height = inchToPoint(arg.height)
+    }
+
+    /**
+     * Set width and height of the document.
+     *
+     * @param args width, height
+     */
+    void setSize(List<Number> args) {
+        width = args[0]
+        height = args[1]
     }
 
     /**
