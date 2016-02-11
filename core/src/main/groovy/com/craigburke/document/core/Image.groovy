@@ -11,38 +11,22 @@ class Image extends BaseNode {
     ImageType type = ImageType.JPG
     Integer width
     Integer height
-    private URL imageUrl
-    private byte[] imageData
+    String url
+    byte[] data
 
     void setType(String value) {
         type = Enum.valueOf(ImageType, value.toUpperCase())
     }
 
-    URL getUrl() {
-        imageUrl
-    }
-
-    void setUrl(String value) {
-        setUrl(value != null ? URI.create(value).toURL() : null)
-    }
-
-    void setUrl(URL value) {
-        imageUrl = value
-    }
-
     byte[] getData() {
-        imageUrl?.bytes ?: imageData
-    }
-
-    void setData(byte[] data) {
-        imageData = Arrays.copyOf(data, data.length)
+        if(this.@data == null && url != null) {
+            this.data = new URL(url).bytes
+        }
+        this.@data
     }
 
     def withInputStream(Closure work) {
-        if(imageUrl != null) {
-            return imageUrl.withInputStream(work)
-        }
-        work.call(new ByteArrayInputStream(imageData))
+        work.call(new ByteArrayInputStream(getData()))
     }
 
     String getHash() {
