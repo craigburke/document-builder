@@ -46,6 +46,38 @@ class TableSpec extends Specification {
         innerTable.children[0].children[0].children[0].text == 'INNER TABLE'
     }
 
+    def "set lineSpacing on table cells"() {
+        when:
+        Document result = builder.create {
+            document {
+                table {
+                    row {
+                        cell() {
+                            text "R1C1"
+                            lineBreak()
+                            text "R1C2"
+                        }
+                        cell(lineSpacingMultiplier: 2) {
+                            text "R2C1"
+                            lineBreak()
+                            text "R2C2"
+                        }
+                    }
+                }
+            }
+        }.document
+
+        Table table = result.children[0]
+        Cell cell1 = table.children[0].children[0]
+        Cell cell2 = table.children[0].children[1]
+
+        then:
+        cell1.children[0].text == "R1C1R1C2"
+        cell1.children[0].lineSpacingMultiplier == LineSpacing.DEFAULT_LINE_SPACING_MULTIPLIER
+        cell2.children[0].text == "R2C1R2C2"
+        cell2.children[0].lineSpacingMultiplier == 2
+    }
+
     def "widths are set correct with table within a table"() {
         when:
         Document result = builder.create {
