@@ -18,6 +18,7 @@ import com.craigburke.document.core.PageBreak
 import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Table
 import com.craigburke.document.core.Text
+import com.craigburke.document.core.Toc
 import groovy.transform.InheritConstructors
 
 import com.craigburke.document.core.builder.DocumentBuilder
@@ -62,6 +63,8 @@ class WordDocumentBuilder extends DocumentBuilder {
                             addPageBreak(builder)
                         } else if (child instanceof Table) {
                             addTable(builder, child)
+                        } else if (child instanceof Toc) {
+                            addTableOfContents(builder)
                         }
                     }
                     w.sectPr {
@@ -126,6 +129,28 @@ class WordDocumentBuilder extends DocumentBuilder {
             addTable(builder, node)
         }
 
+    }
+
+    void addTableOfContents(builder) {
+        builder.w.p {
+            w.r {
+                w.fldChar('w:fldCharType': 'begin')
+            }
+            w.r {
+                w.instrText('xml:space': 'preserve') {
+                    mkp.yieldUnescaped('TOC \\* MERGEFORMAT')
+                }
+            }
+            w.r {
+                w.fldChar('w:fldCharType': 'separate')
+            }
+            w.r {
+                mkp.yieldUnescaped('...')
+            }
+            w.r {
+                w.fldChar('w:fldCharType': 'end')
+            }
+        }
     }
 
     void addPageBreak(builder) {
