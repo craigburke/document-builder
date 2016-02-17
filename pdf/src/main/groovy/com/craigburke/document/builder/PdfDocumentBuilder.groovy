@@ -14,7 +14,11 @@ import com.craigburke.document.core.Document
 import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Table
 import com.craigburke.document.core.Image
-
+import org.apache.jempbox.xmp.XMPMetadata
+import org.apache.jempbox.xmp.XMPSchemaBasic
+import org.apache.jempbox.xmp.XMPSchemaDublinCore
+import org.apache.jempbox.xmp.XMPSchemaPDF
+import org.apache.pdfbox.Version
 import org.apache.pdfbox.pdmodel.common.PDMetadata
 
 /**
@@ -23,6 +27,8 @@ import org.apache.pdfbox.pdmodel.common.PDMetadata
  */
 @InheritConstructors
 class PdfDocumentBuilder extends DocumentBuilder {
+
+    private static final String CREATOR = 'Groovy Document Builder'
 
     PdfDocument pdfDocument
 
@@ -87,7 +93,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
     void writeDocument(Document document, OutputStream out) {
         addHeaderFooter()
-        addMetadata()
+        addMetadata(document.metadata)
 
         pdfDocument.contentStream?.close()
         pdfDocument.pdDocument.save(out)
@@ -151,7 +157,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
         }
     }
 
-    private void addMetadata() {
+    private void addMetadata(Map documentMetadata) {
         ByteArrayOutputStream xmpOut = new ByteArrayOutputStream()
         def xml = new MarkupBuilder(xmpOut.newWriter())
 
@@ -174,10 +180,45 @@ class PdfDocumentBuilder extends DocumentBuilder {
         }
 
         def catalog = pdfDocument.pdDocument.documentCatalog
-        InputStream inputStream = new ByteArrayInputStream(xmpOut.toByteArray())
 
-        PDMetadata metadata = new PDMetadata(pdfDocument.pdDocument, inputStream, false)
-        catalog.metadata = metadata
+        PDMetadata metadataStream = new PDMetadata(pdfDocument.pdDocument)
+
+        metadataStream.importXMPMetadata(xmpOut.toByteArray())
+
+        XMPMetadata xmpMetadata = new XMPMetadata()
+
+        XMPSchemaPDF pdfSchema = xmpMetadata.addPDFSchema();
+        pdfSchema.setProducer("PDFBox ${Version.getVersion()}")
+        if(documentMetadata.keywords) {
+            pdfSchema.setKeywords(documentMetadata.keywords)
+        }
+
+        XMPSchemaBasic basicSchema = xmpMetadata.addBasicSchema()
+        basicSchema.setCreateDate(toGregorianCalendar(documentMetadata.created ?: new Date()))
+        basicSchema.setModifyDate(toGregorianCalendar(documentMetadata.modified ?: new Date()))
+        basicSchema.setCreatorTool(CREATOR)
+
+        XMPSchemaDublinCore dcSchema = xmpMetadata.addDublinCoreSchema()
+        dcSchema.addCreator(documentMetadata.author ?: documentMetadata.creator ?: CREATOR)
+        if(documentMetadata.title) {
+            dcSchema.setTitle(documentMetadata.title)
+        }
+        if(documentMetadata.subject) {
+            dcSchema.addSubject(documentMetadata.subject)
+        }
+        if(documentMetadata.description) {
+            dcSchema.setDescription(documentMetadata.description)
+        }
+
+        metadataStream.importXMPMetadata(xmpMetadata.asByteArray())
+
+        catalog.metadata = metadataStream
+    }
+
+    private GregorianCalendar toGregorianCalendar(Date date) {
+        GregorianCalendar cal = new GregorianCalendar()
+        cal.setTime(date)
+        cal
     }
 
     private void addParagraphToMetadata(builder, TextBlock paragraphNode) {
