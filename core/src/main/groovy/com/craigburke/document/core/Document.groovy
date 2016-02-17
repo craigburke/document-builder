@@ -21,6 +21,8 @@ class Document extends BlockNode {
     def header
     def footer
 
+    Map metadata = [:]
+
     private Map templateMap
 
     Map getTemplateMap() {
