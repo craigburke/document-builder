@@ -1,5 +1,7 @@
 package com.craigburke.document.builder
 
+import java.text.SimpleDateFormat
+
 import static com.craigburke.document.core.UnitUtil.pointToEigthPoint
 import static com.craigburke.document.core.UnitUtil.pointToEmu
 import static com.craigburke.document.core.UnitUtil.pointToTwip
@@ -30,6 +32,7 @@ import com.craigburke.document.core.Document
 @InheritConstructors
 class WordDocumentBuilder extends DocumentBuilder {
 
+    private static final String CREATOR = 'Groovy Document Builder'
     private static final String PAGE_NUMBER_PLACEHOLDER = '##pageNumber##'
     private static final Map RUN_TEXT_OPTIONS = ['xml:space': 'preserve']
 
@@ -47,6 +50,10 @@ class WordDocumentBuilder extends DocumentBuilder {
                 pageCount: document.pageCount,
                 dateGenerated: new Date()
         )
+
+        renderCoreProperties(document.metadata)
+        renderAppProperties(document.metadata)
+        renderSettings()
 
         def header = renderHeader(headerFooterOptions)
         def footer = renderFooter(headerFooterOptions)
@@ -88,7 +95,76 @@ class WordDocumentBuilder extends DocumentBuilder {
         }
 
         renderState = RenderState.CUSTOM
-        document.element.write()
+        wordDocument.write()
+    }
+
+    private String formatDate(Date date) {
+        def dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        dateFormat.setTimeZone(TimeZone.getTimeZone('GMT'))
+        dateFormat.format(new Date())
+    }
+
+    void renderCoreProperties(Map metadata) {
+        def now = formatDate(new Date())
+
+        wordDocument.generateDocumentProperties(BasicDocumentPartTypes.CORE_PROPERTIES) { builder ->
+            cp.coreProperties {
+                if (metadata.title) {
+                    dc.title(metadata.title)
+                }
+                if (metadata.subject) {
+                    dc.subject(metadata.subject)
+                }
+                dc.creator(metadata.author ?: metadata.creator ?: CREATOR)
+                if (metadata.keywords) {
+                    cp.keywords(metadata.keywords)
+                }
+                if (metadata.description) {
+                    dc.description(metadata.description)
+                }
+                if(metadata.lastModifiedBy) {
+                    cp.lastModifiedBy(metadata.lastModifiedBy)
+                }
+                if(metadata.revision != null) {
+                    cp.revision(metadata.revision.toString())
+                }
+                dcterms.created('xsi:type': 'dcterms:W3CDTF') {
+                    mkp.yieldUnescaped(metadata.created ?: now)
+                }
+                dcterms.modified('xsi:type': 'dcterms:W3CDTF') {
+                    mkp.yieldUnescaped(metadata.modified ?: now)
+                }
+                if (metadata.category) {
+                    cp.category(metadata.category)
+                }
+            }
+        }
+    }
+
+    void renderAppProperties(Map metadata) {
+        wordDocument.generateDocumentProperties(BasicDocumentPartTypes.APP_PROPERTIES) { builder ->
+            Properties {
+                Application(metadata.creator ?: this.CREATOR)
+                if (metadata.manager) {
+                    Manager(metadata.manager)
+                }
+                if (metadata.company) {
+                    Company(metadata.company)
+                }
+            }
+        }
+    }
+
+    def renderSettings() {
+        def settings = [:]
+        settings.id = wordDocument.generateDocumentPart(BasicDocumentPartTypes.SETTINGS) {builder->
+            w.settings {
+                w.compat {
+                    w.compatSetting('w:name': "compatibilityMode", 'w:uri': "http://schemas.microsoft.com/office/word", 'w:val': "14")
+                }
+            }
+        }
+        settings
     }
 
     def renderHeader(HeaderFooterOptions options) {

@@ -22,6 +22,13 @@ class WordDocument {
             wp : 'http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing',
             r  : 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
     ]
+    private static final PROPERTIES_NAMESPACES = [
+            '': 'http://schemas.openxmlformats.org/officeDocument/2006/extended-properties',
+            cp : 'http://schemas.openxmlformats.org/package/2006/metadata/core-properties',
+            dc : 'http://purl.org/dc/elements/1.1/',
+            dcterms: 'http://purl.org/dc/terms/',
+            xsi: "http://www.w3.org/2001/XMLSchema-instance"
+    ]
 
     Map<String, DocumentPart> documentParts = [:]
     List<ContentType> contentTypes = []
@@ -35,7 +42,7 @@ class WordDocument {
         zipStream = new ZipOutputStream(out)
         addRelationship(
                 "${CONTENT_FOLDER}/${BasicDocumentPartTypes.DOCUMENT.fileName}",
-                'http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument',
+                BasicDocumentPartTypes.DOCUMENT.relationshipType,
                 BasicDocumentPartTypes.ROOT
         )
 
@@ -56,51 +63,9 @@ class WordDocument {
     }
 
     void write() {
-        writeDocPropsFiles()
         writeRelationships()
         writeContentTypes()
         zipStream.close()
-    }
-
-    void writeDocPropsFiles() {
-
-        writeZipEntry 'docProps/app.xml',
-                'application/vnd.openxmlformats-officedocument.extended-properties+xml',
-                new StreamingMarkupBuilder().bind { builder ->
-            mkp.yieldUnescaped(XML_HEADER)
-            namespaces << ['': 'http://schemas.openxmlformats.org/officeDocument/2006/extended-properties']
-            Properties {
-                Application('Groovy Document Builder')
-            }
-        }
-
-        writeZipEntry 'docProps/core.xml',
-                'conteapplication/vnd.openxmlformats-package.core-properties+xml',
-                new StreamingMarkupBuilder().bind { builder ->
-            mkp.yieldUnescaped(XML_HEADER)
-            namespaces << [
-                    ''       : 'http://schemas.openxmlformats.org/package/2006/metadata/core-properties',
-                    'cp'     : 'http://schemas.openxmlformats.org/package/2006/metadata/core-properties',
-                    'dc'     : 'http://purl.org/dc/elements/1.1/',
-                    'dcterms': 'http://purl.org/dc/terms/',
-                    'xsi'    : 'http://www.w3.org/2001/XMLSchema-instance'
-            ]
-            coreProperties {
-                dc.creator('Groovy Document Builder')
-            }
-        }
-    }
-
-    protected writeZipEntry(String filePath, String contentType = null, Writable writable) {
-        zipStream.putNextEntry(new ZipEntry(filePath))
-        zipStream << writable
-        zipStream.closeEntry()
-        if (contentType) {
-            contentTypeOverrides << new ContentTypeOverride(
-                    partName: "/${filePath}",
-                    contentType: contentType
-            )
-        }
     }
 
     def generateDocument(Closure documentClosure) {
@@ -135,6 +100,26 @@ class WordDocument {
         )
     }
 
+    String generateDocumentProperties(DocumentPartType type, Closure builderClosure) {
+        documentParts[type.value] = new DocumentPart(type: type)
+
+        zipStream.putNextEntry(new ZipEntry(type.fileName))
+        zipStream << new StreamingMarkupBuilder().bind { builder ->
+            mkp.yieldUnescaped(XML_HEADER)
+            namespaces << PROPERTIES_NAMESPACES
+            builderClosure.delegate = builder
+            builderClosure.resolveStrategy = Closure.DELEGATE_FIRST
+            builderClosure(builder)
+        }.toString()
+        zipStream.closeEntry()
+
+        addRelationship(
+                type.fileName,
+                type.relationshipType,
+                BasicDocumentPartTypes.ROOT
+        )
+    }
+
     private addImageFiles() {
         documentParts.each { String name, DocumentPart part ->
             part.images.each { image ->
@@ -163,6 +148,9 @@ class WordDocument {
     }
 
     private void writeRelationshipsForPart(DocumentPartType documentPart) {
+        if(documentParts[documentPart.value].relationships.isEmpty()) {
+            return // No relationships, skip writing the xxx.xml.rels file.
+        }
         String fileLocation
         if (documentPart == BasicDocumentPartTypes.ROOT) {
             fileLocation = ROOT_RELATIONSHIP_FILE
@@ -194,7 +182,13 @@ class WordDocument {
                 }
                 def nonRootParts = documentParts.findAll { it.key != BasicDocumentPartTypes.ROOT.value }
                 nonRootParts.each { String name, DocumentPart documentPart ->
-                    Override(PartName: "/${CONTENT_FOLDER}/${documentPart.type.fileName}",
+                    def fileName = documentPart.type.fileName
+                    if(fileName.startsWith('docProps/')) {
+                        fileName = "/$fileName"
+                    } else {
+                        fileName = "/$CONTENT_FOLDER/$fileName"
+                    }
+                    Override(PartName: fileName,
                             ContentType: documentPart.type.contentType)
                 }
                 contentTypeOverrides.each { ContentTypeOverride override ->
