@@ -115,7 +115,7 @@ class WordDocumentBuilder extends DocumentBuilder {
                 if (metadata.subject) {
                     dc.subject(metadata.subject)
                 }
-                dc.creator(metadata.author ?: metadata.creator ?: CREATOR)
+                dc.creator(metadata.author ?: metadata.creator ?: this.CREATOR)
                 if (metadata.keywords) {
                     cp.keywords(metadata.keywords)
                 }
