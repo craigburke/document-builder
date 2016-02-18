@@ -171,6 +171,58 @@ class BuilderSpec extends Specification {
         thrown(Exception)
     }
 
+    def "Image can be loaded from URL"() {
+        when:
+        def result = builder.create {
+            document {
+                paragraph {
+                    image(url: "http://dummyimage.com/600x400")
+                }
+            }
+        }
+
+        then:
+        TextBlock paragraph = result.document.children[0]
+        Image image = paragraph.children[0]
+        image.data != null
+        image.width == 600
+        image.height == 400
+    }
+
+    def "Image should have correct aspect ratio if only width is specified"() {
+        when:
+        def result = builder.create {
+            document {
+                paragraph {
+                    image(data: imageData, width: 250.px) // cheeseburger.jpg is 500x431
+                }
+            }
+        }
+
+        then:
+        TextBlock paragraph = result.document.children[0]
+        Image image = paragraph.children[0]
+        image.width == 250
+        image.height == 215
+    }
+
+    def "Image should have correct aspect ratio if only height is specified"() {
+        when:
+        def result = builder.create {
+            document {
+                paragraph {
+                    image(data: imageData, height: 216.px) // cheeseburger.jpg is 500x431
+                }
+            }
+        }
+
+        then:
+        TextBlock paragraph = result.document.children[0]
+        Image image = paragraph.children[0]
+        image.width == 250
+        image.height == 216
+    }
+
     def "create a simple paragraph"() {
         when:
         def result = builder.create {
