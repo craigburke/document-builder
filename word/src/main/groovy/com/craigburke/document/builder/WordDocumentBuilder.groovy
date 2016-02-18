@@ -34,6 +34,8 @@ class WordDocumentBuilder extends DocumentBuilder {
     private static final String PAGE_NUMBER_PLACEHOLDER = '##pageNumber##'
     private static final Map RUN_TEXT_OPTIONS = ['xml:space': 'preserve']
 
+    int bookmark = 1
+
     void initializeDocument(Document document, OutputStream out) {
         document.element = new WordDocument(out)
     }
@@ -49,6 +51,7 @@ class WordDocumentBuilder extends DocumentBuilder {
                 dateGenerated: new Date()
         )
 
+        renderStyles([:])
         def header = renderHeader(headerFooterOptions)
         def footer = renderFooter(headerFooterOptions)
 
@@ -131,21 +134,91 @@ class WordDocumentBuilder extends DocumentBuilder {
 
     }
 
+    void renderStyles(Map options) {
+        wordDocument.generateDocumentPart(BasicDocumentPartTypes.STYLES) { builder ->
+            w.styles {
+                w.latentStyles('w:defLockedState': "0", 'w:defUIPriority': "99", 'w:defSemiHidden': "1",
+                        'w:defUnhideWhenUsed': "1", 'w:defQFormat': "0", 'w:count': "276") {
+                    w.lsdException('w:name': "Normal", 'w:semiHidden': "0", 'w:uiPriority': "0", 'w:unhideWhenUsed': "0", 'w:qFormat': "1")
+                    w.lsdException('w:name': "heading 1", 'w:semiHidden': "0", 'w:uiPriority': "9", 'w:unhideWhenUsed': "0", 'w:qFormat': "1")
+                    for (n in 2..9) {
+                        w.lsdException('w:name': "heading $n", 'w:uiPriority': "9", 'w:qFormat': "1")
+                    }
+                    for (n in 1..9) {
+                        w.lsdException('w:name': "toc $n", 'w:uiPriority': "39")
+                    }
+                    w.lsdException('w:name': "caption", 'w:uiPriority': "35", 'w:qFormat': "1")
+                    w.lsdException('w:name': "Title", 'w:semiHidden': "0", 'w:uiPriority': "10", 'w:unhideWhenUsed': "0", 'w:qFormat': "1")
+
+                    w.lsdException('w:name': "TOC Heading", 'w:uiPriority': "39", 'w:qFormat': "1")
+                }
+                w.style('w:type': "paragraph", 'w:default': "1", 'w:styleId': "Normal") {
+                    w.name('w:val': "Normal")
+                    w.qFormat()
+                }
+                w.style('w:type': "paragraph", 'w:styleId': "Heading1") {
+                    w.name('w:val': "heading 1")
+                    w.basedOn('w:val': "Normal")
+                    w.next('w:val': "Normal")
+                    //w.link('w:val': "Heading1Char")
+                    w.uiPriority('w:val': "9")
+                    w.qFormat()
+                    //w.rsid('w:val': "00676A8F")
+                    w.pPr {
+                        w.keepNext()
+                        w.keepLines()
+                        w.spacing('w:before': "480")
+                        w.outlineLvl('w:val': "0")
+                    }
+                }
+                w.style('w:type': "paragraph", 'w:styleId': "Heading2") {
+                    w.name('w:val': "heading 2")
+                    w.basedOn('w:val': "Normal")
+                    w.next('w:val': "Normal")
+                    //w.link('w:val': "Heading2Char")
+                    w.uiPriority('w:val': "9")
+                    w.qFormat()
+                    //w.rsid('w:val': "00676A8F")
+                    w.pPr {
+                        w.keepNext()
+                        w.keepLines()
+                        w.spacing('w:before': "480")
+                        w.outlineLvl('w:val': "0")
+                    }
+                }
+            }
+        }
+    }
+
     void addTableOfContents(builder) {
         builder.w.p {
+            w.pPr {
+                w.pStyle('w:val': "TOC1")
+                w.tabs {
+                    w.tab('w:val': "right", 'w:leader': "dot", 'w:pos': "9016")
+                }
+                w.rPr {
+                    w.noProof()
+                }
+            }
             w.r {
                 w.fldChar('w:fldCharType': 'begin')
             }
             w.r {
                 w.instrText('xml:space': 'preserve') {
-                    mkp.yieldUnescaped('TOC \\* MERGEFORMAT')
+                    mkp.yieldUnescaped('TOC \\o "1-3" \\h \\z \\u')
                 }
             }
             w.r {
                 w.fldChar('w:fldCharType': 'separate')
             }
             w.r {
-                mkp.yieldUnescaped('...')
+                w.rPr {
+                    w.noProof()
+                }
+                w.t {
+                    mkp.yieldUnescaped('RIGHT-CLICK TO UPDATE FIELD.')
+                }
             }
             w.r {
                 w.fldChar('w:fldCharType': 'end')
@@ -224,27 +297,27 @@ class WordDocumentBuilder extends DocumentBuilder {
 
                 if (paragraph instanceof Heading && stylesEnabled) {
                     w.pStyle 'w:val': "Heading${paragraph.level}"
-                }
-
-                String lineRule = (paragraph.lineSpacing) ? 'exact' : 'auto'
-                BigDecimal lineValue = (paragraph.lineSpacing) ?
-                        pointToTwip(paragraph.lineSpacing) : (paragraph.lineSpacingMultiplier * 240)
-                w.spacing(
-                        'w:before': calculatedSpacingBefore(paragraph),
-                        'w:after': calculateSpacingAfter(paragraph),
-                        'w:lineRule': lineRule,
-                        'w:line': lineValue
-                )
-                w.ind(
-                        'w:start': pointToTwip(paragraph.margin.left),
-                        'w:left': pointToTwip(paragraph.margin.left),
-                        'w:right': pointToTwip(paragraph.margin.right),
-                        'w:end': pointToTwip(paragraph.margin.right)
-                )
-                w.jc('w:val': paragraph.align.value)
-
-                if (paragraph instanceof Heading) {
                     w.outlineLvl('w:val': "${paragraph.level - 1}")
+                    if(! paragraph.ref) {
+                        paragraph.ref = "_Toc${bookmark++}"
+                    }
+                } else {
+                    String lineRule = (paragraph.lineSpacing) ? 'exact' : 'auto'
+                    BigDecimal lineValue = (paragraph.lineSpacing) ?
+                            pointToTwip(paragraph.lineSpacing) : (paragraph.lineSpacingMultiplier * 240)
+                    w.spacing(
+                            'w:before': calculatedSpacingBefore(paragraph),
+                            'w:after': calculateSpacingAfter(paragraph),
+                            'w:lineRule': lineRule,
+                            'w:line': lineValue
+                    )
+                    w.ind(
+                            'w:start': pointToTwip(paragraph.margin.left),
+                            'w:left': pointToTwip(paragraph.margin.left),
+                            'w:right': pointToTwip(paragraph.margin.right),
+                            'w:end': pointToTwip(paragraph.margin.right)
+                    )
+                    w.jc('w:val': paragraph.align.value)
                 }
             }
 
@@ -253,22 +326,29 @@ class WordDocumentBuilder extends DocumentBuilder {
                 w.bookmarkStart('w:id': paragraphLinkId, 'w:name': paragraph.ref)
             }
             paragraph.children.each { child ->
-                switch (child.getClass()) {
-                    case Text:
-                        if (child.url?.startsWith('#') && child.url.size() > 1) {
-                            addLink(builder, child)
-                        } else if (child.ref) {
-                            addBookmark(builder, child)
-                        } else {
-                            addTextRun(builder, child.font as Font, child.value as String)
-                        }
-                        break
-                    case Image:
-                        addImageRun(builder, child)
-                        break
-                    case LineBreak:
-                        addLineBreakRun(builder)
-                        break
+                if(paragraph instanceof Heading) {
+                    w.r {
+                        w.lastRenderedPageBreak()
+                        w.t(child.value as String, RUN_TEXT_OPTIONS)
+                    }
+                } else {
+                    switch (child.getClass()) {
+                        case Text:
+                            if (child.url?.startsWith('#') && child.url.size() > 1) {
+                                addLink(builder, child)
+                            } else if (child.ref) {
+                                addBookmark(builder, child)
+                            } else {
+                                addTextRun(builder, child.font as Font, child.value as String)
+                            }
+                            break
+                        case Image:
+                            addImageRun(builder, child)
+                            break
+                        case LineBreak:
+                            addLineBreakRun(builder)
+                            break
+                    }
                 }
             }
             if (paragraph.ref) {
@@ -278,7 +358,7 @@ class WordDocumentBuilder extends DocumentBuilder {
     }
 
     protected boolean isStylesEnabled() {
-        false
+        true
     }
 
     void addBookmark(builder, Text text) {
