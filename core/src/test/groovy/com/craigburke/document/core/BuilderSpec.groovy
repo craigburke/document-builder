@@ -50,6 +50,66 @@ class BuilderSpec extends Specification {
         testFile?.delete()
     }
 
+    def "create default letter size document"() {
+        when:
+        def result = builder.create {
+            document(margin: [top: 2.cm, bottom: 1.cm]) {
+                paragraph(align: 'center', font: [size: 24.pt]) {
+                    text 'ISO 216'
+                }
+            }
+        }
+
+        then:
+        result.document.width == 612 // 8.5 inch * 72 DPI
+        result.document.height == 792 // 11 inch * 72 DPI
+    }
+
+    def "create A4 document"() {
+        when:
+        def result = builder.create {
+            document(size: 'A4', margin: [top: 2.cm, bottom: 1.cm]) {
+                paragraph(align: 'center', font: [size: 24.pt]) {
+                    text 'ISO 216'
+                }
+            }
+        }
+
+        then:
+        result.document.width == 595 // 8.27 inch * 72 DPI
+        result.document.height == 842 // 11.7 inch * 72 DPI
+    }
+
+    def "create document with custom size"() {
+        when:
+        def result = builder.create {
+            document(size: [14.8.cm, 21.cm], margin: [top: 2.cm, bottom: 1.cm]) {
+                paragraph(align: 'center', font: [size: 24.pt]) {
+                    text 'ISO 216'
+                }
+            }
+        }
+
+        then:
+        result.document.width == 419 // 8.27 inch * 72 DPI
+        result.document.height == 595 // 11.7 inch * 72 DPI
+    }
+
+    def "use landscape orientation"() {
+        when:
+        def result = builder.create {
+            document(size: 'A4', orientation: 'landscape', margin: [top: 2.cm, bottom: 1.cm]) {
+                paragraph(align: 'center', font: [size: 24.pt]) {
+                    text 'Landscape'
+                }
+            }
+        }
+
+        then:
+        result.document.width == 842 // 11.7 inch * 72 DPI
+        result.document.height == 595 // 8.27 inch * 72 DPI
+    }
+
     def "use typographic units"() {
         when:
         builder.create {

@@ -3,6 +3,7 @@ package com.craigburke.document.builder
 import com.craigburke.document.core.Document
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.PDPage
+import org.apache.pdfbox.pdmodel.common.PDRectangle
 import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
 
 /**
@@ -36,8 +37,16 @@ class PdfDocument {
         currentPage.mediaBox.height - document.margin.bottom
     }
 
+    private PDRectangle getRectangle(BigDecimal width, BigDecimal height) {
+        new PDRectangle(width.floatValue(), height.floatValue())
+    }
+
     void addPage() {
         def newPage = new PDPage()
+        newPage.setMediaBox(getRectangle(document.width, document.height))
+        if(document.isLandscape()) {
+            newPage.setRotation(90)
+        }
         pages << newPage
         pageNumber++
 

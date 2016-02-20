@@ -10,6 +10,7 @@ class UnitCategory {
     BigDecimal getInch() { this * UnitUtil.POINTS_PER_INCH }
     BigDecimal getCentimeters() { this * UnitUtil.POINTS_PER_CENTIMETER }
     BigDecimal getCentimeter() { this * UnitUtil.POINTS_PER_CENTIMETER }
+    BigDecimal getCm() { this * UnitUtil.POINTS_PER_CENTIMETER }
     BigDecimal getPt() { this }
     BigDecimal getPx() { this }
 }
