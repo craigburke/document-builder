@@ -2,23 +2,13 @@ package com.craigburke.document.builder
 
 import com.craigburke.document.builder.render.ParagraphRenderer
 import com.craigburke.document.builder.render.TableRenderer
-import com.craigburke.document.core.EmbeddedFont
-import com.craigburke.document.core.HeaderFooterOptions
-import com.craigburke.document.core.PageBreak
+import com.craigburke.document.core.*
+import com.craigburke.document.core.builder.DocumentBuilder
 import com.craigburke.document.core.builder.RenderState
 import groovy.transform.InheritConstructors
 import groovy.xml.MarkupBuilder
-
-import com.craigburke.document.core.builder.DocumentBuilder
-import com.craigburke.document.core.Document
-import com.craigburke.document.core.TextBlock
-import com.craigburke.document.core.Table
-import com.craigburke.document.core.Image
-import org.apache.jempbox.xmp.XMPMetadata
-import org.apache.jempbox.xmp.XMPSchemaBasic
-import org.apache.jempbox.xmp.XMPSchemaDublinCore
-import org.apache.jempbox.xmp.XMPSchemaPDF
 import org.apache.pdfbox.Version
+import org.apache.pdfbox.pdmodel.PDDocumentInformation
 import org.apache.pdfbox.pdmodel.common.PDMetadata
 
 /**
@@ -29,6 +19,7 @@ import org.apache.pdfbox.pdmodel.common.PDMetadata
 class PdfDocumentBuilder extends DocumentBuilder {
 
     private static final String CREATOR = 'Groovy Document Builder'
+    private static final String VERSION = '0.4.16' // TODO Create version utility class
 
     PdfDocument pdfDocument
 
@@ -93,7 +84,8 @@ class PdfDocumentBuilder extends DocumentBuilder {
 
     void writeDocument(Document document, OutputStream out) {
         addHeaderFooter()
-        addMetadata(document.metadata)
+        addMetadata()
+        addDocumentInfo(document.metadata)
 
         pdfDocument.contentStream?.close()
         pdfDocument.pdDocument.save(out)
@@ -157,7 +149,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
         }
     }
 
-    private void addMetadata(Map documentMetadata) {
+    private void addMetadata() {
         ByteArrayOutputStream xmpOut = new ByteArrayOutputStream()
         def xml = new MarkupBuilder(xmpOut.newWriter())
 
@@ -179,40 +171,34 @@ class PdfDocumentBuilder extends DocumentBuilder {
             }
         }
 
+        InputStream inputStream = new ByteArrayInputStream(xmpOut.toByteArray())
+        PDMetadata metadata = new PDMetadata(pdfDocument.pdDocument, inputStream, false)
+
         def catalog = pdfDocument.pdDocument.documentCatalog
+        catalog.metadata = metadata
+    }
 
-        PDMetadata metadataStream = new PDMetadata(pdfDocument.pdDocument)
+    private void addDocumentInfo(Map documentMetadata) {
+        PDDocumentInformation info = pdfDocument.pdDocument.getDocumentInformation()
 
-        metadataStream.importXMPMetadata(xmpOut.toByteArray())
+        info.setProducer("PDFBox ${Version.getVersion()}")
 
-        XMPMetadata xmpMetadata = new XMPMetadata()
-
-        XMPSchemaPDF pdfSchema = xmpMetadata.addPDFSchema();
-        pdfSchema.setProducer("PDFBox ${Version.getVersion()}")
-        if(documentMetadata.keywords) {
-            pdfSchema.setKeywords(documentMetadata.keywords)
+        if (documentMetadata.keywords) {
+            info.setKeywords(documentMetadata.keywords)
         }
 
-        XMPSchemaBasic basicSchema = xmpMetadata.addBasicSchema()
-        basicSchema.setCreateDate(toGregorianCalendar(documentMetadata.created ?: new Date()))
-        basicSchema.setModifyDate(toGregorianCalendar(documentMetadata.modified ?: new Date()))
-        basicSchema.setCreatorTool(CREATOR)
+        info.setCreationDate(toGregorianCalendar(documentMetadata.created ?: new Date()))
+        info.setModificationDate(toGregorianCalendar(documentMetadata.modified ?: new Date()))
 
-        XMPSchemaDublinCore dcSchema = xmpMetadata.addDublinCoreSchema()
-        dcSchema.addCreator(documentMetadata.author ?: documentMetadata.creator ?: CREATOR)
-        if(documentMetadata.title) {
-            dcSchema.setTitle(documentMetadata.title)
-        }
-        if(documentMetadata.subject) {
-            dcSchema.addSubject(documentMetadata.subject)
-        }
-        if(documentMetadata.description) {
-            dcSchema.setDescription(documentMetadata.description)
-        }
+        info.setCreator("${CREATOR} ${VERSION}")
+        info.setAuthor(documentMetadata.author ?: documentMetadata.creator ?: CREATOR)
 
-        metadataStream.importXMPMetadata(xmpMetadata.asByteArray())
-
-        catalog.metadata = metadataStream
+        if (documentMetadata.title) {
+            info.setTitle(documentMetadata.title)
+        }
+        if (documentMetadata.subject) {
+            info.setSubject(documentMetadata.subject)
+        }
     }
 
     private GregorianCalendar toGregorianCalendar(Date date) {

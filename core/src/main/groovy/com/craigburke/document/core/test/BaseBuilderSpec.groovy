@@ -90,6 +90,27 @@ abstract class BaseBuilderSpec extends Specification {
         currentMargin << testMargins
     }
 
+    def "document metadata"() {
+        when:
+        def result = builder.create {
+            document(metadata: [
+                    title: 'Groovy Document Builder',
+                    subject: 'Programatically build documents in a Groovy way',
+                    keywords: 'groovy,document,creator,word,doc,docx,pdf',
+                    description: 'The Groovy Document Builder is an awesome tool for the document oriented developer',
+                    author: 'Craig Burke'
+            ])
+        }
+
+
+        then:
+        result.document.metadata.title == 'Groovy Document Builder'
+        result.document.metadata.subject == 'Programatically build documents in a Groovy way'
+        result.document.metadata.keywords == 'groovy,document,creator,word,doc,docx,pdf'
+        result.document.metadata.description == 'The Groovy Document Builder is an awesome tool for the document oriented developer'
+        result.document.metadata.author == 'Craig Burke'
+    }
+
     def "create a simple table"() {
         when:
         builder.create {
