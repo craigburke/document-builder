@@ -2,19 +2,12 @@ package com.craigburke.document.builder
 
 import com.craigburke.document.builder.render.ParagraphRenderer
 import com.craigburke.document.builder.render.TableRenderer
-import com.craigburke.document.core.EmbeddedFont
-import com.craigburke.document.core.HeaderFooterOptions
-import com.craigburke.document.core.PageBreak
+import com.craigburke.document.core.*
+import com.craigburke.document.core.builder.DocumentBuilder
 import com.craigburke.document.core.builder.RenderState
 import groovy.transform.InheritConstructors
 import groovy.xml.MarkupBuilder
-
-import com.craigburke.document.core.builder.DocumentBuilder
-import com.craigburke.document.core.Document
-import com.craigburke.document.core.TextBlock
-import com.craigburke.document.core.Table
-import com.craigburke.document.core.Image
-
+import org.apache.pdfbox.pdmodel.PDDocumentInformation
 import org.apache.pdfbox.pdmodel.common.PDMetadata
 
 /**
@@ -23,6 +16,8 @@ import org.apache.pdfbox.pdmodel.common.PDMetadata
  */
 @InheritConstructors
 class PdfDocumentBuilder extends DocumentBuilder {
+
+    private static final String CREATOR = 'Groovy Document Builder'
 
     PdfDocument pdfDocument
 
@@ -88,6 +83,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
     void writeDocument(Document document, OutputStream out) {
         addHeaderFooter()
         addMetadata()
+        addDocumentInfo(document.metadata)
 
         pdfDocument.contentStream?.close()
         pdfDocument.pdDocument.save(out)
@@ -173,11 +169,40 @@ class PdfDocumentBuilder extends DocumentBuilder {
             }
         }
 
-        def catalog = pdfDocument.pdDocument.documentCatalog
         InputStream inputStream = new ByteArrayInputStream(xmpOut.toByteArray())
-
         PDMetadata metadata = new PDMetadata(pdfDocument.pdDocument, inputStream, false)
+
+        def catalog = pdfDocument.pdDocument.documentCatalog
         catalog.metadata = metadata
+    }
+
+    private void addDocumentInfo(Map documentMetadata) {
+        PDDocumentInformation info = pdfDocument.pdDocument.getDocumentInformation()
+
+        info.setProducer("PDFBox ${org.apache.pdfbox.Version.getVersion()}")
+
+        if (documentMetadata.keywords) {
+            info.setKeywords(documentMetadata.keywords)
+        }
+
+        info.setCreationDate(toGregorianCalendar(documentMetadata.created ?: new Date()))
+        info.setModificationDate(toGregorianCalendar(documentMetadata.modified ?: new Date()))
+
+        info.setCreator("${CREATOR} ${Version.getVersion()}")
+        info.setAuthor(documentMetadata.author ?: documentMetadata.creator ?: CREATOR)
+
+        if (documentMetadata.title) {
+            info.setTitle(documentMetadata.title)
+        }
+        if (documentMetadata.subject) {
+            info.setSubject(documentMetadata.subject)
+        }
+    }
+
+    private GregorianCalendar toGregorianCalendar(Date date) {
+        GregorianCalendar cal = new GregorianCalendar()
+        cal.setTime(date)
+        cal
     }
 
     private void addParagraphToMetadata(builder, TextBlock paragraphNode) {

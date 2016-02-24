@@ -9,7 +9,20 @@ enum BasicDocumentPartTypes implements DocumentPartType {
 
     DOCUMENT('document',
             'document.xml',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml'
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml',
+            'http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument'
+    ),
+
+    CORE_PROPERTIES('core',
+            'docProps/core.xml',
+            'application/vnd.openxmlformats-package.core-properties+xml',
+            'http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties'
+    ),
+
+    APP_PROPERTIES('app',
+            'docProps/app.xml',
+            'application/vnd.openxmlformats-officedocument.extended-properties+xml',
+            'http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties'
     ),
 
     HEADER('header',
