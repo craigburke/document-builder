@@ -10,3 +10,16 @@ project.ext {
             url : 'https://www.mozilla.org/MPL/2.0/'
     ]
 }
+
+task updateVersion {
+    ant.propertyfile(
+        file: 'src/main/resources/document-builder.properties') {
+        entry( key: 'document-builder.version', value: project.version)
+    }
+    ant.replaceregexp(file: 'src/main/resources/document-builder.properties', match: /(?s)^#.*document/, replace: 'document')
+
+}
+
+tasks.withType(JavaCompile) {
+    compileTask -> compileTask.dependsOn updateVersion
+}

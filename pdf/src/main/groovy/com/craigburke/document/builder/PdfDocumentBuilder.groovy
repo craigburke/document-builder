@@ -7,7 +7,6 @@ import com.craigburke.document.core.builder.DocumentBuilder
 import com.craigburke.document.core.builder.RenderState
 import groovy.transform.InheritConstructors
 import groovy.xml.MarkupBuilder
-import org.apache.pdfbox.Version
 import org.apache.pdfbox.pdmodel.PDDocumentInformation
 import org.apache.pdfbox.pdmodel.common.PDMetadata
 
@@ -19,7 +18,6 @@ import org.apache.pdfbox.pdmodel.common.PDMetadata
 class PdfDocumentBuilder extends DocumentBuilder {
 
     private static final String CREATOR = 'Groovy Document Builder'
-    private static final String VERSION = '0.4.16' // TODO Create version utility class
 
     PdfDocument pdfDocument
 
@@ -181,7 +179,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
     private void addDocumentInfo(Map documentMetadata) {
         PDDocumentInformation info = pdfDocument.pdDocument.getDocumentInformation()
 
-        info.setProducer("PDFBox ${Version.getVersion()}")
+        info.setProducer("PDFBox ${org.apache.pdfbox.Version.getVersion()}")
 
         if (documentMetadata.keywords) {
             info.setKeywords(documentMetadata.keywords)
@@ -190,7 +188,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
         info.setCreationDate(toGregorianCalendar(documentMetadata.created ?: new Date()))
         info.setModificationDate(toGregorianCalendar(documentMetadata.modified ?: new Date()))
 
-        info.setCreator("${CREATOR} ${VERSION}")
+        info.setCreator("${CREATOR} ${Version.getVersion()}")
         info.setAuthor(documentMetadata.author ?: documentMetadata.creator ?: CREATOR)
 
         if (documentMetadata.title) {
