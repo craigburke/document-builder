@@ -5,10 +5,10 @@ import com.craigburke.document.core.Align
 import com.craigburke.document.core.ImageType
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.TextBlock
-import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMap
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage
+import org.apache.pdfbox.pdmodel.PDPageContentStream
+import org.apache.pdfbox.pdmodel.graphics.image.JPEGFactory
+import org.apache.pdfbox.pdmodel.graphics.image.LosslessFactory
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject
 
 import javax.imageio.ImageIO
 import java.awt.image.BufferedImage
@@ -163,12 +163,12 @@ class ParagraphRenderer implements Renderable {
         InputStream inputStream = new ByteArrayInputStream(element.node.data)
         BufferedImage bufferedImage = ImageIO.read(inputStream)
 
-        PDXObjectImage img
+        PDImageXObject img
         if (element.node.type == ImageType.PNG) {
-            img = new PDPixelMap(pdfDocument.pdDocument, bufferedImage)
+            img = LosslessFactory.createFromImage(pdfDocument.pdDocument, bufferedImage)
         }
         else {
-            img = new PDJpeg(pdfDocument.pdDocument, bufferedImage)
+            img = JPEGFactory.createFromImage(pdfDocument.pdDocument, bufferedImage)
         }
 
         int width = element.node.width

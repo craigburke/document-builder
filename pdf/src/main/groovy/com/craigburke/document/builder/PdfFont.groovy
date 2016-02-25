@@ -4,7 +4,7 @@ import com.craigburke.document.core.EmbeddedFont
 import com.craigburke.document.core.Font
 import org.apache.pdfbox.pdmodel.PDDocument
 import org.apache.pdfbox.pdmodel.font.PDFont
-import org.apache.pdfbox.pdmodel.font.PDTrueTypeFont
+import org.apache.pdfbox.pdmodel.font.PDType0Font
 import org.apache.pdfbox.pdmodel.font.PDType1Font
 
 /**
@@ -49,11 +49,11 @@ class PdfFont {
 
     static BigDecimal getXHeight(Font font) {
         PDFont pdFont = PdfFont.getFont(font)
-        (font.size * pdFont.getFontHeight(['x'.bytes[0]] as byte[], 0, 1) / 1000f)
+        (font.size * pdFont.getHeight('x'.bytes[0]) / 1000f)
     }
 
     static void addFont(PDDocument document, EmbeddedFont embeddedFont) {
-        PDFont font = PDTrueTypeFont.loadTTF(document, embeddedFont.file)
+        PDFont font = PDType0Font.load(document, embeddedFont.file)
         String fontName = embeddedFont.name ?: font.baseFont
 
         fonts[fontName] = fonts[fontName] ?: [:]

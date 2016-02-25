@@ -5,8 +5,8 @@ import com.craigburke.document.core.Document
 import com.craigburke.document.core.Font
 import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Text
-import org.apache.pdfbox.util.PDFTextStripper
-import org.apache.pdfbox.util.TextPosition
+import org.apache.pdfbox.text.PDFTextStripper
+import org.apache.pdfbox.text.TextPosition
 
 /**
  * Extract the content from a pdf file from paragraphs and tables. There are limitations but works for simple tests
@@ -35,13 +35,13 @@ class PdfContentExtractor extends PDFTextStripper {
 
     @Override
     void processTextPosition(TextPosition text) {
-        if (text.character == ' ') {
+        if (text.unicode == ' ') {
             return
         }
 
         updateChildNumber(text)
 
-        Font currentFont = new Font(family: text.font.baseFont, size: text.fontSizeInPt)
+        Font currentFont = new Font(family: text.font.baseFont, size: text.fontSize)
         def textNode
 
         if (currentChild.getClass() == TextBlock) {
@@ -50,7 +50,7 @@ class PdfContentExtractor extends PDFTextStripper {
             textNode = processTable(text, currentFont)
         }
 
-        textNode?.value += text.character
+        textNode?.value += text.unicode
         lastPosition = text
     }
 
@@ -106,7 +106,7 @@ class PdfContentExtractor extends PDFTextStripper {
     }
 
     private void updateChildNumber(TextPosition current) {
-        if (!lastPosition || (lastPosition.y != current.y && current.character != ' ')) {
+        if (!lastPosition || (lastPosition.y != current.y && current.unicode != ' ')) {
             currentChildNumber++
             tablePosition.row = 0
             tablePosition.cell = 0
