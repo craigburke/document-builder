@@ -4,7 +4,7 @@ import com.craigburke.document.builder.PdfDocument
 import com.craigburke.document.core.Cell
 import com.craigburke.document.core.Row
 import com.craigburke.document.core.Table
-import org.apache.pdfbox.pdmodel.edit.PDPageContentStream
+import org.apache.pdfbox.pdmodel.PDPageContentStream
 
 /**
  * Rendering element for the Row node

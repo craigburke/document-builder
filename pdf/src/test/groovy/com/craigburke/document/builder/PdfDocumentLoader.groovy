@@ -7,7 +7,6 @@ import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.Row
 import com.craigburke.document.core.Table
 import org.apache.pdfbox.pdmodel.PDDocument
-import org.apache.pdfbox.pdmodel.PDPage
 
 /**
  * Creates a Document object based on byte content of Pdf file
@@ -68,16 +67,13 @@ class PdfDocumentLoader {
     }
 
     private static void loadChildren(Document document) {
-        def pages = document.element.documentCatalog.allPages
-
         // Set content and margins based on text position
         def extractor = new PdfContentExtractor(document)
-        pages.each { PDPage page ->
-            if (page.contents) {
-                extractor.processStream(page, page.findResources(), page.contents.stream)
-            }
+        File extractedFile = new File('testPdf')
+        extractedFile.withWriter { writer ->
+            extractor.writeText(document.element, writer)
         }
-
+        extractedFile.delete()
     }
 
 }
