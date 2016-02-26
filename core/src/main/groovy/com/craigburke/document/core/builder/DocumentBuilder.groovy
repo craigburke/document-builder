@@ -138,7 +138,8 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
         if (column.children && column.children[0] instanceof TextBlock) {
             column.children[0]
         } else {
-            TextBlock paragraph = new TextBlock(font: column.font.clone(), parent: column, align: column.align)
+            TextBlock paragraph = new TextBlock(font: column.font.clone(), parent: column, align: column.align,
+                    lineSpacing: column.lineSpacing, lineSpacingMultiplier: column.lineSpacingMultiplier)
             setNodeProperties(paragraph, [margin: [top: 0, left: 0, bottom: 0, right: 0]], 'paragraph')
             column.children << paragraph
             paragraph
