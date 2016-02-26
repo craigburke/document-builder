@@ -1,6 +1,6 @@
 dependencies {
     compile project(':core')
-    compile 'org.apache.pdfbox:pdfbox:1.8.11'
+    compile 'org.apache.pdfbox:pdfbox:2.0.0-RC3'
 }
 
 project.ext {

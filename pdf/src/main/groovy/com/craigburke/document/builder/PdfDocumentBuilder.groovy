@@ -176,7 +176,7 @@ class PdfDocumentBuilder extends DocumentBuilder {
         def catalog = pdfDocument.pdDocument.documentCatalog
         InputStream inputStream = new ByteArrayInputStream(xmpOut.toByteArray())
 
-        PDMetadata metadata = new PDMetadata(pdfDocument.pdDocument, inputStream, false)
+        PDMetadata metadata = new PDMetadata(pdfDocument.pdDocument, inputStream)
         catalog.metadata = metadata
     }
 
