@@ -26,6 +26,7 @@ import com.craigburke.document.core.factory.CellFactory
 
 import com.craigburke.document.core.Document
 import com.craigburke.document.core.Font
+import com.craigburke.document.core.factory.TocFactory
 
 /**
  * Document Builder base class
@@ -184,6 +185,7 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
         registerFactory('heading4', new HeadingFactory())
         registerFactory('heading5', new HeadingFactory())
         registerFactory('heading6', new HeadingFactory())
+        registerFactory('toc', new TocFactory())
     }
 }
 
