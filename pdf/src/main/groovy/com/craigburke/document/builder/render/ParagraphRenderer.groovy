@@ -147,9 +147,16 @@ class ParagraphRenderer implements Renderable {
         Text text = element.node
 
         PDPageContentStream contentStream = pdfDocument.contentStream
+        int startX = pdfDocument.x
+        int startY = pdfDocument.translatedY
+
+        if (text.background) {
+            contentStream.setNonStrokingColor(*text.background.rgb)
+            contentStream.fillRect(startX, startY, element.width, text.font.size)
+        }
 
         contentStream.beginText()
-        contentStream.moveTextPositionByAmount(pdfDocument.x, pdfDocument.translatedY)
+        contentStream.moveTextPositionByAmount(startX, startY)
 
         def color = text.font.color.rgb
         contentStream.setNonStrokingColor(color[0], color[1], color[2])

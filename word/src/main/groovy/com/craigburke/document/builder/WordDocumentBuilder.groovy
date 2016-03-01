@@ -235,7 +235,7 @@ class WordDocumentBuilder extends DocumentBuilder {
                         } else if (child.ref) {
                             addBookmark(builder, child)
                         } else {
-                            addTextRun(builder, child.font as Font, child.value as String)
+                            addTextRun(builder, child)
                         }
                         break
                     case Image:
@@ -420,7 +420,9 @@ class WordDocumentBuilder extends DocumentBuilder {
         }
     }
 
-    void addTextRun(builder, Font font, String text) {
+    void addTextRun(builder, Text text) {
+        Font font = text.font
+
         builder.w.r {
             w.rPr {
                 w.rFonts('w:ascii': font.family)
@@ -430,13 +432,16 @@ class WordDocumentBuilder extends DocumentBuilder {
                 if (font.italic) {
                     w.i()
                 }
+                if (text.background) {
+                    w.shd('w:val': 'solid', 'w:fill': text.background.hex)
+                }
                 w.color('w:val': font.color.hex)
                 w.sz('w:val': pointToHalfPoint(font.size))
             }
             if (renderState == RenderState.PAGE) {
-                w.t(text, RUN_TEXT_OPTIONS)
+                w.t(text.value, RUN_TEXT_OPTIONS)
             } else {
-                parseHeaderFooterText(builder, text)
+                parseHeaderFooterText(builder, text.value)
             }
         }
     }
