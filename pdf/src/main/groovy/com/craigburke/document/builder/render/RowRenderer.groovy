@@ -90,7 +90,8 @@ class RowRenderer implements Renderable {
                 float width = column.width + (isLastColumn ? table.border.size : tableBorderOffset)
                 float height = parsedHeight - (fullyParsed ? 0 : tableBorderOffset)
                 height += ((fullyParsed && !onFirstPage) ? table.border.size : 0)
-                contentStream.fillRect(startX, translatedStartY, width, height)
+                contentStream.addRect(startX, translatedStartY, width, height)
+                contentStream.fill()
             }
         }
     }
@@ -109,21 +110,29 @@ class RowRenderer implements Renderable {
         setBorderOptions(contentStream)
 
         if (firstRow || isTopOfPage(startY)) {
-            contentStream.drawLine(rowStartX, translatedYTop, rowEndX, translatedYTop)
+            contentStream.moveTo(rowStartX, translatedYTop)
+            contentStream.lineTo(rowEndX, translatedYTop)
+            contentStream.stroke()
         }
 
         cellRenderers.eachWithIndex { columnElement, i ->
             if (i == 0) {
                 float firstLineStartX = columnElement.startX - table.border.size
-                contentStream.drawLine(firstLineStartX, translatedYTop, firstLineStartX, translatedYBottom)
+                contentStream.moveTo(firstLineStartX, translatedYTop)
+                contentStream.lineTo(firstLineStartX, translatedYBottom)
+                contentStream.stroke()
             }
             float columnStartX = columnElement.startX - table.border.size
             float columnEndX = columnElement.startX + columnElement.cell.width + tableBorderOffset
 
-            contentStream.drawLine(columnEndX, translatedYTop, columnEndX, translatedYBottom)
+            contentStream.moveTo(columnEndX, translatedYTop)
+            contentStream.lineTo(columnEndX, translatedYBottom)
+            contentStream.stroke()
 
             if (fullyParsed && columnElement.onLastRowspanRow) {
-                contentStream.drawLine(columnStartX, translatedYBottom, columnEndX, translatedYBottom)
+                contentStream.moveTo(columnStartX, translatedYBottom)
+                contentStream.lineTo(columnEndX, translatedYBottom)
+                contentStream.stroke()
             }
         }
     }

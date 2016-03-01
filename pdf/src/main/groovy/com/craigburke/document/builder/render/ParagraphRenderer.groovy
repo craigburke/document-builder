@@ -152,16 +152,17 @@ class ParagraphRenderer implements Renderable {
 
         if (text.background) {
             contentStream.setNonStrokingColor(*text.background.rgb)
-            contentStream.fillRect(startX, startY, element.width, text.font.size)
+            contentStream.addRect(startX, startY, element.width, text.font.size)
+            contentStream.fill()
         }
 
         contentStream.beginText()
-        contentStream.moveTextPositionByAmount(startX, startY)
+        contentStream.newLineAtOffset(startX, startY)
 
         def color = text.font.color.rgb
         contentStream.setNonStrokingColor(color[0], color[1], color[2])
         contentStream.setFont(element.pdfFont, text.font.size)
-        contentStream.drawString(element.text)
+        contentStream.showText(element.text)
 
         contentStream.endText()
     }
@@ -181,7 +182,7 @@ class ParagraphRenderer implements Renderable {
         int width = element.node.width
         int height = element.node.height
 
-        pdfDocument.contentStream.drawXObject(img, pdfDocument.x, pdfDocument.translatedY, width, height)
+        pdfDocument.contentStream.drawImage(img, pdfDocument.x, pdfDocument.translatedY, width, height)
     }
 
 }
