@@ -196,7 +196,9 @@ class WordDocumentBuilder extends DocumentBuilder {
 
         builder.w.p {
             w.pPr {
-
+                if (paragraph.background) {
+                    w.shd('w:fill': paragraph.background.hex, 'w:color': paragraph.background.hex, 'w:val': 'solid')
+                }
                 if (paragraph instanceof Heading && stylesEnabled) {
                     w.pStyle 'w:val': "Heading${paragraph.level}"
                 }
@@ -204,6 +206,7 @@ class WordDocumentBuilder extends DocumentBuilder {
                 String lineRule = (paragraph.lineSpacing) ? 'exact' : 'auto'
                 BigDecimal lineValue = (paragraph.lineSpacing) ?
                         pointToTwip(paragraph.lineSpacing) : (paragraph.lineSpacingMultiplier * 240)
+
                 w.spacing(
                         'w:before': calculatedSpacingBefore(paragraph),
                         'w:after': calculateSpacingAfter(paragraph),
@@ -433,7 +436,7 @@ class WordDocumentBuilder extends DocumentBuilder {
                     w.i()
                 }
                 if (text.background) {
-                    w.shd('w:val': 'solid', 'w:fill': text.background.hex)
+                    w.shd('w:fill': text.background.hex, 'w:color': text.background.hex, 'w:val': 'solid')
                 }
                 w.color('w:val': font.color.hex)
                 w.sz('w:val': pointToHalfPoint(font.size))

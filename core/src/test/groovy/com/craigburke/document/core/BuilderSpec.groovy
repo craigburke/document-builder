@@ -519,61 +519,6 @@ class BuilderSpec extends Specification {
         notThrown(Exception)
     }
 
-    def "background color cascades"() {
-        given:
-        String[] backgroundColors = ['#000000', '#111111', '#333333']
-
-        when:
-        Document result = builder.create {
-            document {
-                table(background: backgroundColors[0]) {
-                    row {
-                        cell '1.1'
-                        cell '1.2'
-                    }
-                }
-
-                table {
-                    row(background: backgroundColors[1]) {
-                        cell '2.1'
-                        cell '2.2'
-                    }
-                }
-
-                table {
-                    row {
-                        cell '3-1', background: backgroundColors[2]
-                        cell '3-2'
-                    }
-                }
-            }
-        }.document
-
-        Table table1 = result.children[0]
-        Table table2 = result.children[1]
-        Table table3 = result.children[2]
-
-        then:
-        table1.background.hex == backgroundColors[0] - '#'
-        table1.children[0].background.hex == backgroundColors[0] - '#'
-        table1.children[0].children.each { Cell column ->
-            assert column.background.hex == backgroundColors[0] - '#'
-        }
-
-        and:
-        table2.background == null
-        table2.children[0].background.hex == backgroundColors[1] - '#'
-        table2.children[0].children.each { Cell column ->
-            assert column.background.hex == backgroundColors[1] - '#'
-        }
-
-        and:
-        table3.background == null
-        table3.children[0].background == null
-        table3.children[0].children[0].background.hex == backgroundColors[2] - '#'
-        table3.children[0].children[1].background == null
-    }
-
     def "set link on linkable nodes"() {
         String url = 'http://www.craigburke.com'
 

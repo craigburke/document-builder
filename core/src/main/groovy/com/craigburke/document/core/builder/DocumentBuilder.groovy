@@ -115,9 +115,6 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
                 node.background = properties.background
             }
         }
-        if (!node.background && (node.parent instanceof BackgroundAssignable) && node.parent.background) {
-            node.background = "#${node.parent.background.hex}"
-        }
     }
 
     static String[] getTemplateKeys(BaseNode node, String nodeKey) {

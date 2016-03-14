@@ -27,15 +27,17 @@ class ParagraphRenderer implements Renderable {
 
     float renderedHeight = 0
     private float startX
+    private float totalWidth
     private boolean parsedAndRendered = false
     private boolean fullyRendered = false
     private boolean fullyParsed = false
 
-    ParagraphRenderer(TextBlock paragraph, PdfDocument pdfDocument, float startX, float maxWidth) {
+    ParagraphRenderer(TextBlock paragraph, PdfDocument pdfDocument, float startX, float totalWidth) {
         node = paragraph
         this.pdfDocument = pdfDocument
         this.startX = startX
-        lines = ParagraphParser.getLines(paragraph, maxWidth)
+        this.totalWidth = totalWidth
+        lines = ParagraphParser.getLines(paragraph, totalWidth)
     }
 
     boolean getFullyParsed() {
@@ -93,6 +95,8 @@ class ParagraphRenderer implements Renderable {
             return
         }
 
+        renderBackground()
+
         lines[parseStart..parseEnd].each { ParagraphLine line ->
             pdfDocument.x = startX
             renderLine(line)
@@ -100,6 +104,21 @@ class ParagraphRenderer implements Renderable {
         renderedHeight = parsedHeight
         fullyRendered = fullyParsed
         parsedAndRendered = true
+    }
+
+    void renderBackground() {
+        if (!node.background) {
+            return
+        }
+        PDPageContentStream contentStream = pdfDocument.contentStream
+
+        float height = parsedHeight
+        float backgroundBottomY = pdfDocument.translateY(pdfDocument.y + parsedHeight)
+
+        contentStream.setNonStrokingColor(*node.background.rgb)
+        contentStream.addRect(startX, backgroundBottomY, totalWidth, height)
+        contentStream.fill()
+
     }
 
     float getTotalHeight() {
@@ -129,30 +148,31 @@ class ParagraphRenderer implements Renderable {
         pdfDocument.y += line.contentHeight
 
         line.elements.each { element ->
-            switch (element.getClass()) {
-                case TextElement:
-                    renderTextElement(element)
-                    pdfDocument.x += element.width
-                    break
-                case ImageElement:
-                    renderImageElement(element)
-                    pdfDocument.x += element.node.width
-                    break
+            if (element instanceof TextElement) {
+                renderTextElement(element as TextElement, line)
+                pdfDocument.x += element.width
+            }
+            else if (element instanceof ImageElement) {
+                renderImageElement(element as ImageElement)
+                pdfDocument.x += element.node.width
             }
         }
+
         pdfDocument.y += line.lineSpacing
     }
 
-    private void renderTextElement(TextElement element) {
+    private void renderTextElement(TextElement element, ParagraphLine line) {
         Text text = element.node
 
         PDPageContentStream contentStream = pdfDocument.contentStream
-        int startX = pdfDocument.x
-        int startY = pdfDocument.translatedY
+        float startX = pdfDocument.x
+        float startY = pdfDocument.translatedY
 
         if (text.background) {
+            float height = line.contentHeight + line.lineSpacing
+            float backgroundBottomY = pdfDocument.translateY(pdfDocument.y + line.contentHeight - line.lineSpacing)
             contentStream.setNonStrokingColor(*text.background.rgb)
-            contentStream.addRect(startX, startY, element.width, text.font.size)
+            contentStream.addRect(startX, backgroundBottomY, element.width, height)
             contentStream.fill()
         }
 
