@@ -114,6 +114,10 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
             if (properties.containsKey('background')) {
                 node.background = properties.background
             }
+            boolean canCascade = (!(node.parent instanceof TextBlock) && (node.parent instanceof BackgroundAssignable))
+            if (canCascade && !node.background && node.parent.background) {
+                node.background = "#${node.parent.background.hex}"
+            }
         }
     }
 
