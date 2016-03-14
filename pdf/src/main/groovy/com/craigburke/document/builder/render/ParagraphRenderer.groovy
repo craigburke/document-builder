@@ -2,6 +2,7 @@ package com.craigburke.document.builder.render
 
 import com.craigburke.document.builder.PdfDocument
 import com.craigburke.document.core.Align
+import com.craigburke.document.core.Font
 import com.craigburke.document.core.ImageType
 import com.craigburke.document.core.Text
 import com.craigburke.document.core.TextBlock
@@ -163,25 +164,38 @@ class ParagraphRenderer implements Renderable {
 
     private void renderTextElement(TextElement element, ParagraphLine line) {
         Text text = element.node
+        Font font = text.font
 
         PDPageContentStream contentStream = pdfDocument.contentStream
         float startX = pdfDocument.x
         float startY = pdfDocument.translatedY
+        float bottomY = pdfDocument.translateY(pdfDocument.y + line.contentHeight - line.lineSpacing)
 
         if (text.background) {
             float height = line.contentHeight + line.lineSpacing
-            float backgroundBottomY = pdfDocument.translateY(pdfDocument.y + line.contentHeight - line.lineSpacing)
             contentStream.setNonStrokingColor(*text.background.rgb)
-            contentStream.addRect(startX, backgroundBottomY, element.width, height)
+            contentStream.addRect(startX, bottomY, element.width, height)
             contentStream.fill()
+        }
+
+        if (text.font.underline) {
+            float textBottom = pdfDocument.translateY(pdfDocument.y + line.contentHeight - (line.lineSpacing * 1.5f))
+            float endX = startX + element.width
+
+            contentStream.setStrokingColor(*font.color.rgb)
+            float lineWidth = ((font.size as Float) / 16f)
+            contentStream.setLineWidth(lineWidth)
+
+            contentStream.moveTo(startX, textBottom)
+            contentStream.lineTo(endX, textBottom)
+            contentStream.stroke()
         }
 
         contentStream.beginText()
         contentStream.newLineAtOffset(startX, startY)
 
-        def color = text.font.color.rgb
-        contentStream.setNonStrokingColor(color[0], color[1], color[2])
-        contentStream.setFont(element.pdfFont, text.font.size)
+        contentStream.setNonStrokingColor(*font.color.rgb)
+        contentStream.setFont(element.pdfFont, font.size)
         contentStream.showText(element.text)
 
         contentStream.endText()

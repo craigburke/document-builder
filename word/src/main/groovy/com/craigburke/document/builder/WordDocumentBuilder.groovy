@@ -435,6 +435,9 @@ class WordDocumentBuilder extends DocumentBuilder {
                 if (font.italic) {
                     w.i()
                 }
+                if (font.underline) {
+                    w.u('w:val': 'single')
+                }
                 if (text.background) {
                     w.shd('w:fill': text.background.hex, 'w:color': text.background.hex, 'w:val': 'solid')
                 }
