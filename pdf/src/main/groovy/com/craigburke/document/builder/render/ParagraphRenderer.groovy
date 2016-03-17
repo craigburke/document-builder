@@ -208,11 +208,13 @@ class ParagraphRenderer implements Renderable {
         if (text instanceof Link) {
             Link link = text as Link
             PDRectangle position = new PDRectangle(startX, bottomY, element.width as float, line.totalHeight)
+
+            PDActionURI action = new PDActionURI(URI: link.url)
             PDAnnotationLink linkAnnotation = new PDAnnotationLink()
-            linkAnnotation.setRectangle(position)
-            PDActionURI action = new PDActionURI()
-            action.setURI(link.url)
-            linkAnnotation.setAction(action)
+            PDBorderStyleDictionary border = new PDBorderStyleDictionary(width: 0)
+            linkAnnotation.borderStyle = border
+            linkAnnotation.rectangle = position
+            linkAnnotation.action = action
             pdfDocument.currentPage.annotations.add(linkAnnotation)
         }
 
