@@ -604,42 +604,31 @@ class BuilderSpec extends Specification {
         text2.background.hex == GREY - '#'
     }
 
-    def "set link on linkable nodes"() {
+    def "links are created correctly"() {
         String url = 'http://www.craigburke.com'
 
         when:
         Document result = builder.create {
             document {
-                heading1 'HEADING1', url: url
-                heading2 'HEADING2'
-
-                paragraph 'Paragraph1', url: url
                 paragraph {
-                    text 'Check this out: '
-                    text 'Click on me', url: url
+                    link url
+                    link 'Craig Burke', url: url
                 }
             }
         }.document
 
-        Heading heading1 = result.children[0]
-        Heading heading2 = result.children[1]
-        TextBlock paragraph1 = result.children[2]
-        TextBlock paragraph2 = result.children[3]
+        TextBlock paragraph = result.children[0]
+        Link link1 = paragraph.children[0]
+        Link link2 = paragraph.children[1]
+        Link link3 = paragraph.children[2]
 
         then:
-        heading1.url == url
+        link1.value == url
+        link1.url == url
 
         and:
-        heading2.url == null
-
-        and:
-        paragraph1.url == url
-        paragraph1.children[0].url == url
-
-        and:
-        paragraph2.url == null
-        paragraph2.children[0].url == null
-        paragraph2.children[1].url == url
+        link2.value == 'Craig Burke'
+        link2.url == url
     }
 
     @Unroll('Template keys calculated for #description')

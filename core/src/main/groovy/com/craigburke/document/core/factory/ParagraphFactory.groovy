@@ -25,7 +25,7 @@ class ParagraphFactory extends AbstractFactory {
         }
 
         if (value) {
-            List elements = paragraph.addText(value.toString())
+            List elements = paragraph.add(value.toString())
             elements.each { node ->
                 if (node instanceof Text) {
                     builder.setNodeProperties(node, [:], 'text')

@@ -1,5 +1,7 @@
 package com.craigburke.document.builder
 
+import com.craigburke.document.core.Link
+
 import static com.craigburke.document.core.UnitUtil.pointToEigthPoint
 import static com.craigburke.document.core.UnitUtil.pointToEmu
 import static com.craigburke.document.core.UnitUtil.pointToTwip
@@ -232,14 +234,11 @@ class WordDocumentBuilder extends DocumentBuilder {
             }
             paragraph.children.each { child ->
                 switch (child.getClass()) {
+                    case Link:
+                        addLink(builder, child)
+                        break
                     case Text:
-                        if (child.url?.startsWith('#') && child.url.size() > 1) {
-                            addLink(builder, child)
-                        } else if (child.ref) {
-                            addBookmark(builder, child)
-                        } else {
-                            addTextRun(builder, child)
-                        }
+                        addTextRun(builder, child)
                         break
                     case Image:
                         addImageRun(builder, child)
@@ -259,16 +258,17 @@ class WordDocumentBuilder extends DocumentBuilder {
         false
     }
 
-    void addBookmark(builder, Text text) {
-        String id = UUID.randomUUID()
-        builder.w.bookmarkStart('w:id': id, 'w:name': text.ref)
-        addTextRun(builder, text.font as Font, text.value as String)
-        builder.w.bookmarkEnd('w:id': id)
-    }
-
-    void addLink(builder, Text text) {
-        builder.w.hyperlink('w:anchor': text.url[1..-1]) {
-            addTextRun(builder, text.font as Font, text.value as String)
+    void addLink(builder, Link link) {
+        if (link.url.startsWith('#')) {
+            builder.w.hyperlink('w:anchor': link.url[1..-1]) {
+                addTextRun(builder, link as Text)
+            }
+        }
+        else {
+            String id = wordDocument.addLink(link.url, currentDocumentPart)
+            builder.w.hyperlink('r:id': id) {
+                addTextRun(builder, link as Text)
+            }
         }
     }
 
@@ -424,6 +424,12 @@ class WordDocumentBuilder extends DocumentBuilder {
     }
 
     void addTextRun(builder, Text text) {
+        String id = UUID.randomUUID()
+
+        if (text.ref) {
+            builder.w.bookmarkStart('w:id': id, 'w:name': text.ref)
+        }
+
         Font font = text.font
 
         builder.w.r {
@@ -449,6 +455,10 @@ class WordDocumentBuilder extends DocumentBuilder {
             } else {
                 parseHeaderFooterText(builder, text.value)
             }
+        }
+
+        if (text.ref) {
+            builder.w.bookmarkEnd('w:id': id)
         }
     }
 

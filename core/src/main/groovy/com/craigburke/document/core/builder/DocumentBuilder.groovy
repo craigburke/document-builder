@@ -7,7 +7,6 @@ import com.craigburke.document.core.Bookmarkable
 import com.craigburke.document.core.Cell
 import com.craigburke.document.core.EmbeddedFont
 import com.craigburke.document.core.Heading
-import com.craigburke.document.core.Linkable
 import com.craigburke.document.core.Stylable
 import com.craigburke.document.core.TextBlock
 import com.craigburke.document.core.UnitCategory
@@ -15,6 +14,7 @@ import com.craigburke.document.core.UnitCategory
 import com.craigburke.document.core.factory.CreateFactory
 import com.craigburke.document.core.factory.DocumentFactory
 import com.craigburke.document.core.factory.HeadingFactory
+import com.craigburke.document.core.factory.LinkFactory
 import com.craigburke.document.core.factory.PageBreakFactory
 import com.craigburke.document.core.factory.ParagraphFactory
 import com.craigburke.document.core.factory.LineBreakFactory
@@ -77,14 +77,6 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
         }
         if (node instanceof BackgroundAssignable) {
             setNodeBackground(node, nodeProperties)
-        }
-        if (node instanceof Linkable) {
-            String parentUrl = (node.parent instanceof Linkable) ? node.parent.url : null
-            node.url = node.url ?: parentUrl
-        }
-        if (node instanceof Bookmarkable) {
-            // it doesn't make any sense to let this prefil from the template
-            node.ref = attributes.ref
         }
     }
 
@@ -176,6 +168,7 @@ abstract class DocumentBuilder extends FactoryBuilderSupport {
         registerFactory('lineBreak', new LineBreakFactory())
         registerFactory('image', new ImageFactory())
         registerFactory('text', new TextFactory())
+        registerFactory('link', new LinkFactory())
         registerFactory('table', new TableFactory())
         registerFactory('row', new RowFactory())
         registerFactory('cell', new CellFactory())

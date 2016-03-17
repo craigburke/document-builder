@@ -48,10 +48,14 @@ class WordDocument {
         contentTypes << new ContentType(extension: 'jpeg', type: 'image/jpeg')
     }
 
-    String addRelationship(String target, String type, DocumentPartType part) {
+    String addRelationship(String target, String type, DocumentPartType part, String targetMode = null) {
         def currentRelationships = documentParts[part.value].relationships
         String id = "rId${currentRelationships.size() + 1}"
-        currentRelationships << new Relationship(id: id, target: target, type: type)
+        Map props = [id: id, target: target, type: type]
+        if (targetMode) {
+            props.targetMode = targetMode
+        }
+        currentRelationships << new Relationship(props)
         id
     }
 
@@ -156,6 +160,14 @@ class WordDocument {
         id
     }
 
+    String addLink(String url, DocumentPartType partType) {
+        addRelationship(url,
+            'http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink',
+             partType,
+             'External'
+        )
+    }
+
     private void writeRelationships() {
         documentParts.each { String name, DocumentPart documentPart ->
             writeRelationshipsForPart(documentPart.type)
@@ -176,7 +188,11 @@ class WordDocument {
             namespaces << ['': 'http://schemas.openxmlformats.org/package/2006/relationships']
             Relationships {
                 documentParts[documentPart.value].relationships.each { Relationship relationship ->
-                    Relationship(Id: relationship.id, Target: relationship.target, Type: relationship.type)
+                    Map props = [Id: relationship.id, Target: relationship.target, Type: relationship.type]
+                    if (relationship.targetMode) {
+                        props.TargetMode = relationship.targetMode
+                    }
+                    Relationship(props)
                 }
             }
         }.toString()

@@ -42,7 +42,7 @@ class ParagraphParser {
         PDFont pdfFont
 
         chunk.each { node ->
-            if (node.getClass() == Text) {
+            if (node instanceof Text) {
                 Font font = node.font
                 pdfFont = PdfFont.getFont(font)
                 String remainingText = node.value
