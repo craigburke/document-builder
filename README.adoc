@@ -6,6 +6,8 @@ A document builder for Groovy for PDF or Word documents. This is still very much
 
 http://www.craigburke.com/document-builder/[Documentation]
 
+NOTE: Because of the use of Groovy traits within the project, the minimum version of Groovy required is 2.3.
+
 == Example
 
 [source,groovy,subs='attributes']
