@@ -53,7 +53,13 @@ class PdfFont {
     }
 
     static void addFont(PDDocument document, EmbeddedFont embeddedFont) {
-        PDFont font = PDType0Font.load(document, embeddedFont.file)
+        PDFont font = null
+        if (embeddedFont.file) {
+            font = PDType0Font.load(document, embeddedFont.file)
+        }
+        else {
+            font = PDType0Font.load(document, embeddedFont.inputStream)
+        }
         String fontName = embeddedFont.name ?: font.baseFont
 
         fonts[fontName] = fonts[fontName] ?: [:]
