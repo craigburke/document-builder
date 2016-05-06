@@ -30,11 +30,11 @@ byte[] groovyImageData = new URL(GROOVY_IMAGE_URL).bytes
 
 builders.each { builder ->
     builder.create {
-    document(font: [family: 'Helvetica', size: 14.pt], margin: [top: 0.75.inches]) {
+        document(font: [family: 'Helvetica', size: 14.pt], margin: [top: 0.75.inches]) {
 
-    heading1 "Groovy Document Builder v.{version}", font: [color: '#990000', size: 22.pt]
+        heading1 "Groovy Document Builder v.{version}", font: [color: '#990000', size: 22.pt]
 
-    heading2 "Paragraphs"
+        heading2 "Paragraphs"
 
         paragraph {
             font.size = 42.pt
@@ -59,7 +59,7 @@ builders.each { builder ->
             lineBreak()
             text "Figure 1: Groovy Logo", font: [italic: true, size: 9.pt]
         }
-        
+
         heading2 "Tables"
 
         table(width: 6.inches, padding: 4.px, border: [size: 3.px, color: '#990000']) {
