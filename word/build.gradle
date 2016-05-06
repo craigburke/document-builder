@@ -12,8 +12,4 @@ dependencies {
 project.ext {
     artifactId = 'word'
     description = 'Groovy Word Document Builder'
-    license = [
-            name: 'Mozilla Public License, Version 2.0',
-            url : 'https://www.mozilla.org/MPL/2.0/'
-    ]
 }
