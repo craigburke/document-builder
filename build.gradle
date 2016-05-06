@@ -65,11 +65,20 @@ subprojects {
             user = project.hasProperty('bintrayUsername') ? project.bintrayUsername : ''
             key = project.hasProperty('bintrayApiKey') ? project.bintrayApiKey : ''
             publications = ['maven']
+            publish = true
 
             pkg {
                 repo = 'document-builder'
                 userOrg = 'craigburke'
                 name = project.artifactId
+                githubRepo = project.githubUrl
+                githubReleaseNotesFile = 'README.adoc'
+                version {
+                    mavenCentralSync {
+                        user = project.hasProperty('mavenCentralUsername') ? project.mavenCentralUsername : ''
+                        password = project.hasProperty('mavenCentralPassword') ? project.mavenCentralPassword : ''
+                    }
+                }
             }
         }
 
