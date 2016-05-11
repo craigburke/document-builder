@@ -63,7 +63,8 @@ class Table extends BlockNode implements BackgroundAssignable {
         def updatedColumns = []
 
         children.eachWithIndex { row, rowIndex ->
-            row.children.eachWithIndex { column, columnIndex ->
+            def columnIndex = 0
+            row.children.each { column ->
                 if (column.rowspan > 1 && !updatedColumns.contains(column)) {
                     int rowspanEnd = Math.min(children.size() - 1, rowIndex + column.rowspan - 1)
                     (rowIndex + 1..rowspanEnd).each {
@@ -71,6 +72,7 @@ class Table extends BlockNode implements BackgroundAssignable {
                     }
                     updatedColumns << column
                 }
+                columnIndex += column.colspan
             }
         }
     }
